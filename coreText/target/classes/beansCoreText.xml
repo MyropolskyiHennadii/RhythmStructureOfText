@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd"
+>
+
+    <!--    <bean id="game" class="udemy.learning.GameImpl" init-method="reset">-->
+    <bean id="verse" class="textsVocal.structure.VersePortionForRythm" >
+
+        <!-- comment after adding <context:annotation-config/> = autowiring -->
+        <!--<property name="numberGenerator" ref="numberGenerator"/>-->
+
+        <property name="requireUnknownWordsByUser" value="true"/><!-- require users about unknown words or not -->
+        <property name="validLevelOfMainMeterGroupInVerseText" value="65"/>
+        <property name="validDifferenceBetweenTwoMainGroupsInVerseText" value="30"/>
+    </bean>
+
+    <bean id="prose" class="textsVocal.structure.ProsePortionForRythm">
+        <property name="requireUnknownWordsByUser" value="false"/> <!-- require users about unknown words or not -->
+    </bean>
+
+    <bean id="consoleDialog" class="textsVocal.dialogs.ConsoleDialog"/>
+
+    <!-- comment after adding <context:annotation-config/> = autowiring -->
+    <!--<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/> -->
+
+</beans>

@@ -1,0 +1,15 @@
+textsVocal\structure\TextForRythm.class
+textsVocal\structure\VersePortionForRythm$1.class
+textsVocal\structure\Alphabetable.class
+textsVocal\structure\ru\VocalAnalisysWordRu.class
+textsVocal\structure\AppConfig.class
+textsVocal\structure\VersePortionForRythm.class
+textsVocal\structure\ProsePortionForRythm.class
+textsVocal\structure\Word.class
+textsVocal\structure\SegmentOfPortion.class
+textsVocal\structure\TextForRythm$verseMeterPatterns.class
+textsVocal\structure\ru\VocalAnalisysSegmentRu.class
+textsVocal\console\ConsoleDialog.class
+textsVocal\structure\ru\VocalAnalisysWordRu$alphabetAndDuration.class
+textsVocal\structure\PortionOfTextGenerator.class
+textsVocal\structure\ru\VocalAnalisysWordRu$vocals.class
