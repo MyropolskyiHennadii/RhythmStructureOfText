@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd"
+        https://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
     <!--    <bean id="game" class="udemy.learning.GameImpl" init-method="reset">-->
@@ -16,7 +13,7 @@
         <property name="languageOfText" value="ru"/><!--language of the text-->
         <property name="numPortion" value="1"/><!--start number of the portion-->
         <property name="thisIsVerse" value="true"/><!--verse or prose-->
-        <property name="readingFromFile" value="true"/><!--read text from file or from ...-->
+        <property name="readingFromFile" value="false"/><!--read text from file or from ...-->
         <property name="fileInputDirectory" value="c:\\Users\\Геннадий\\Documents\\"/><!--path to directory with input file ...-->
         <property name="fileInputName" value="Kuzmin Verses.txt"/><!--name of the input file ...-->
         <property name="fileOutputDirectory" value="c:\\Users\\Геннадий\\Documents\\"/><!--path to directory with input file ...-->

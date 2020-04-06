@@ -2,7 +2,7 @@ package textsVocal.structure;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import textsVocal.structure.ru.VocalAnalisysSegmentRu;
+import textsVocal.ru.VocalAnalisysSegmentRu;
 import textsVocal.utils.DynamicTableRythm;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class SegmentOfPortion {
     private double duration = 0;// in our case duration == namberSyllable, but theoretically may be something other
     private String meter;//classic meter definition, if there is
     private int numberOfTonicFoot;// classic number of foots, if there is
-    private int numberСaesuraSyllable;// classic number of syllable with caesura, if there is
+    private int numberCaesuraSyllable;// classic number of syllable with caesura, if there is
     private String choosedMeterRepresentation;//if there is more than one representations, here we define main (if there is)
     private String ending;//ending of segment
 
@@ -94,12 +94,12 @@ public class SegmentOfPortion {
         this.numberOfTonicFoot = numberOfTonicFoot;
     }
 
-    public int getNumberСaesuraSyllable() {
-        return numberСaesuraSyllable;
+    public int getnumberCaesuraSyllable() {
+        return numberCaesuraSyllable;
     }
 
-    public void setNumberСaesuraSyllable(int numberСaesuraSyllable) {
-        this.numberСaesuraSyllable = numberСaesuraSyllable;
+    public void setnumberCaesuraSyllable(int numberCaesuraSyllable) {
+        this.numberCaesuraSyllable = numberCaesuraSyllable;
     }
 
     public void setSegmentIdentifier(Integer segmentIdentifier) {
@@ -256,7 +256,7 @@ public class SegmentOfPortion {
                     if (!dtMeters.getValue("Meter", i).toString().contains("Unknown")) {
                         repr = (String) dtMeters.getValue("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                 continue;
                             }
                         }
@@ -273,7 +273,7 @@ public class SegmentOfPortion {
                     for (int i = 0; i < dtMeters.getSize(); i++) {
                         repr = (String) dtMeters.getValue("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                 continue;
                             }
                         }
@@ -295,7 +295,7 @@ public class SegmentOfPortion {
                         if (dtMeters.getValue("Meter", i).toString().equals(mainGroup)) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -312,7 +312,7 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -332,7 +332,7 @@ public class SegmentOfPortion {
                         if (dtMeters.getValue("Meter", i).toString().equals(mainGroup) || dtMeters.getValue("Meter", i).toString().equals(secondGroup)) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -348,7 +348,7 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -368,7 +368,7 @@ public class SegmentOfPortion {
                         if (dtMeters.getValue("Meter", i).toString().equals(mainGroup)) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -384,7 +384,7 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValue("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getNumberСaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -433,7 +433,7 @@ public class SegmentOfPortion {
         setMeter((String) dtMeters.getValue("Meter", nRow));
         setChoosedMeterRepresentation((String) dtMeters.getValue("Segment representation", nRow));
         setNumberOfTonicFoot((Integer) dtMeters.getValue("Number tonic foot", nRow));
-        setNumberСaesuraSyllable((Integer) dtMeters.getValue("Сaesura syllable", nRow));
+        setnumberCaesuraSyllable((Integer) dtMeters.getValue("Сaesura syllable", nRow));
         // ending
         int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
         if (posLastSymbolOfStress >= 0) {

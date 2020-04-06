@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import textsVocal.dialogs.ConsoleDialog;
-import textsVocal.structure.ru.VocalAnalisysWordRu;
+import textsVocal.ru.VocalAnalisysWordRu;
 import textsVocal.utils.DynamicTableRythm;
 
 import java.util.*;
@@ -44,14 +44,14 @@ public abstract class TextForRythm {
 
     //== enums ================================================================
     //must have to define verse meter
-    public static enum verseMeterPatterns {
+    public enum verseMeterPatterns {
 
         Trochee("10"), Iambus("01"), Dactyl("100"), Amphibrach("010"), Anapaest("001"),
         PentonI("10000"), PentonII("01000"), PentonIII("00100"), PentonIV("00010"), PentonV("00001");
 
         private final String pattern;
 
-        private verseMeterPatterns(String m) {
+        verseMeterPatterns(String m) {
             this.pattern = m;
         }
 

@@ -838,7 +838,7 @@ public class VersePortionForRythm extends TextForRythm {
             String meterRepresentation = listSegments.get(i).getChoosedMeterRepresentation().trim();
             String meter = listSegments.get(i).getMeter().trim();
             int numberOfTonicFoot = listSegments.get(i).getNumberOfTonicFoot();
-            int numberСaesuraSyllable = listSegments.get(i).getNumberСaesuraSyllable();
+            int numberСaesuraSyllable = listSegments.get(i).getnumberCaesuraSyllable();
             outputLineInResume(outputAccumulation, new String[]{line, meterRepresentation, "[" + numberOfTonicFoot + "-" + meter + "]",
                     "[" + numberСaesuraSyllable + "]", "[" + listSegments.get(i).getNumberSyllable() + "]"});
         }
