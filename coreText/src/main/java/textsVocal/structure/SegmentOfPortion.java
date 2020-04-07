@@ -223,7 +223,7 @@ public class SegmentOfPortion {
      * @param mainPart
      * @param secondPart
      */
-    public void fillSegmentWithMeterCharacteristics(Map priorityMap, String mainGroup, String secondGroup, int mainPart, int secondPart) {
+    public void fillVerseSegmentWithMeterCharacteristics(Map priorityMap, String mainGroup, String secondGroup, int mainPart, int secondPart) {
 
         String repr = "";
         int nStresses = 0;
@@ -231,16 +231,16 @@ public class SegmentOfPortion {
 
         DynamicTableRythm dtMeters = getTableOfMeterDefinitions();
         if (dtMeters == null) {
-            log.error("Null instead table of meter definitions.", IllegalArgumentException.class);
+            log.error("Null instead table of meter definitions!");
             throw new IllegalArgumentException("Null instead table of meter definitions.");
         }
         if (dtMeters.getSize() == 0) {
-            log.error("0-dimensioned table of meter definitions.", IllegalArgumentException.class);
+            log.error("0-dimensioned table of meter definitions!");
             throw new IllegalArgumentException("0-dimensioned table of meter definitions.");
         }
 
         //setNumberSyllable from the first representation (all must have the same length)
-        repr = (String) dtMeters.getValue("Segment representation", 0);
+        repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", 0);
         int numberOfSyllable = repr.length();
         setNumberSyllable(numberOfSyllable);
 
@@ -253,10 +253,10 @@ public class SegmentOfPortion {
                 boolean wasDefined = false;
                 //may be there is well-defined meter. But we choose representation with maximal number of stresses or with latest position of stress
                 for (int i = 0; i < dtMeters.getSize(); i++) {
-                    if (!dtMeters.getValue("Meter", i).toString().contains("Unknown")) {
-                        repr = (String) dtMeters.getValue("Segment representation", i);
+                    if (!dtMeters.getValueFromColumnAndRow("Meter", i).toString().contains("Unknown")) {
+                        repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                 continue;
                             }
                         }
@@ -271,9 +271,9 @@ public class SegmentOfPortion {
 
                 if (!wasDefined) {
                     for (int i = 0; i < dtMeters.getSize(); i++) {
-                        repr = (String) dtMeters.getValue("Segment representation", i);
+                        repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                 continue;
                             }
                         }
@@ -292,10 +292,10 @@ public class SegmentOfPortion {
                     boolean wasDefined = false;
                     //may be there is well-defined meter. But we choose representation with maximal number of stresses
                     for (int i = 0; i < dtMeters.getSize(); i++) {
-                        if (dtMeters.getValue("Meter", i).toString().equals(mainGroup)) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                        if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup)) {
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -310,9 +310,9 @@ public class SegmentOfPortion {
 
                     if (!wasDefined) {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -329,10 +329,10 @@ public class SegmentOfPortion {
                     // two main meters compete one with another
                     boolean wasDefined = false;
                     for (int i = 0; i < dtMeters.getSize(); i++) {
-                        if (dtMeters.getValue("Meter", i).toString().equals(mainGroup) || dtMeters.getValue("Meter", i).toString().equals(secondGroup)) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                        if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup) || dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(secondGroup)) {
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -346,9 +346,9 @@ public class SegmentOfPortion {
                     }
                     if (!wasDefined) {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -365,10 +365,10 @@ public class SegmentOfPortion {
 
                     boolean wasDefined = false;
                     for (int i = 0; i < dtMeters.getSize(); i++) {
-                        if (dtMeters.getValue("Meter", i).toString().equals(mainGroup)) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                        if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup)) {
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -382,9 +382,9 @@ public class SegmentOfPortion {
                     }
                     if (!wasDefined) {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
-                            repr = (String) dtMeters.getValue("Segment representation", i);
+                            repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValue("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
                                     continue;
                                 }
                             }
@@ -408,7 +408,7 @@ public class SegmentOfPortion {
      */
     public Map getMeterDefinitions(String language) {
         if (!language.equals("ru")) {
-            log.error("Unknown language for meter's definition!", IllegalArgumentException.class);
+            log.error("Unknown language for meter's definition " + language +"!");
             throw new IllegalArgumentException("Unknown language for meter's definition!");
         } else {
             VocalAnalisysSegmentRu vocalSegment = new VocalAnalisysSegmentRu(this);
@@ -417,10 +417,12 @@ public class SegmentOfPortion {
     }
 
     //=== private instance methods
+/*
     private int getValidLevelOfMainMeterGroupInVerseText() {
-        log.error("Not supported yet.", IllegalArgumentException.class);
+        log.error("Not supported yet!");
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+*/
 
     /**
      * filling segment fields, when we have all lines with meter-definitions
@@ -429,11 +431,11 @@ public class SegmentOfPortion {
      */
     private void fillMeterCharacteristicsVariables(DynamicTableRythm dtMeters, int nRow) {
 
-        String repr = (String) dtMeters.getValue("Segment representation", nRow);
-        setMeter((String) dtMeters.getValue("Meter", nRow));
-        setChoosedMeterRepresentation((String) dtMeters.getValue("Segment representation", nRow));
-        setNumberOfTonicFoot((Integer) dtMeters.getValue("Number tonic foot", nRow));
-        setnumberCaesuraSyllable((Integer) dtMeters.getValue("Сaesura syllable", nRow));
+        String repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", nRow);
+        setMeter((String) dtMeters.getValueFromColumnAndRow("Meter", nRow));
+        setChoosedMeterRepresentation((String) dtMeters.getValueFromColumnAndRow("Segment representation", nRow));
+        setNumberOfTonicFoot((Integer) dtMeters.getValueFromColumnAndRow("Number tonic foot", nRow));
+        setnumberCaesuraSyllable((Integer) dtMeters.getValueFromColumnAndRow("Сaesura syllable", nRow));
         // ending
         int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
         if (posLastSymbolOfStress >= 0) {

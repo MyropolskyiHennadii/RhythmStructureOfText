@@ -12,12 +12,12 @@
         <!--<property name="numberGenerator" ref="numberGenerator"/>-->
         <property name="languageOfText" value="ru"/><!--language of the text-->
         <property name="numPortion" value="1"/><!--start number of the portion-->
-        <property name="thisIsVerse" value="true"/><!--verse or prose-->
-        <property name="readingFromFile" value="false"/><!--read text from file or from ...-->
+        <property name="thisIsVerse" value="false"/><!--verse or prose-->
+        <property name="readingFromFile" value="true"/><!--read text from file or from ...-->
         <property name="fileInputDirectory" value="c:\\Users\\Геннадий\\Documents\\"/><!--path to directory with input file ...-->
-        <property name="fileInputName" value="Kuzmin Verses.txt"/><!--name of the input file ...-->
+        <property name="fileInputName" value="Хаджи Мурат — 1 порция.txt"/><!--name of the input file ...-->
         <property name="fileOutputDirectory" value="c:\\Users\\Геннадий\\Documents\\"/><!--path to directory with input file ...-->
-        <property name="fileOutputName" value="out_Kuzmin Verses.txt"/><!--name of the output file ...-->
+        <property name="fileOutputName" value="out_Хаджи Мурат — 1 порция.txt"/><!--name of the output file ...-->
         <property name="charsetName" value="UTF-8"/><!--UTF-8 and so on ...-->
         <property name="portionSeparator" value="//////////////////////////////////////////////////"/><!--separator of text's portions-->
     </bean>

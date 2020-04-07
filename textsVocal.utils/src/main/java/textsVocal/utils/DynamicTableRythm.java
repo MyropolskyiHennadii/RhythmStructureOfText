@@ -23,10 +23,12 @@ public class DynamicTableRythm<T> {
     public DynamicTableRythm(List<String> pNamesOfColumn, List<Supplier<List<T>>> pSupplier) {
 
         if (!checkDimensionOfListsAndNames(pNamesOfColumn, pSupplier)) {
+            log.error("Non-equel dimension of columns names and columns lists in dynamic table");
             throw new IllegalArgumentException("Non-equel dimension of columns names and columns lists in dynamic table");
         }
 
         if (new HashSet<>(pNamesOfColumn).size() != pNamesOfColumn.size()) {
+            log.error("There are duplicate names in namesOfColumn");
             throw new IllegalArgumentException("There are duplicate names in namesOfColumn");
         }
 
@@ -45,6 +47,9 @@ public class DynamicTableRythm<T> {
 
     //=== getters and setters =======================================================
 
+    public Collection<String> getNamesOfColumn() {
+        return Collections.unmodifiableCollection(namesOfColumn);
+    }
 
     //== public instance methods ====================================================
     /**
@@ -57,7 +62,7 @@ public class DynamicTableRythm<T> {
         String name;
 
         if (pData.size() != namesOfColumn.size() - 1) {
-            log.debug("Non-equel dimension adding data and columns lists in dynamic table", IllegalArgumentException.class);
+            log.error("Non-equel dimension adding data and columns lists in dynamic table");
             throw new IllegalArgumentException("Non-equel dimension adding data and columns lists in dynamic table");
         }
         try {
@@ -72,7 +77,7 @@ public class DynamicTableRythm<T> {
             }
             return true;
         } catch (Exception ex) {
-            log.debug("Impossible to add data to table: may be, incompatible data type", IllegalArgumentException.class);
+            log.debug("Impossible to add data to table: may be, incompatible data type");
             throw new IllegalArgumentException("Impossible to add data to table: may be, incompatible data type");
         }
     }
@@ -101,7 +106,7 @@ public class DynamicTableRythm<T> {
         return Data;
     }
 
-    public List getColumn(String nameColumn) {
+    public List getColumnFromTable(String nameColumn) {
         return DataColumns.get(nameColumn);
     }
 
@@ -111,7 +116,7 @@ public class DynamicTableRythm<T> {
      * @param nRow
      * @return
      */
-    public Object getValue(String pNameColumn, int nRow) {
+    public Object getValueFromColumnAndRow(String pNameColumn, int nRow) {
         return DataColumns.get(pNameColumn).get(nRow);
     }
 
@@ -122,11 +127,11 @@ public class DynamicTableRythm<T> {
      * @param pValueCondition
      * @return
      */
-    public List getValue(String pNameColumn, String pNameCondition, T pValueCondition) {
+    public List getValueFromColumnAndRowByCondition(String pNameColumn, String pNameCondition, T pValueCondition) {
         int indexName = namesOfColumn.indexOf(pNameColumn);
         int indexNameCondition = namesOfColumn.indexOf(pNameCondition);
         if ((indexName == -1) || (indexNameCondition == -1)) {
-            log.debug("Incorrect names of columns", IllegalArgumentException.class);
+            log.error("Incorrect names of columns "+pNameColumn + " or " + pNameCondition);
             throw new IllegalArgumentException("Incorrect names of columns");
         }
 
@@ -153,7 +158,8 @@ public class DynamicTableRythm<T> {
      */
     public Integer getMinimumValue(String pNameColumn)
     {
-        List<Integer> numberOfFragment = getColumn("Number of line");
+        //List<Integer> numberOfFragment = getColumn("Number of line");
+        List<Integer> numberOfFragment = getColumnFromTable(namesOfColumn.get(1));//first column of table
         OptionalInt optMinNumber = numberOfFragment.stream().mapToInt(x -> x).min();
         if (optMinNumber.isPresent())
         {
@@ -171,7 +177,8 @@ public class DynamicTableRythm<T> {
      */
     public Integer getMaximumValue(String pNameColumn)
     {
-        List<Integer> numberOfFragment = getColumn("Number of line");
+        //List<Integer> numberOfFragment = getColumn("Number of line");
+        List<Integer> numberOfFragment = getColumnFromTable(namesOfColumn.get(1));
         OptionalInt optMaxNumber = numberOfFragment.stream().mapToInt(x -> x).max();
         if (optMaxNumber.isPresent())
         {

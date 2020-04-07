@@ -1,9 +1,15 @@
 package textsVocal.dialogs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import textsVocal.ru.VocalAnalisysWordRu;
 import textsVocal.utils.DBHelper;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 import static textsVocal.structure.TextForRythm.symbolOfNoStress;
@@ -11,19 +17,17 @@ import static textsVocal.structure.TextForRythm.symbolOfStress;
 
 public class ConsoleDialog {
 
+    //=== static fields ===
     private static final ApplicationContext context = new ClassPathXmlApplicationContext("beansTextsVocalUtil.xml");
     private static final DBHelper db = context.getBean(DBHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(VocalAnalisysWordRu.class);
+
+    //=== non-static fields ===
     private final Scanner scanner = new Scanner(System.in);
 
     public String giveMePleaseStressSchema(String word, int duration) {
         boolean check = false;
         String schema = "";
-
-
-        //ApplicationContext context = new ClassPathXmlApplicationContext("beansTextsVocalUtil.xml");
-        //DBHelper db = context.getBean(DBHelper.class);
-
-        //String sql = "SELECT distinct textWord, meterRepresentation, partOfSpeech FROM " + db.getDb_Table() + " WHERE textWord in (";
 
         while (!check) {
             check = true;
@@ -47,9 +51,41 @@ public class ConsoleDialog {
                 }
             }
         }
-       /* if (!schema.equals("N")){
+        if (!schema.equals("N")) {
+/*            2020-04-06 16:45:01,021 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Существительное
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Междометие
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Союз
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Инфинитив
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Местоимение существительное
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Наречие
+            2020-04-06 16:45:01,022 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Глагол в личной форме
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Прилагательное
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Предлог
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Числительное количественное
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Местоименное прилагательное
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Частица
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Причастие
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Деепричастие
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Вводное слово
+            2020-04-06 16:45:01,023 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Краткое прилагательное
+            2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Предикатив
+            2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Фразеологизм
+            2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Краткое причастие
+            2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Числительное порядковое
+            2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Местоимение предикатив*/
 
-        }*/
+            String sql = "INSERT INTO " + db.getDb_TableUnKnownWords() + " (textWord, meterRepresentation) " + "VALUES ('" + word + "', '";
+            try {
+                Connection conn = db.getConnectionMainStressTable();
+                Statement stmt = conn.createStatement();
+                int nRecords = stmt.executeUpdate(sql + schema + "')");
+                log.info("Added records "+nRecords + " in unknown words database. Word = " + word);
+            } catch (SQLException e) {
+                log.error("Something wrong with SQL!", e);
+                e.getMessage();
+            }
+        }
         return schema;
     }
+
 }

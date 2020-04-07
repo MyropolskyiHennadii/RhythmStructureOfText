@@ -12,11 +12,11 @@ import java.util.concurrent.ExecutionException;
 import static textsVocal.structure.TextForRythm.CreateDynamicTableOfPortionSegmentsAndStresses;
 import static textsVocal.structure.TextForRythm.buildSegmentMeterPerfomanceWithAllOptions;
 
-public class PortionOfTextGenerator {
+public class PortionOfTextAnalyser {
 
     //=== fields =================================
     public static final StringBuilder outputAccumulation = new StringBuilder();//output accumulation
-    private static final Logger log = LoggerFactory.getLogger(PortionOfTextGenerator.class);//logger
+    private static final Logger log = LoggerFactory.getLogger(PortionOfTextAnalyser.class);//logger
 
     //=== static methods =========================
     public static void portionAnalysys(int numberOfPortion, String pText, boolean thisIsVerse, String pathToFileOutput, String language) throws ExecutionException, InterruptedException {
@@ -31,10 +31,12 @@ public class PortionOfTextGenerator {
         DynamicTableRythm dtOfTextSegmentsAndStresses = CreateDynamicTableOfPortionSegmentsAndStresses(instanceOfText, language);
 
         outputAccumulation.append("!----------PORTION N" + numberOfPortion + " ------------!\n");
-        log.debug("!----------PORTION N" + numberOfPortion + " ------------!");
+        log.info("!----------PORTION N" + numberOfPortion + " ------------!");
 
+        //name of the first column: they are different in verse and prose
+        String nameOfFirstColumn = dtOfTextSegmentsAndStresses.getNamesOfColumn().toArray()[1].toString();
         //every segment has to have table with metric characteristics
-        instanceOfText.setListOfSegments(buildSegmentMeterPerfomanceWithAllOptions(dtOfTextSegmentsAndStresses, "Number of line", "Word-object / Stress form", thisIsVerse, language));
+        instanceOfText.setListOfSegments(buildSegmentMeterPerfomanceWithAllOptions(dtOfTextSegmentsAndStresses, nameOfFirstColumn, "Word-object / Stress form", thisIsVerse, language));
 
         if (thisIsVerse) {
             VersePortionForRythm verseInstance = (VersePortionForRythm)instanceOfText;
@@ -66,6 +68,9 @@ public class PortionOfTextGenerator {
                 }
             }
 
+        } else {//prose
+            ProsePortionForRythm proseInstance = (ProsePortionForRythm)instanceOfText;
+            proseInstance.fillPortionWithCommonRythmCharacteristics(null);
         }
 
         instanceOfText.resumeOutput(numberOfPortion, outputAccumulation, pathToFileOutput);

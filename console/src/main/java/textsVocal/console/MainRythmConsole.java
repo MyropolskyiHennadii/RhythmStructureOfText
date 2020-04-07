@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import textsVocal.structure.PortionOfTextGenerator;
+import textsVocal.structure.PortionOfTextAnalyser;
 import textsVocal.structure.TextForRythm;
 import textsVocal.structure.Word;
 
@@ -147,16 +147,16 @@ public class MainRythmConsole {
 
 
         if (!readingFromFile) {
-            PortionOfTextGenerator.portionAnalysys(numPortion, testText, thisIsVerse, "", languageOfText);
+            PortionOfTextAnalyser.portionAnalysys(numPortion, testText, thisIsVerse, "", languageOfText);
         } else {
 
             Path textPath = Paths.get(directoryInput, fileInputName);
             if (!Files.exists(textPath)) {
-                log.error("There is no file " + textPath, new FileNotFoundException());
+                log.error("There is no file " + textPath);
                 throw new FileNotFoundException("There is no file " + textPath);
             }
             if (!Files.isReadable(textPath)) {
-                log.error("Impossible to read file " + textPath, new FileNotFoundException());
+                log.error("Impossible to read file " + textPath);
                 throw new FileNotFoundException("Impossible to read file " + textPath);
             }
 
@@ -192,7 +192,7 @@ public class MainRythmConsole {
                         sPortion.append(line);
                         sPortion.append((char) 12);
                     } else {
-                        PortionOfTextGenerator
+                        PortionOfTextAnalyser
                                 .portionAnalysys(numPortion, sPortion.toString().trim(), thisIsVerse, directoryOuput + fileOutputName, languageOfText);
                         sPortion.delete(0, sPortion.length());
                         numPortion++;
@@ -204,7 +204,7 @@ public class MainRythmConsole {
                 //last portion
                 if (!sPortion.toString()
                         .isEmpty()) {
-                    PortionOfTextGenerator
+                    PortionOfTextAnalyser
                             .portionAnalysys(numPortion, sPortion.toString().trim(), thisIsVerse, directoryOuput + fileOutputName, languageOfText);
                 }
             } catch (FileNotFoundException e) {

@@ -16,8 +16,9 @@ public class DBHelper {
     private static String db_USER = "root";
     private static String db_PASSWORD = "1961";
     private static String db_Table = "stressworddictionaryru";
+    private static String db_TableUnKnownWords = "unknownwords";//temporary table for unknown words
     private static final Logger log = LoggerFactory.getLogger(DBHelper.class);//logger
-    private static Connection conn;
+    private static Connection mainConnection;//main connection with stress table
 
     //=== setters and getters ==========================
 
@@ -45,6 +46,10 @@ public class DBHelper {
         return db_Table;
     }
 
+    public static String getDb_TableUnKnownWords() {
+        return db_TableUnKnownWords;
+    }
+
     public static void setDb_NAME(String db_NAME) {
         DBHelper.db_NAME = db_NAME;
     }
@@ -69,25 +74,27 @@ public class DBHelper {
         DBHelper.db_Table = db_Table;
     }
 
-    public static int count;
+    public static void setDb_TableUnKnownWords(String db_TableUnKnownWords) {
+        DBHelper.db_TableUnKnownWords = db_TableUnKnownWords;
+    }
 
     /**
-     * return connection (one time new, than the same)
+     * return main connection with stress table (one time new, than the same)
      *
      * @return
      * @throws SQLException
      */
-    public Connection getConnection()  throws SQLException{
-        if (conn == null) {
+    public Connection getConnectionMainStressTable()  throws SQLException{
+        if (mainConnection == null) {
             try {
-                conn = DriverManager.getConnection("jdbc:mysql://" + db_HOST + ":" + db_PORT + "/" + db_NAME + "?useSSL=false", db_USER, db_PASSWORD);
+                mainConnection = DriverManager.getConnection("jdbc:mysql://" + db_HOST + ":" + db_PORT + "/" + db_NAME + "?useSSL=false", db_USER, db_PASSWORD);
                 ;
             } catch (SQLException e) {
-                log.error("Can't create connection with DB!", e);
+                log.error("Can't create connection with DB!" + e.getMessage());
                 throw e;
             }
         }
-        return conn;
+        return mainConnection;
     }
 
     /**
@@ -95,11 +102,11 @@ public class DBHelper {
      * @throws SQLException
      */
     public void beforeDestoying() throws SQLException {
-        if(conn != null){
+        if(mainConnection != null){
             try {
-            conn.close();}
+            mainConnection.close();}
             catch (SQLException e) {
-                log.error("Can't close connection with DB!", e);
+                log.error("Can't close connection with DB!" + e.getMessage());
                 throw e;
             }
         }

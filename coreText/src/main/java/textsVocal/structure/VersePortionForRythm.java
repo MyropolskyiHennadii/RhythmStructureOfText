@@ -459,6 +459,12 @@ public class VersePortionForRythm extends TextForRythm {
         return prepareTable;
     }
 
+    @Override
+    public <T> void fillPortionWithCommonRythmCharacteristics(T t) {
+        fillVersePortionWithCommonRythmCharacteristics((Map)t);
+    }
+
+    //== public insyance methods ==
     /**
      * What sre the most popular meters in portion
      */
@@ -468,8 +474,8 @@ public class VersePortionForRythm extends TextForRythm {
         List<SegmentOfPortion> preparedListOfSegment = getListOfSegments();
 
         if (preparedListOfSegment.isEmpty()) {
-            getLog().error("There is no segments. Impossible to define meter in segment.", IllegalArgumentException.class);
-            throw new IllegalArgumentException("There is no segments. Impossible to define meter in segment.");
+            getLog().error("There is no segment in list. Impossible to define meter in segment.");
+            throw new IllegalArgumentException("There is no segment in list. Impossible to define meter in segment.");
         }
 
         // prioritize
@@ -478,7 +484,7 @@ public class VersePortionForRythm extends TextForRythm {
             // temporary set
             Set<String> tempSet = new HashSet<>();
             for (int i = 0; i < dt.getSize(); i++) {
-                tempSet.add(dt.getValue("Meter", i).toString().trim());
+                tempSet.add(dt.getValueFromColumnAndRow("Meter", i).toString().trim());
             }
             return tempSet;
         }).forEach((tempSet) -> {
@@ -533,19 +539,19 @@ public class VersePortionForRythm extends TextForRythm {
     /**
      * fill portion with common rythm characteristics
      */
-    public void fillPortionWithCommonRythmCharacteristics(Map priorityMap) {
+    public void fillVersePortionWithCommonRythmCharacteristics(Map priorityMap) {
 
         List<SegmentOfPortion> preparedListOfSegment = getListOfSegments();
         if (preparedListOfSegment.isEmpty()) {
-            getLog().error("There is empty list of segments. Impossible to define meter in portion.", IllegalArgumentException.class);
+            getLog().error("There is empty list of segments. Impossible to define meter in portion.");
             throw new IllegalArgumentException("There is empty list of segments. Impossible to define meter in portion.");
         }
         if (priorityMap == null) {
-            getLog().error("Null instead of priority map.", IllegalArgumentException.class);
+            getLog().error("Null instead of priority map.");
             throw new IllegalArgumentException("Null instead of priority map.");
         }
         if (priorityMap.isEmpty()) {
-            getLog().error("Empty priority map.", IllegalArgumentException.class);
+            getLog().error("Empty priority map.");
             throw new IllegalArgumentException("Empty priority map.");
         }
 
@@ -572,7 +578,7 @@ public class VersePortionForRythm extends TextForRythm {
         }
 
         for (SegmentOfPortion s : preparedListOfSegment) {
-            s.fillSegmentWithMeterCharacteristics(priorityMap, mainGroupName, secondGroupName, mainPart, secondPart);
+            s.fillVerseSegmentWithMeterCharacteristics(priorityMap, mainGroupName, secondGroupName, mainPart, secondPart);
         }
 
     }
@@ -829,11 +835,12 @@ public class VersePortionForRythm extends TextForRythm {
 
         DynamicTableRythm dt = this.getDtOfTextSegmentsAndStresses();
         List<SegmentOfPortion> listSegments = this.getListOfSegments();
+        String nameOfFirstColumn = (String)dt.getNamesOfColumn().toArray()[1];
 
         outputLineInResume(outputAccumulation, new String[]{"Line", "Meter representation", "Meter-number of foots", "Shift meter (N syllable)", "Quantity of syllables"});
         for (int i = 0; i < listSegments.size(); i++) {
             Integer nSegment = listSegments.get(i).getSegmentIdentifier();
-            List<String> words = (List<String>) dt.getValue("Word", "Number of line", nSegment);
+            List<String> words = (List<String>) dt.getValueFromColumnAndRowByCondition("Word", nameOfFirstColumn, nSegment);
             String line = words.stream().map(s -> s + " ").reduce("", String::concat).trim();
             String meterRepresentation = listSegments.get(i).getChoosedMeterRepresentation().trim();
             String meter = listSegments.get(i).getMeter().trim();
@@ -865,10 +872,10 @@ public class VersePortionForRythm extends TextForRythm {
                 fw.write(outputAccumulation.toString());
             }
             catch (FileNotFoundException e) {
-                getLog().error("Something wrong with output!", e);
+                getLog().error("Something wrong with output!" + e.getMessage());
                 e.getMessage();
             } catch (IOException e) {
-                getLog().error("Something wrong with output!", e);
+                getLog().error("Something wrong with output!" + e.getMessage());
                 e.getMessage();
             }
         }
@@ -890,7 +897,7 @@ public class VersePortionForRythm extends TextForRythm {
         lengthInSymbols[4] = 24;
 
         if (outputArr.length != lengthInSymbols.length){
-            getLog().error("Non-equal arrays!", IllegalArgumentException.class);
+            getLog().error("Non-equal arrays!");
             throw new IllegalArgumentException();
         }
 

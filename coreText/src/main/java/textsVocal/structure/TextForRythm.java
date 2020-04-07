@@ -325,7 +325,7 @@ public abstract class TextForRythm {
                         VocalAnalisysWordRu vo = new VocalAnalisysWordRu(words);
                         return vo.getRythmSchemaOfTheText();
                     } else {
-                        log.error(language + "! Unknown language! Impossible to build DynamicTableRythm.", IllegalArgumentException.class);
+                        log.error(language + "! Unknown language. Impossible to build DynamicTableRythm.");
                         throw new IllegalArgumentException(language + "! Unknown language! Impossible to build DynamicTableRythm.");
                     }
                 }
@@ -342,12 +342,13 @@ public abstract class TextForRythm {
         exService.shutdown();
 
         if (dt.getSize() == 0) {
+            log.error("Empty dynamic table!");
             throw new IllegalArgumentException("Empty dynamic table!");
         }
 
         //full object Words with stress and so on...
-        List<String> words = dt.getColumn("Word");
-        List<Word> objWords = dt.getColumn("Word-object / Stress form");
+        List<String> words = dt.getColumnFromTable("Word");
+        List<Word> objWords = dt.getColumnFromTable("Word-object / Stress form");
         int duration = 0;
 
         for (int i = 0; i < words.size(); i++) {
@@ -443,14 +444,15 @@ public abstract class TextForRythm {
         Integer min = dt.getMinimumValue(nameColumnSegmentIdentifier);
         Integer max = dt.getMaximumValue(nameColumnSegmentIdentifier);
         if ((min < 0) || (max < 0)) {
-            throw new IllegalArgumentException("Impossible to define min and max values in segment identifier. May be, incorrect names of columns");
+            log.error("Impossible to define min and max values in segment identifier. May be, incorrect names of columns "+ nameColumnSegmentIdentifier);
+            throw new IllegalArgumentException("Impossible to define min and max values in segment identifier. May be, incorrect names of columns " + nameColumnSegmentIdentifier);
         }
 
         ExecutorService exService = Executors.newCachedThreadPool();
 
         for (int i = min; i <= max; i++) {
 
-            List<Word> words = dt.getValue(nameColumnWord, nameColumnSegmentIdentifier, i);
+            List<Word> words = dt.getValueFromColumnAndRowByCondition(nameColumnWord, nameColumnSegmentIdentifier, i);
             SegmentOfPortion s = SegmentOfPortion.buildSegmentMeterRepresentationWithAllOptions(words, language);
             s.setSegmentIdentifier(i);
             listSegments.add(s);
@@ -469,7 +471,7 @@ public abstract class TextForRythm {
                 try {
                     listFuture.get(i).get();
                 } catch (InterruptedException | ExecutionException ex) {
-                    log.error("Impossible to receive meter. i = " + i + ". " + dt.getValue(nameColumnWord, nameColumnSegmentIdentifier, i) + ex.getMessage());
+                    log.error("Impossible to receive meter. i = " + i + ". " + dt.getValueFromColumnAndRowByCondition(nameColumnWord, nameColumnSegmentIdentifier, i) + ex.getMessage());
                 }
             }
         }
@@ -518,9 +520,14 @@ public abstract class TextForRythm {
 
     /**
      * @param <R>
-     * @return parsed portion of text (why with parameter?)
+     * @return parsed portion of text as a dynamic table
      */
     public abstract <R> R parsePortionOfText();
+
+    /**
+     * fill all segments with rythm charachteristics
+     */
+    public abstract <T> void fillPortionWithCommonRythmCharacteristics(T t);
 
     /**
      * reset instance by singlton initiating
