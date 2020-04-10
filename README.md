@@ -18,6 +18,6 @@ The problems with Russian texts rythmic structure are
 
 Unfortunately I have Russian vocabulary of stresses only offline, but I hope soon have a hosting for this vocabulary (<4Gb).
 
-But code is here. 
+But code is here. Only console-variant, but soon come web-app.
 
 
