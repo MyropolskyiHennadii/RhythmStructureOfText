@@ -16,13 +16,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static textsVocal.structure.TextForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextForRythm.symbolOfStress;
+import static textsVocal.structure.TextForRythm.*;
 
 public class VocalAnalisysWordRu implements Alphabetable {
 
     //=== fields ============================================================
-    private static Map<String, Set<String>> tempWordDictionary = new HashMap<>();//temporary dictionary ("cash")
     private List<String> listWord;
     private static final Logger log = LoggerFactory.getLogger(VocalAnalisysWordRu.class);
 
@@ -88,15 +86,6 @@ public class VocalAnalisysWordRu implements Alphabetable {
     @Override
     public Map getRythmSchemaOfTheText() {
         return getMeterSchemaFromDataBase(listWord);
-    }
-
-    //=== public static methods =============================================
-    public static Map<String, Set<String>> getTempWordDictionary() {
-        return tempWordDictionary;
-    }
-
-    public static void setTempWordDictionary(Map<String, Set<String>> tempWordDictionary) {
-        VocalAnalisysWordRu.tempWordDictionary = tempWordDictionary;
     }
 
     /**
@@ -280,7 +269,6 @@ public class VocalAnalisysWordRu implements Alphabetable {
                 n0++;
                 if ((n0 == nStep) || (i == (prepareWords.size() - 1))) {
                     ResultSet rs = stmt.executeQuery(sql + sqlArray + ")");
-                    //System.out.println(sqlArray);
                     fillStressMapWithResultSet(rs, stressMap);
 
                     n0 = 0;

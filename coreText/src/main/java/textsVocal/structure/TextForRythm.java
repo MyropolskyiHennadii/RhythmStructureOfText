@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
 public abstract class TextForRythm {
 
@@ -21,7 +22,7 @@ public abstract class TextForRythm {
     public static final char symbolOfNoStress = '0';
     public static final String[] stressRepresentations = {"" + symbolOfNoStress, "" + symbolOfStress};
     public static final Set<Word> unKnownWords = new HashSet<>();//set of words with unknown stresses
-    public static final CharSequence[] SYMB_SEGMENT = {"" + (char) 10, "" + (char) 12, "" + (char) 13};// unicodes return
+    public static final CharSequence[] SYMB_PARAGRAPH = {"" + (char) 10, "" + (char) 12, "" + (char) 13};// unicodes return
     public static final CharSequence[] SYMB_SPACE = {"" + (char) 32, "" + (char) 160, "" + (char) 9};// unicodes spaces
     // strings with different marks end of sentence
     public static final CharSequence[] SYMB_SENTENCE = {"!!!", "???", "...", "??!", "??", "?!", "!!", "!", "?",
@@ -34,6 +35,8 @@ public abstract class TextForRythm {
     //brief punctuation
     public static final CharSequence[] SYMB_BRIEF_PUNCTUATION = {",", ".", ";", ":", "!", "?", "-", "_", "" + (char) 8212, "" + (char) -1, "" + (char) 65279};
 
+    //temporary dictionary
+    public static Map<String, Set<String>> tempWordDictionary = new HashMap<>();//temporary dictionary ("cash")
     private static Logger log = LoggerFactory.getLogger(VersePortionForRythm.class);//logger
 
     private final String pText = "";//original text
@@ -104,7 +107,7 @@ public abstract class TextForRythm {
 
     //== static methods =========================================================
     public static CharSequence[] getSYMB_SEGMENT() {
-        return SYMB_SEGMENT;
+        return SYMB_PARAGRAPH;
     }
 
     public static CharSequence[] getSYMB_SPACE() {
@@ -317,7 +320,7 @@ public abstract class TextForRythm {
         //1. parallel: receive stresses and dynamic table without stresses
         Future<Map<String, Set<String>>> stresses = exService.submit(() -> {//stream for stress to find
                     List<CharSequence[]> allChars = new ArrayList<>();
-                    allChars.add(SYMB_SEGMENT);
+                    allChars.add(SYMB_PARAGRAPH);
                     allChars.add(SYMB_PUNCTUATION);
                     String pText = cleanTextFromSymbols(entranceText, allChars);
                     List<String> words = StringToWords(pText, SYMB_SPACE);
@@ -356,7 +359,7 @@ public abstract class TextForRythm {
 
             Word objWord = objWords.get(i);
             objWord.setTextWord(textWord);
-            duration = (int) VocalAnalisysWordRu.calculateDurationOnlyVocale(textWord.replaceAll("ё", "е"));
+            duration = (int) VocalAnalisysWordRu.calculateDurationOnlyVocale(textWord);
             objWord.setDuration(duration);
             objWord.setNumSyllable(duration);
             String reprParticularCasesOfWords = VocalAnalisysWordRu.particularCasesOfWords(textWord);
@@ -389,6 +392,10 @@ public abstract class TextForRythm {
                         } else {
                             objWord.addMeterRepresentation(schema);
                             objWord.setMeterRepresentationForUser(schema);
+                            //adding to temporary dictionary:
+                            Set<String> serviceSet = new HashSet<>();
+                            serviceSet.add(schema);
+                            tempWordDictionary.put(textWord, serviceSet);
                         }
                     } else {//add word to set of unknown words
                         addUnkownWordToSet(objWord, textWord, duration);
@@ -453,7 +460,7 @@ public abstract class TextForRythm {
         for (int i = min; i <= max; i++) {
 
             List<Word> words = dt.getValueFromColumnAndRowByCondition(nameColumnWord, nameColumnSegmentIdentifier, i);
-            SegmentOfPortion s = SegmentOfPortion.buildSegmentMeterRepresentationWithAllOptions(words, language);
+            SegmentOfPortion s = SegmentOfPortion.buildSegmentMeterRepresentationWithAllOptions(words, language, thisIsVerse);
             s.setSegmentIdentifier(i);
             listSegments.add(s);
 
@@ -481,17 +488,17 @@ public abstract class TextForRythm {
 
 
     //== instance-methods ======================================================================================
-
     /**
-     * @return array with average stress per syllable
+     * @return array with average stress per syllable from segments
      */
-    public double[] getStressProfile() {
+    public double[] getStressProfileFromSegments(Function<SegmentOfPortion, String> func) {
         List<SegmentOfPortion> listSegments = getListOfSegments();
         int maxLength = 0;
         int lineLength = 0;
         String line = "";
         for (int i = 0; i < listSegments.size(); i++) {
-            lineLength = listSegments.get(i).getChoosedMeterRepresentation().length();
+            line = func.apply(listSegments.get(i));
+            lineLength = line.length();
             if (lineLength > maxLength) {
                 maxLength = lineLength;
             }
@@ -499,7 +506,7 @@ public abstract class TextForRythm {
         int[] numberOfStress = new int[maxLength];
         int[] numberOfLines = new int[maxLength];
         for (int i = 0; i < listSegments.size(); i++) {
-            line = listSegments.get(i).getChoosedMeterRepresentation();
+            line = line = func.apply(listSegments.get(i));
             for (int j = 0; j < line.length(); j++) {
                 numberOfLines[j] = numberOfLines[j] + 1;
                 if (line.charAt(j) == symbolOfStress) {

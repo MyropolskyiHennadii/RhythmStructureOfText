@@ -3,6 +3,7 @@ textsVocal\structure\TextForRythm.class
 textsVocal\ru\VocalAnalisysSegmentRu.class
 textsVocal\structure\VersePortionForRythm$1.class
 textsVocal\structure\Alphabetable.class
+textsVocal\structure\PortionOfTextAnalyser.class
 textsVocal\ru\VocalAnalisysWordRu$vocals.class
 textsVocal\dialogs\ConsoleDialog.class
 textsVocal\structure\VersePortionForRythm.class
@@ -12,4 +13,3 @@ textsVocal\structure\SegmentOfPortion.class
 textsVocal\structure\TextForRythm$verseMeterPatterns.class
 textsVocal\ru\VocalAnalisysWordRu.class
 textsVocal\config\AppConfig.class
-textsVocal\structure\PortionOfTextGenerator.class

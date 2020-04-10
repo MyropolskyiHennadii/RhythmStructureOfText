@@ -17,7 +17,7 @@
     </bean>
 
     <bean id="prose" class="textsVocal.structure.ProsePortionForRythm">
-        <property name="requireUnknownWordsByUser" value="false"/> <!-- require users about unknown words or not -->
+        <property name="requireUnknownWordsByUser" value="true"/> <!-- require users about unknown words or not -->
     </bean>
 
     <bean id="consoleDialog" class="textsVocal.dialogs.ConsoleDialog"/>

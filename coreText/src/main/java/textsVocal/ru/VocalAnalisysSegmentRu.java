@@ -55,18 +55,18 @@ public class VocalAnalisysSegmentRu implements Alphabetable {
             Map<String, String> descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringWithoutPentons(var);
 
             if (!"Unknown".equals(descriptionMeter.get("meter").trim()) || var.length() <= 10) {//without pentons
-                String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nСaesuraSyllable").trim();
+                String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
 
                 if (!setMeters.contains(repr)) {//without duplicates
-                    dtSegment.setRow(Stream.of(var, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nСaesuraSyllable").trim())).collect(Collectors.toList()));
+                    dtSegment.setRow(Stream.of(var, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nShiftRegularMeterOnSyllable").trim())).collect(Collectors.toList()));
                     setMeters.add(repr);
                 }
             } else {//pentons
                 descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringPentons(var);
-                String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nСaesuraSyllable").trim();
+                String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
 
                 if (!setMeters.contains(repr)) {//without duplicates
-                    dtSegment.setRow(Stream.of(var, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nСaesuraSyllable").trim())).collect(Collectors.toList()));
+                    dtSegment.setRow(Stream.of(var, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nShiftRegularMeterOnSyllable").trim())).collect(Collectors.toList()));
                     setMeters.add(repr);
                 }
             }
@@ -77,7 +77,7 @@ public class VocalAnalisysSegmentRu implements Alphabetable {
         if (dtSegment.getSize() == 0) {
             dtSegment.setRow(Stream.of("0", "Unknown. Probably unknown language", 0, 0).collect(Collectors.toList()));
             segment.setMeter("" + symbolOfNoStress);
-            segment.setChoosedMeterRepresentation("" + symbolOfNoStress);
+            segment.setSelectedMeterRepresentation("" + symbolOfNoStress);
         }
 
         mapMeters.put(segment.getSegmentIdentifier(), setMeters);
@@ -88,12 +88,13 @@ public class VocalAnalisysSegmentRu implements Alphabetable {
 
     /**
      * check in Russian: whether current representation have sense
+     *
      * @param meterRepresentation
      * @param listWords
      * @return
      */
-    public static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords) {
-        //System.out.println(meterRepresentation + ": " + listWords);
+    public static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, boolean thisIsVerse) {
+
         int size = listWords.size();
 
         boolean allOK = true;
@@ -105,16 +106,18 @@ public class VocalAnalisysSegmentRu implements Alphabetable {
             numSyllableSum += numSyllable;
 
             if (numSyllable == 1 && numSyllableSum < meterRepresentation.length() - 1) {
-                //one-syllable-word with stress and next word beginns with stress
-                if (meterRepresentation.charAt(numSyllableSum - 1) == symbolOfStress
-                        && meterRepresentation.charAt(numSyllableSum) == symbolOfStress) {
-                    return false;
-                }
-                //one-syllable-word with stress and previous word ends with stress
-                if (numSyllableSum >= 2) {
+                if (thisIsVerse) {
+                    //one-syllable-word with stress and next word beginns with stress
                     if (meterRepresentation.charAt(numSyllableSum - 1) == symbolOfStress
-                            && meterRepresentation.charAt(numSyllableSum - 2) == symbolOfStress) {
+                            && meterRepresentation.charAt(numSyllableSum) == symbolOfStress) {
                         return false;
+                    }
+                    //one-syllable-word with stress and previous word ends with stress
+                    if (numSyllableSum >= 2) {
+                        if (meterRepresentation.charAt(numSyllableSum - 1) == symbolOfStress
+                                && meterRepresentation.charAt(numSyllableSum - 2) == symbolOfStress) {
+                            return false;
+                        }
                     }
                 }
             }

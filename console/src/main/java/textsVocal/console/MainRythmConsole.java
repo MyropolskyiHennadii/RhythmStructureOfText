@@ -14,6 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
+import static textsVocal.structure.PortionOfTextAnalyser.outputAccumulation;
+import static textsVocal.structure.ProsePortionForRythm.outputStressProfileOfWholeText;
+import static textsVocal.structure.TextForRythm.SYMB_PARAGRAPH;
+
 public class MainRythmConsole {
 
     //=== fields =======================================
@@ -101,7 +105,7 @@ public class MainRythmConsole {
 
     public void setCharsetName(String charsetName) {
         this.charsetName = charsetName;
-    }
+    }//UTF-8 and so on
 
     public String getPortionSeparator() {
         return portionSeparator;
@@ -111,15 +115,12 @@ public class MainRythmConsole {
         this.portionSeparator = portionSeparator;
     }
 
+    //=== public instance methods ===
+
     /**
-     * start
-     *
-     * @param args the command line arguments
-     * @throws java.lang.InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.io.FileNotFoundException
+     * build portion in verse by separator
      */
-    public static void main(String[] args) throws InterruptedException, ExecutionException, FileNotFoundException, IOException {
+    public void buildVersePortions() throws ExecutionException, InterruptedException, IOException {
 
         String testText = "Любви, надежды, тихой славы" + (char) 12
                 + "Недолго нежил нас обман," + (char) 12
@@ -130,21 +131,15 @@ public class MainRythmConsole {
                 + "Нетерпеливою душой" + (char) 12
                 + "Отчизны внемлем призыванье.";
 
-        log.info("Beginning main...");
-        ApplicationContext context = new ClassPathXmlApplicationContext("beansMainRythmConsole.xml");
-        MainRythmConsole startObject = context.getBean(MainRythmConsole.class);
-
-        boolean thisIsVerse = startObject.isThisIsVerse();
-        boolean readingFromFile = startObject.isReadingFromFile();
-        String languageOfText = startObject.getLanguageOfText();
-        int numPortion = startObject.getNumPortion();
-        String directoryInput = startObject.getFileInputDirectory();
-        String fileInputName = startObject.getFileInputName();
-        String directoryOuput = startObject.getFileOutputDirectory();
-        String fileOutputName = startObject.getFileOutputName();
-        String charsetName = startObject.getCharsetName();
-        String portionSeparator = startObject.getPortionSeparator();
-
+        boolean readingFromFile = isReadingFromFile();
+        String languageOfText = getLanguageOfText();
+        int numPortion = getNumPortion();
+        String directoryInput = getFileInputDirectory();
+        String fileInputName = getFileInputName();
+        String directoryOuput = getFileOutputDirectory();
+        String fileOutputName = getFileOutputName();
+        String charsetName = getCharsetName();
+        String portionSeparator = getPortionSeparator();
 
         if (!readingFromFile) {
             PortionOfTextAnalyser.portionAnalysys(numPortion, testText, thisIsVerse, "", languageOfText);
@@ -160,6 +155,7 @@ public class MainRythmConsole {
                 throw new FileNotFoundException("Impossible to read file " + textPath);
             }
 
+            // find portion in verse by separator and in prose by paraghaph
             File input = new File(textPath.toString());
 
 // read the content from file
@@ -193,7 +189,7 @@ public class MainRythmConsole {
                         sPortion.append((char) 12);
                     } else {
                         PortionOfTextAnalyser
-                                .portionAnalysys(numPortion, sPortion.toString().trim(), thisIsVerse, directoryOuput + fileOutputName, languageOfText);
+                                .portionAnalysys(numPortion, sPortion.toString().trim(), isThisIsVerse(), directoryOuput + fileOutputName, languageOfText);
                         sPortion.delete(0, sPortion.length());
                         numPortion++;
                         k = 0;
@@ -205,7 +201,7 @@ public class MainRythmConsole {
                 if (!sPortion.toString()
                         .isEmpty()) {
                     PortionOfTextAnalyser
-                            .portionAnalysys(numPortion, sPortion.toString().trim(), thisIsVerse, directoryOuput + fileOutputName, languageOfText);
+                            .portionAnalysys(numPortion, sPortion.toString().trim(), isThisIsVerse(), directoryOuput + fileOutputName, languageOfText);
                 }
             } catch (FileNotFoundException e) {
                 log.error("Undefinite FileNotFoundExctption in main", e);
@@ -216,7 +212,122 @@ public class MainRythmConsole {
             }
 
         }
+    }
 
+    /**
+     * build portion in prose by paraghaph
+     */
+    public void buildProsePortions() throws ExecutionException, InterruptedException, IOException {
+
+        String testText = "Любви, надежды, тихой славы" + (char) 12
+                + "Недолго нежил нас обман," + (char) 12
+                + "Исчезли юные забавы," + (char) 12
+                + "Как сон, как утренний туман;" + (char) 13
+                + "Но в нас горит еще желанье," + (char) 10
+                + "Под гнетом власти роковой" + (char) 10
+                + "Нетерпеливою душой" + (char) 12
+                + "Отчизны внемлем призыванье.";
+
+        boolean readingFromFile = isReadingFromFile();
+        String languageOfText = getLanguageOfText();
+        int numPortion = getNumPortion();
+        String directoryInput = getFileInputDirectory();
+        String fileInputName = getFileInputName();
+        String directoryOuput = getFileOutputDirectory();
+        String fileOutputName = getFileOutputName();
+        String charsetName = getCharsetName();
+        CharSequence[] portionSeparator = SYMB_PARAGRAPH;
+
+        if (!readingFromFile) {
+            String portionText = "";
+            for (int i = 0; i < testText.length(); i++) {
+                boolean mustAdd = true;
+                for (int j = 0; j < SYMB_PARAGRAPH.length; j++) {
+                    if (("" + testText.charAt(i)).equals(SYMB_PARAGRAPH[j])) {
+                        if (!portionText.isEmpty()) {
+                            PortionOfTextAnalyser.portionAnalysys(numPortion, portionText, isThisIsVerse(), "", languageOfText);
+                            portionText = "";
+                            mustAdd = false;
+                            numPortion++;
+                        }
+                    }
+                }
+                if (mustAdd) {
+                    portionText += testText.charAt(i);
+                }
+            }
+            //last portion
+            if (!portionText.isEmpty()) {
+                PortionOfTextAnalyser.portionAnalysys(numPortion, portionText, isThisIsVerse(), "", languageOfText);
+                numPortion++;
+            }
+
+        } else {
+
+            Path textPath = Paths.get(directoryInput, fileInputName);
+            if (!Files.exists(textPath)) {
+                log.error("There is no file " + textPath);
+                throw new FileNotFoundException("There is no file " + textPath);
+            }
+            if (!Files.isReadable(textPath)) {
+                log.error("Impossible to read file " + textPath);
+                throw new FileNotFoundException("Impossible to read file " + textPath);
+            }
+
+            // find portion in prose by paraghaph
+            File input = new File(textPath.toString());
+
+// read the content from file
+            try (BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(input), charsetName))) {
+                StringBuilder sPortion = new StringBuilder("");
+                String line = bufferedReader.readLine().trim();
+
+                while (line != null) {
+                    if (line.isEmpty()) {
+                        line = bufferedReader.readLine();
+                        continue;
+                    }
+                    PortionOfTextAnalyser.portionAnalysys(numPortion, line, isThisIsVerse(), directoryOuput + fileOutputName, languageOfText);
+                    numPortion++;
+                    line = bufferedReader.readLine();
+                }
+            } catch (FileNotFoundException e) {
+                log.error("Undefinite FileNotFoundExctption in main", e);
+                throw e;
+            } catch (IOException e) {
+                log.error("Undefinite IOException in main", e);
+                throw e;
+            }
+
+        }
+        outputStressProfileOfWholeText(outputAccumulation, directoryOuput + fileOutputName);
+
+    }
+
+    /**
+     * start
+     *
+     * @param args the command line arguments
+     * @throws java.lang.InterruptedException
+     * @throws java.util.concurrent.ExecutionException
+     * @throws java.io.FileNotFoundException
+     */
+    public static void main(String[] args) throws InterruptedException, ExecutionException, FileNotFoundException, IOException {
+
+        log.info("Beginning main...");
+        ApplicationContext context = new ClassPathXmlApplicationContext("beansMainRythmConsole.xml");
+        MainRythmConsole startObject = context.getBean(MainRythmConsole.class);
+
+        boolean thisIsVerse = startObject.isThisIsVerse();
+
+        // build portion in verse by separator and in prose by paraghaph!!!
+        if (thisIsVerse) {
+            startObject.buildVersePortions();
+        } else {
+            startObject.buildProsePortions();
+        }
 
         //publish unknown words
         if (TextForRythm.unKnownWords.size() > 0) {
@@ -228,4 +339,5 @@ public class MainRythmConsole {
 
         log.info("End main ...");
     }
+
 }

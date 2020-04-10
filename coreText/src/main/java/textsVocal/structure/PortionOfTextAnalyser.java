@@ -6,16 +6,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import textsVocal.utils.DynamicTableRythm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static textsVocal.structure.TextForRythm.CreateDynamicTableOfPortionSegmentsAndStresses;
-import static textsVocal.structure.TextForRythm.buildSegmentMeterPerfomanceWithAllOptions;
+import static textsVocal.structure.TextForRythm.*;
 
 public class PortionOfTextAnalyser {
 
     //=== fields =================================
     public static final StringBuilder outputAccumulation = new StringBuilder();//output accumulation
+    public static final List<String> meterRepresentationOfPortion = new ArrayList<>();//stress profile of whole portion
     private static final Logger log = LoggerFactory.getLogger(PortionOfTextAnalyser.class);//logger
 
     //=== static methods =========================
@@ -53,6 +54,7 @@ public class PortionOfTextAnalyser {
                 verseInstance.IsThereRegularEndings();
                 verseInstance.IsThereRegularDuration();
                 verseInstance.IsThereRegularNumberOfStress();
+                verseInstance.IsThereRegularСaesura();
             }
             verseInstance.setMaxAndMinDuration();
 
@@ -76,5 +78,45 @@ public class PortionOfTextAnalyser {
         instanceOfText.resumeOutput(numberOfPortion, outputAccumulation, pathToFileOutput);
     }
 
+    /**
+     * @return array with average stress per syllable from segments
+     */
+    public static double[] getStressProfileFromWholeText() {
+        int maxLength = 0;
+        int lineLength = 0;
+        String line = "";
+        for (int i = 0; i < meterRepresentationOfPortion.size(); i++) {
+            line = meterRepresentationOfPortion.get(i);
+            lineLength = line.length();
+            if (lineLength > maxLength) {
+                maxLength = lineLength;
+            }
+        }
+        int[] numberOfStress = new int[maxLength];
+        int[] numberOfLines = new int[maxLength];
+        for (int i = 0; i < meterRepresentationOfPortion.size(); i++) {
+            line = meterRepresentationOfPortion.get(i);
+            for (int j = 0; j < line.length(); j++) {
+                numberOfLines[j] = numberOfLines[j] + 1;
+                if (line.charAt(j) == symbolOfStress) {
+                    numberOfStress[j] = numberOfStress[j] + 1;
+                }
+            }
+        }
+
+        double[] stressProfile = new double[maxLength];
+        for (int i = 0; i < maxLength; i++) {
+            stressProfile[i] = 100 * numberOfStress[i] / numberOfLines[i];
+        }
+
+        return stressProfile;
+    }
+
+    /**
+     * cleaning list with meter representations
+     */
+    public static void ClearListMeterRepresentation(){
+        meterRepresentationOfPortion.clear();
+    }
 }
 

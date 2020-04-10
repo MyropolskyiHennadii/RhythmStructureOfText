@@ -1,24 +1,26 @@
 package textsVocal.structure;
 
 import textsVocal.utils.DynamicTableRythm;
+import textsVocal.utils.FileTreatment;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static textsVocal.structure.PortionOfTextAnalyser.meterRepresentationOfPortion;
 
 public class VersePortionForRythm extends TextForRythm {
 
     //== fields ========================================================
     private String pText;//formatted text
     private String originalText;//original text
-    private static int validLevelOfMainMeterGroupInVerseText = 65;
-    private static int validDifferenceBetweenTwoMainGroupsInVerseText = 30;
+    private static int validLevelOfMainMeterGroupInVerseText ;
+    private static int validDifferenceBetweenTwoMainGroupsInVerseText;
     private String mainMeter;//meter of whole text
     private String regularEndingsOfFirstStrophe;//ending's formula
     private String regularDurationOfFirstStrophe;//duration's formula
     private String regularNumberOfStressOfFirstStrophe;//number's of stress formula
+    private String regularSpaceOnSyllable;//ceasure
     private double maxDuration = 0;//maximal duration in lines
     private double minDuration = Integer.MAX_VALUE;////minimal duration in lines
 
@@ -44,6 +46,7 @@ public class VersePortionForRythm extends TextForRythm {
         this.regularEndingsOfFirstStrophe = "";
         this.regularDurationOfFirstStrophe = "";
         this.regularNumberOfStressOfFirstStrophe = "";
+        this.regularSpaceOnSyllable = "";
         this.maxDuration = 0;
         this.minDuration = Integer.MAX_VALUE;
         this.pText = prepareStringForParsing(pText, SYMB_BRIEF_PUNCTUATION, SYMB_SPACE).toString();
@@ -94,6 +97,14 @@ public class VersePortionForRythm extends TextForRythm {
         this.regularNumberOfStressOfFirstStrophe = regularNumberOfStressOfFirstStrophe;
     }
 
+    public String getRegularSpaceOnSyllable() {
+        return regularSpaceOnSyllable;
+    }
+
+    public void setRegularSpaceOnSyllable(String regularSpaceOnSyllable) {
+        this.regularSpaceOnSyllable = regularSpaceOnSyllable;
+    }
+
     public double getMaxDuration() {
         return maxDuration;
     }
@@ -138,7 +149,7 @@ public class VersePortionForRythm extends TextForRythm {
         //undefined content (we have not found pattern):
         descriptionMeter.put("meter", "Unknown");
         descriptionMeter.put("nTonicFoot", "0");
-        descriptionMeter.put("nСaesuraSyllable", "0");
+        descriptionMeter.put("nShiftRegularMeterOnSyllable", "0");
 
         //cut end of string
         String sWithoutEnding = s.trim();
@@ -162,7 +173,7 @@ public class VersePortionForRythm extends TextForRythm {
         //only if s has non-empty and well-defined content we are trying to find pattern
         int minLength;
         int maxLength;
-        int nСaesuraSyllable = 0;
+        int nShiftRegularMeterOnSyllable = 0;
         int nTonicFoot;
         int nMistake;
         int nShift;
@@ -205,17 +216,17 @@ public class VersePortionForRythm extends TextForRythm {
             maxLength = sWithoutEnding.length() <= pattern.getDuration() ? pattern.getDuration() : sWithoutEnding.length();
 
             for (int iShift = 1; iShift <= nShift; iShift++) {
-                if (!descriptionMeter.get("meter").equals("Unknown") && descriptionMeter.get("nСaesuraSyllable").equals("0")) {
+                if (!descriptionMeter.get("meter").equals("Unknown") && descriptionMeter.get("nShiftRegularMeterOnSyllable").equals("0")) {
                     continue;
                 }
                 nMistake = 0;
-                nСaesuraSyllable = CircleByPatternWhatIsTheMettersPatternForString(descriptionMeter, sWithoutEnding, pattern,
+                nShiftRegularMeterOnSyllable = CircleByPatternWhatIsTheMettersPatternForString(descriptionMeter, sWithoutEnding, pattern,
                         maxLength, minLength, iShift);
 
-                if (nСaesuraSyllable > 999998) {
-                    nMistake = nСaesuraSyllable;
+                if (nShiftRegularMeterOnSyllable > 999998) {
+                    nMistake = nShiftRegularMeterOnSyllable;
                 } else {
-                    if (nСaesuraSyllable > 0) {
+                    if (nShiftRegularMeterOnSyllable > 0) {
                         nMistake = 1;
                     } else {
                         nMistake = 0;
@@ -228,29 +239,26 @@ public class VersePortionForRythm extends TextForRythm {
                     if (nMistake == 0 || descriptionMeter.get("meter") == "Unknown") {
                         descriptionMeter.put("meter", pattern.name());
 
-                        nTonicFoot = SegmentOfPortion.getNumberOfStress(sWithoutEnding);
+                        nTonicFoot = SegmentOfPortion.getNumberOfSegmentStress(sWithoutEnding);
                         int footCorrection = sWithoutEnding.length() % strPattern.length();
-                        //System.out.println(sWithoutEnding+"; start nTonic " + nTonicFoot+", foot correction "+footCorrection);
+
                         if (footCorrection == 0) {
                             if (sWithoutEnding.length() / strPattern.length() > nTonicFoot) {
                                 nTonicFoot = sWithoutEnding.length() / strPattern.length();
-                                // System.out.println("1/"+sWithoutEnding+"; nTonic " + nTonicFoot+", foot correction "+footCorrection);
                             }
                         } else {
                             if ((strPattern.charAt(footCorrection - 1) == symbolOfStress ? 1 : 0) + sWithoutEnding.length() / strPattern.length() > nTonicFoot) {
                                 nTonicFoot = (strPattern.charAt(footCorrection - 1) == symbolOfStress ? 1 : 0) + sWithoutEnding.length() / strPattern.length();
-                                //System.out.println("2/"+sWithoutEnding+"; nTonic " + nTonicFoot+", foot correction "+footCorrection);
                             } else {
                                 //How to define in other way???
                                 if (strPattern.length() == 3 && sWithoutEnding.contains("000000")) {
                                     nTonicFoot = (1 + sWithoutEnding.length() / strPattern.length() > nTonicFoot) ? 1 + sWithoutEnding.length() / strPattern.length() : nTonicFoot;
-                                    //System.out.println("3/" + sWithoutEnding + "; nTonic " + nTonicFoot + ", foot correction " + footCorrection);
                                 }
                             }
 
                         }
                         descriptionMeter.put("nTonicFoot", "" + nTonicFoot);
-                        descriptionMeter.put("nСaesuraSyllable", "" + nСaesuraSyllable);
+                        descriptionMeter.put("nShiftRegularMeterOnSyllable", "" + nShiftRegularMeterOnSyllable);
                     }
                 }
             }
@@ -268,7 +276,7 @@ public class VersePortionForRythm extends TextForRythm {
         //undefined content (we have not found pattern):
         descriptionMeter.put("meter", "Unknown");
         descriptionMeter.put("nTonicFoot", "0");
-        descriptionMeter.put("nСaesuraSyllable", "0");
+        descriptionMeter.put("nShiftRegularMeterOnSyllable", "0");
 
         //cut end of string
         String sWithoutEnding = s.trim();
@@ -304,7 +312,7 @@ public class VersePortionForRythm extends TextForRythm {
             if (wasDefined) {
                 descriptionMeter.put("meter", pattern.name());
                 descriptionMeter.put("nTonicFoot", "" + (1 + sWithoutEnding.length() / strPattern.length()));
-                descriptionMeter.put("nСaesuraSyllable", "" + 0);
+                descriptionMeter.put("nShiftRegularMeterOnSyllable", "" + 0);
                 return descriptionMeter;
             }
 
@@ -326,7 +334,7 @@ public class VersePortionForRythm extends TextForRythm {
                                                                        int maxLength, int minLength, int nShift) {
 
         int nMistake = 0;
-        int nCaesureSyllable = 0;
+        int nShiftRegularMeterOnSyllable = 0;
         String strPattern = pattern.getPattern().trim();
 
         //System.out.println(pattern.name() + " nMistake before: " + nMistake);
@@ -362,10 +370,10 @@ public class VersePortionForRythm extends TextForRythm {
 
             }
 
-            if (strPattern.charAt(iPattern) == symbolOfNoStress) //defined content (we have not found pattern):
+            if (strPattern.charAt(iPattern)== symbolOfNoStress) //defined content (we have not found pattern):
             {
                 nMistake++;
-                nCaesureSyllable = i + 1;//+1 because i begins of 0
+                nShiftRegularMeterOnSyllable = i + 1;//+1 because i begins from 0
             }
 
             if (nMistake > 1) {
@@ -374,7 +382,7 @@ public class VersePortionForRythm extends TextForRythm {
             }
 
         }
-        return nCaesureSyllable;
+        return nShiftRegularMeterOnSyllable;
     }
 
     // == public instance overriden methods ========================================
@@ -416,7 +424,7 @@ public class VersePortionForRythm extends TextForRythm {
         List<Object> addData = new ArrayList<>();
 
         do {
-            fragment = textFragmentToDelimiter(sbText, SYMB_SEGMENT);
+            fragment = textFragmentToDelimiter(sbText, SYMB_PARAGRAPH);
             StringBuilder fragmentToWords = (fragment == null ? new StringBuilder(sbText.toString()) : new StringBuilder(fragment));
 
             do {
@@ -424,7 +432,7 @@ public class VersePortionForRythm extends TextForRythm {
                 StringBuilder wordToTable = (word == null ? fragmentToWords : new StringBuilder(word));
 
                 // symbol "Return" - away
-                for (CharSequence delimiter : SYMB_SEGMENT) {
+                for (CharSequence delimiter : SYMB_PARAGRAPH) {
                     posSymbol = wordToTable.indexOf("" + delimiter);
                     if (posSymbol >= 0) {
                         wordToTable.replace(posSymbol, posSymbol + 1, "");
@@ -441,7 +449,6 @@ public class VersePortionForRythm extends TextForRythm {
                 addData.add((fragment == null ? sbText.toString().trim() : fragment.trim()));
                 addData.add(NumberOfWord);
                 addData.add(wordToTable.toString().trim());
-                //addData.add(cleanWordFromPunctuation(wordToTable, SYMB_PUNCTUATION));
                 addData.add(new Word());
 
                 if (!prepareTable.setRow(addData)) {
@@ -750,17 +757,47 @@ public class VersePortionForRythm extends TextForRythm {
             array = new String[10];
         }
         for (int i = 0; i < array.length; i++) {
-            array[i] = "" + SegmentOfPortion.getNumberOfStress(listSegment.get(i).getChoosedMeterRepresentation());
+            array[i] = "" + SegmentOfPortion.getNumberOfSegmentStress(listSegment.get(i).getSelectedMeterRepresentation());
         }
 
         if (checkRegularity(array)) {
             int iMin = array.length > 5 ? 6 : array.length;
             String reg = "";
             for (int i = 0; i < iMin; i++) {
-                reg += SegmentOfPortion.getNumberOfStress(listSegment.get(i).getChoosedMeterRepresentation()) + "|";
+                reg += SegmentOfPortion.getNumberOfSegmentStress(listSegment.get(i).getSelectedMeterRepresentation()) + "|";
             }
             setRegularNumberOfStressOfFirstStrophe(reg);
         }
+    }
+
+    /**
+     * is there regular ceasure
+     */
+    public void IsThereRegularСaesura() {
+        List<SegmentOfPortion> listSegment = this.getListOfSegments();
+        int[] caesura = new int[12];//considerate for ceasure max 12 syllables
+        int lineCount =  listSegment.size()>=10? 10 : listSegment.size();
+
+
+        for (int i = 0; i < lineCount; i++) {
+            List<Integer> potentialСaesura = listSegment.get(i).getSchemaOfSpaces();
+            int countSyllable = listSegment.get(i).getNumberSyllable();
+            for (int j = 0; j < potentialСaesura.size(); j++) {
+                if( j > 12 || potentialСaesura.get(j) > 12 || potentialСaesura.get(j) < 1
+                        || potentialСaesura.get(j) > countSyllable-1){
+                    continue;
+                }
+                caesura[potentialСaesura.get(j)-1]++;
+            }
+        }
+        String reg = "";
+        for (int i = 0; i < caesura.length; i++) {
+            if((int)100*caesura[i]/lineCount > 50){
+                reg = reg + (i + 1) +" (" + (int)100*caesura[i]/lineCount + "%) | ";
+            }
+        }
+        reg = reg.isEmpty()? "Not regular": reg;
+        setRegularSpaceOnSyllable(reg);
     }
 
     /**
@@ -787,7 +824,9 @@ public class VersePortionForRythm extends TextForRythm {
      * finishing: common portion characteristics
      */
     public void finalDefinitionOfPortionsMeter() {
+
         List<SegmentOfPortion> listSegment = this.getListOfSegments();
+
         //we have ground to take portion as verse
         boolean thatIsAccentVerse = false;
         boolean thatIsTaktovikVerse = false;
@@ -795,15 +834,17 @@ public class VersePortionForRythm extends TextForRythm {
         int maxNumberOfStress = 0;
 
         for (int i = 0; i < listSegment.size(); i++) {
-            if (listSegment.get(i).getChoosedMeterRepresentation().contains("0000")
-                    || listSegment.get(i).getChoosedMeterRepresentation().contains("00000")) {
+
+            // main meter definition
+            if (listSegment.get(i).getSelectedMeterRepresentation().contains("0000")
+                    || listSegment.get(i).getSelectedMeterRepresentation().contains("00000")) {
                 thatIsAccentVerse = true;
             }
-            if (listSegment.get(i).getChoosedMeterRepresentation().contains("000")) {
+            if (listSegment.get(i).getSelectedMeterRepresentation().contains("000")) {
                 thatIsTaktovikVerse = true;
             }
-            if (SegmentOfPortion.getNumberOfStress(listSegment.get(i).getChoosedMeterRepresentation()) > maxNumberOfStress) {
-                maxNumberOfStress = SegmentOfPortion.getNumberOfStress(listSegment.get(i).getChoosedMeterRepresentation());
+            if (SegmentOfPortion.getNumberOfSegmentStress(listSegment.get(i).getSelectedMeterRepresentation()) > maxNumberOfStress) {
+                maxNumberOfStress = SegmentOfPortion.getNumberOfSegmentStress(listSegment.get(i).getSelectedMeterRepresentation());
             }
         }
 
@@ -830,6 +871,7 @@ public class VersePortionForRythm extends TextForRythm {
         outputAccumulation.append("Endings of the first lines: " + this.getRegularEndingsOfFirstStrophe() + "\n");
         outputAccumulation.append("Duration of the first lines: " + this.getRegularDurationOfFirstStrophe() + "\n");
         outputAccumulation.append("Quantity of stresses in the first lines: " + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
+        outputAccumulation.append("Regular spaces after syllable in the first lines (may be ceasura): " + this.getRegularSpaceOnSyllable() + "\n");
         outputAccumulation.append("\n");
         outputAccumulation.append("==========================\n");
 
@@ -842,18 +884,22 @@ public class VersePortionForRythm extends TextForRythm {
             Integer nSegment = listSegments.get(i).getSegmentIdentifier();
             List<String> words = (List<String>) dt.getValueFromColumnAndRowByCondition("Word", nameOfFirstColumn, nSegment);
             String line = words.stream().map(s -> s + " ").reduce("", String::concat).trim();
-            String meterRepresentation = listSegments.get(i).getChoosedMeterRepresentation().trim();
+            String meterRepresentation = listSegments.get(i).getSelectedMeterRepresentation().trim();
+            meterRepresentationOfPortion.add(listSegments.get(i).getSelectedMeterRepresentation());//all portion
+            //String meterRepresentationWithSpaces = listSegments.get(i).getMeterRepresentationWithSpaces().trim();
             String meter = listSegments.get(i).getMeter().trim();
             int numberOfTonicFoot = listSegments.get(i).getNumberOfTonicFoot();
-            int numberСaesuraSyllable = listSegments.get(i).getnumberCaesuraSyllable();
+            int shiftRegularMeterOnSyllable = listSegments.get(i).getShiftRegularMeterOnSyllable();
             outputLineInResume(outputAccumulation, new String[]{line, meterRepresentation, "[" + numberOfTonicFoot + "-" + meter + "]",
-                    "[" + numberСaesuraSyllable + "]", "[" + listSegments.get(i).getNumberSyllable() + "]"});
+                    "[" + shiftRegularMeterOnSyllable + "]", "[" + listSegments.get(i).getNumberSyllable() + "]"});
         }
         outputAccumulation.append("==========================\n");
         outputAccumulation.append("\n");
         outputAccumulation.append("Stress profile\n");
         outputAccumulation.append("Number of syllable\n");
-        double[] stressProfile = getStressProfile();
+
+        Function<SegmentOfPortion, String> funcGetMeter = (s -> s.getSelectedMeterRepresentation());
+        double[] stressProfile = getStressProfileFromSegments(funcGetMeter);
         for (int i = 0; i < stressProfile.length; i++) {
             outputAccumulation.append("\t" + (i + 1));
         }
@@ -868,16 +914,7 @@ public class VersePortionForRythm extends TextForRythm {
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            try (FileWriter fw = new FileWriter(pathToFileOutput, true)) {
-                fw.write(outputAccumulation.toString());
-            }
-            catch (FileNotFoundException e) {
-                getLog().error("Something wrong with output!" + e.getMessage());
-                e.getMessage();
-            } catch (IOException e) {
-                getLog().error("Something wrong with output!" + e.getMessage());
-                e.getMessage();
-            }
+            FileTreatment.outputResultToFile(outputAccumulation, pathToFileOutput);
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length()-1);

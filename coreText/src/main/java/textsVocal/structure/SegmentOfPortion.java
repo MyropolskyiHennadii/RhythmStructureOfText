@@ -20,19 +20,30 @@ public class SegmentOfPortion {
 
     private final List<String> meterRepresentations;// full list of representations such as "...0101..."  (probably more than one element)
     private final DynamicTableRythm tableOfMeterDefinitions;// table with definition every meter in meterRepresentations
+    private final List<Integer> schemaOfSpaces;//numbers of syllables with space: for ceasure
+
     private String meterRepresentationForUser;//first meter representation with "?", whether they are
     private Integer segmentIdentifier;// number of segment
     private int numberSyllable;
     private double duration = 0;// in our case duration == namberSyllable, but theoretically may be something other
     private String meter;//classic meter definition, if there is
     private int numberOfTonicFoot;// classic number of foots, if there is
-    private int numberCaesuraSyllable;// classic number of syllable with caesura, if there is
-    private String choosedMeterRepresentation;//if there is more than one representations, here we define main (if there is)
+    private int shiftRegularMeterOnSyllable;// number of syllable with shift regular stress, if there is
+    private String selectedMeterRepresentation;//if there is more than one representations, here we define main (if there is)
+    private String meterRepresentationWithSpaces;// selected meter with spaces
     private String ending;//ending of segment
 
     //=== constructor ============================================
-    public SegmentOfPortion(List<String> meterRepresentations) {
+    public SegmentOfPortion(List<String> meterRepresentations, List<Integer> schemaOfSpaces) {
 
+        List<Integer> spaces = new ArrayList<>();
+        int count = 0;
+        for (int i = 0; i <schemaOfSpaces.size() ; i++) {
+            count += schemaOfSpaces.get(i);
+            spaces.add(count);
+        }
+
+        this.schemaOfSpaces = spaces;
         this.meterRepresentations = meterRepresentations;
 
         // names of columns
@@ -40,7 +51,7 @@ public class SegmentOfPortion {
         namesOfColumns.add("Segment representation");
         namesOfColumns.add("Meter");
         namesOfColumns.add("Number tonic foot");
-        namesOfColumns.add("Сaesura syllable");
+        namesOfColumns.add("Shift regular meter on syllable");
 
         // supliers for lists with data
         List<Supplier<?>> sup = new ArrayList<>();
@@ -70,12 +81,30 @@ public class SegmentOfPortion {
         this.numberSyllable = numberSyllable;
     }
 
-    public String getChoosedMeterRepresentation() {
-        return choosedMeterRepresentation;
+    public String getSelectedMeterRepresentation() {
+        return selectedMeterRepresentation;
     }
 
-    public void setChoosedMeterRepresentation(String choosedMeterRepresentation) {
-        this.choosedMeterRepresentation = choosedMeterRepresentation;
+    public void setSelectedMeterRepresentation(String selectedMeterRepresentation) {
+        this.selectedMeterRepresentation = selectedMeterRepresentation;
+        if ((this.schemaOfSpaces.size() > 0) && (!selectedMeterRepresentation.isEmpty())){
+            String meterRepresentationWithSpaces = "";
+            for (int i = 0; i < selectedMeterRepresentation.length(); i++) {
+                if(schemaOfSpaces.contains(i)){
+                    {meterRepresentationWithSpaces += " ";}
+                }
+                meterRepresentationWithSpaces += selectedMeterRepresentation.charAt(i);
+            }
+            setMeterRepresentationWithSpaces(meterRepresentationWithSpaces.trim());
+        }
+    }
+
+    public String getMeterRepresentationWithSpaces() {
+        return meterRepresentationWithSpaces;
+    }
+
+    public void setMeterRepresentationWithSpaces(String meterRepresentationWithSpaces) {
+        this.meterRepresentationWithSpaces = meterRepresentationWithSpaces;
     }
 
     public String getMeter() {
@@ -94,12 +123,12 @@ public class SegmentOfPortion {
         this.numberOfTonicFoot = numberOfTonicFoot;
     }
 
-    public int getnumberCaesuraSyllable() {
-        return numberCaesuraSyllable;
+    public int getShiftRegularMeterOnSyllable() {
+        return shiftRegularMeterOnSyllable;
     }
 
-    public void setnumberCaesuraSyllable(int numberCaesuraSyllable) {
-        this.numberCaesuraSyllable = numberCaesuraSyllable;
+    public void setShiftRegularMeterOnSyllable(int shiftRegularMeterOnSyllable) {
+        this.shiftRegularMeterOnSyllable = shiftRegularMeterOnSyllable;
     }
 
     public void setSegmentIdentifier(Integer segmentIdentifier) {
@@ -127,12 +156,19 @@ public class SegmentOfPortion {
         this.duration = representation.length();
     }
 
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
     public double getDuration() {
         return duration;
     }
 
     public DynamicTableRythm getTableOfMeterDefinitions() {
         return tableOfMeterDefinitions;
+    }
+
+    public List<Integer> getSchemaOfSpaces() {
+        return schemaOfSpaces;
     }
 
     // === overriden methods ==============================================
@@ -149,7 +185,7 @@ public class SegmentOfPortion {
      * @param representation
      * @return
      */
-    public static int getNumberOfStress(String representation) {
+    public static int getNumberOfSegmentStress(String representation) {
         int nStress = 0;
         for (int i = 0; i < representation.length(); i++) {
             if (representation.charAt(i) == symbolOfStress) {
@@ -165,9 +201,10 @@ public class SegmentOfPortion {
      * @param language
      * @return segment
      */
-    public static SegmentOfPortion buildSegmentMeterRepresentationWithAllOptions(List<Word> listWords, String language) {
+    public static SegmentOfPortion buildSegmentMeterRepresentationWithAllOptions(List<Word> listWords, String language, boolean thisIsVerse) {
 
         List<String> varSegmentMeterRepresentations = new ArrayList<>();
+        List<Integer> spacesSchema = new ArrayList<>();//positions of space
         varSegmentMeterRepresentations.add("");//initializing
         listWords.stream().map((w) -> w.getMeterRepresentation()).map((wordRepresentations) -> {
             String[] arrayWordStress = new String[wordRepresentations.size() * varSegmentMeterRepresentations.size()];
@@ -187,13 +224,16 @@ public class SegmentOfPortion {
         //correct and remove "impossible" combinations
         varSegmentMeterRepresentations.removeIf(
                 s -> (s.contains("" + symbolOfStress + symbolOfStress + symbolOfStress))
-                        || (s.startsWith("" + symbolOfStress + symbolOfStress))
-                        || (s.endsWith("" + symbolOfStress + symbolOfStress))
+                        || thisIsVerse && ((s.startsWith("" + symbolOfStress + symbolOfStress))
+                        || (s.endsWith("" + symbolOfStress + symbolOfStress)))
                         || (!s.contains("" + symbolOfStress))
-                        || (!checkSensibleRepresentationOfMeter(s, listWords, language))
+                        || (!checkSensibleRepresentationOfMeter(s, listWords, language, thisIsVerse))
         );
 
-        SegmentOfPortion s = new SegmentOfPortion(varSegmentMeterRepresentations);
+        //for ceasure
+        listWords.forEach(s-> spacesSchema.add(s.getNumSyllable()));
+
+        SegmentOfPortion s = new SegmentOfPortion(varSegmentMeterRepresentations, spacesSchema);
 
         return s;
     }
@@ -205,11 +245,11 @@ public class SegmentOfPortion {
      * @param language
      * @return
      */
-    private static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, String language) {
+    private static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, String language, boolean thisIsVerse) {
         if (!language.equals("ru")) {
             return true;
         } else {
-            return VocalAnalisysSegmentRu.checkSensibleRepresentationOfMeter(meterRepresentation, listWords);
+            return VocalAnalisysSegmentRu.checkSensibleRepresentationOfMeter(meterRepresentation, listWords, thisIsVerse);
         }
     }
 
@@ -256,12 +296,12 @@ public class SegmentOfPortion {
                     if (!dtMeters.getValueFromColumnAndRow("Meter", i).toString().contains("Unknown")) {
                         repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                 continue;
                             }
                         }
-                        if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                            nStresses = getNumberOfStress(repr);
+                        if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                            nStresses = getNumberOfSegmentStress(repr);
                             nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                             fillMeterCharacteristicsVariables(dtMeters, i);
                             wasDefined = true;
@@ -273,12 +313,12 @@ public class SegmentOfPortion {
                     for (int i = 0; i < dtMeters.getSize(); i++) {
                         repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                         if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                            if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                 continue;
                             }
                         }
-                        if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                            nStresses = getNumberOfStress(repr);
+                        if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                            nStresses = getNumberOfSegmentStress(repr);
                             nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                             fillMeterCharacteristicsVariables(dtMeters, i);
                             wasDefined = true;
@@ -295,12 +335,12 @@ public class SegmentOfPortion {
                         if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup)) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -312,12 +352,12 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -332,12 +372,12 @@ public class SegmentOfPortion {
                         if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup) || dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(secondGroup)) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -348,12 +388,12 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -368,12 +408,12 @@ public class SegmentOfPortion {
                         if (dtMeters.getValueFromColumnAndRow("Meter", i).toString().equals(mainGroup)) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -384,12 +424,12 @@ public class SegmentOfPortion {
                         for (int i = 0; i < dtMeters.getSize(); i++) {
                             repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", i);
                             if (wasDefined) {// if there is caesura, but meter was defined without, continue
-                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Сaesura syllable", i).toString()) > getnumberCaesuraSyllable()) {
+                                if (Integer.parseInt(dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", i).toString()) > getShiftRegularMeterOnSyllable()) {
                                     continue;
                                 }
                             }
-                            if ((getNumberOfStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
-                                nStresses = getNumberOfStress(repr);
+                            if ((getNumberOfSegmentStress(repr) > nStresses) || (repr.lastIndexOf(symbolOfStress) > nLastStressPosition)) {
+                                nStresses = getNumberOfSegmentStress(repr);
                                 nLastStressPosition = repr.lastIndexOf(symbolOfStress);
                                 fillMeterCharacteristicsVariables(dtMeters, i);
                                 wasDefined = true;
@@ -416,13 +456,7 @@ public class SegmentOfPortion {
         }
     }
 
-    //=== private instance methods
-/*
-    private int getValidLevelOfMainMeterGroupInVerseText() {
-        log.error("Not supported yet!");
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-*/
+    //=== private instance methods ===
 
     /**
      * filling segment fields, when we have all lines with meter-definitions
@@ -433,9 +467,9 @@ public class SegmentOfPortion {
 
         String repr = (String) dtMeters.getValueFromColumnAndRow("Segment representation", nRow);
         setMeter((String) dtMeters.getValueFromColumnAndRow("Meter", nRow));
-        setChoosedMeterRepresentation((String) dtMeters.getValueFromColumnAndRow("Segment representation", nRow));
+        setSelectedMeterRepresentation((String) dtMeters.getValueFromColumnAndRow("Segment representation", nRow));
         setNumberOfTonicFoot((Integer) dtMeters.getValueFromColumnAndRow("Number tonic foot", nRow));
-        setnumberCaesuraSyllable((Integer) dtMeters.getValueFromColumnAndRow("Сaesura syllable", nRow));
+        setShiftRegularMeterOnSyllable((Integer) dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", nRow));
         // ending
         int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
         if (posLastSymbolOfStress >= 0) {
