@@ -21,10 +21,6 @@ Unfortunately I have Russian vocabulary of stresses only offline, but I hope soo
 But code is here. Only for poems. Only console. 
 Prose is in process. Web-application too.
 
-But code is here. Only console-variant, but soon come web-app.
-
-
-
 
 
 
