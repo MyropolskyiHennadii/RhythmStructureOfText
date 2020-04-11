@@ -8,19 +8,16 @@ Then we schould do with this sequence everything we want.
 
 So the first task is to split text (or file content) into segments (paragraphs or/and lines or/and sentences and words).
 Then we have to recognize stresses in segments and build sequence of symbols 1 and 0 for each segment.
-And then - in poem's case - we use to detect poetry meter and poems characteristics. It may be not so simple challenge.
+And thenc - if we have a poem - we use to detect poetry meter and its characteristics. It may be not so simple challenge.
 
-These purposes for Russian language are treated here.
+Those purposes for Russian language are treated here.
 
-The problems with Russian text rythmic structure are
+The problems with Russian texts rythmic structure are
 1. there is no Russian online-vocabulary with numerical stresses
 2. the stress position in Rassian words often is variable.
 
 Unfortunately I have Russian vocabulary of stresses only offline, but I hope soon have a hosting for this vocabulary (<4Gb).
 
-But code is here. Only for poems. Only console. 
-Prose is in process. Web-application too.
-
-
+But code is here. Only console-variant, but soon come web-app.
 
 
