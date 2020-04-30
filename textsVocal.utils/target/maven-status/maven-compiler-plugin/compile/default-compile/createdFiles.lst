@@ -1,6 +1,2 @@
-textsVocal\utils\DBHelper.class
-textsVocal\utils\CleanMySQL$alphabetAndDuration.class
-textsVocal\utils\DynamicTableRythm.class
-textsVocal\utils\CleanMySQL$vocals.class
-textsVocal\utils\CleanMySQL.class
-textsVocal\utils\FileTreatment.class
+textsVocal\utilsCommon\FileTreatment.class
+textsVocal\utilsCommon\DynamicTableRythm.class

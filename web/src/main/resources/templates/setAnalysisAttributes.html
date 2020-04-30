@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rythm structure</title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"/>
+<div align="center">
+    <!--   <form method="POST" enctype="multipart/form-data" action="/">-->
+    <form method="POST" enctype="multipart/form-data" action="setAnalysisAttributes">
+
+        <p><b>Enter your small text here or upload your file below:</b></p>
+        <p><b>Введите ваш небольшой текст в это поле или загрузите ваш файл ниже:</b></p>
+        <textarea id="textFromForm" cols="80" maxlength="500" name="textFromForm" rows="25">
+
+            </textarea>
+
+        <p>
+            <input
+                    id="checkBoxThisIsProse"
+                    type="checkbox"
+                    name="checkBoxThisIsProse"/>
+            This is prose (Это проза) </p>
+
+
+        <table>
+            <tr>
+                <td>File to analyze (Файл для анализа):</td>
+                <td><input type="file" name="file"/></td>
+            </tr>
+        </table>
+
+        <br/>
+        <table>
+            <tr>
+                <td>Portions separator in file with poems [prose doesn't need] (Разделитель порций в файле стихов [в прозе не требуется]):</td>
+                <td><input type="String" name="portionsSepataror"/></td>
+            </tr>
+        </table>
+        <br/>
+
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Go (Поехали)"/></td>
+        </tr>
+    </form>
+</div>
+
+<div th:if="${message}">
+    <h2 th:text="${message}"/>
+</div>
+
+<div>
+    <a th:href="home">Home (В начало)</a>
+</div>
+
+<div>
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="${file}" th:text="${file}"/>
+        </li>
+    </ul>
+</div>
+
+<div align="center">
+    <h2 th:text="${mistakeMessage}"/>
+</div>
+
+<div align="center">
+    <footer th:replace="~{fragments/footer :: footer}"/>
+</div>
+
+</body>
+</html>

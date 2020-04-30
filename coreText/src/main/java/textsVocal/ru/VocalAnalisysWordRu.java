@@ -3,10 +3,9 @@ package textsVocal.ru;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import textsVocal.config.CommonConstants;
 import textsVocal.structure.Alphabetable;
 import textsVocal.structure.TextForRythm;
-import textsVocal.utils.DBHelper;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,7 +15,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static textsVocal.structure.TextForRythm.*;
+import static textsVocal.structure.TextForRythm.symbolOfNoStress;
+import static textsVocal.structure.TextForRythm.symbolOfStress;
 
 public class VocalAnalisysWordRu implements Alphabetable {
 
@@ -89,6 +89,25 @@ public class VocalAnalisysWordRu implements Alphabetable {
     }
 
     /**
+     * calculate duration with only vocale
+     *
+     * @param word
+     * @return
+     */
+    public static Number calculateDurationOnlyVocale(String word) {
+        int duration = 0;
+        for (int i = 0; i < word.length(); i++) {
+            for (vocals letter : vocals.values()) {
+                if (("" + word.charAt(i)).equals(letter.name())) {
+
+                    duration += letter.getDuration();
+                }
+            }
+        }
+        return duration;
+    }
+
+    /**
      * service static function for stress definitions for russian words with "ё"
      *
      * @param textWord
@@ -114,24 +133,6 @@ public class VocalAnalisysWordRu implements Alphabetable {
         return repr;
     }
 
-    /**
-     * calculate duration with only vocale
-     *
-     * @param word
-     * @return
-     */
-    public static Number calculateDurationOnlyVocale(String word) {
-        int duration = 0;
-        for (int i = 0; i < word.length(); i++) {
-            for (vocals letter : vocals.values()) {
-                if (("" + word.charAt(i)).equals(letter.name())) {
-
-                    duration += letter.getDuration();
-                }
-            }
-        }
-        return duration;
-    }
 
     //=== private instance methods ====================================
 
@@ -212,7 +213,7 @@ public class VocalAnalisysWordRu implements Alphabetable {
                 if (serviceSet.size() > 0) {
                     stressMap.put(rs.getString(1).trim(), serviceSet);
                     //in the temporary dictionary:
-                    tempWordDictionary.put(rs.getString(1).trim(), serviceSet);
+                    CommonConstants.getTempWordDictionary().put(rs.getString(1).trim(), serviceSet);
                 }
             }
         } catch (SQLException ex) {
@@ -230,8 +231,8 @@ public class VocalAnalisysWordRu implements Alphabetable {
         int n0 = 0;//start
         int nStep = 100;
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("beansTextsVocalUtil.xml");
-        DBHelper db = context.getBean(DBHelper.class);
+        ApplicationContext context = CommonConstants.getApplicationContext();
+        DB_RussianDictionary db = context.getBean(DB_RussianDictionary.class);
 
         String sql = "SELECT distinct textWord, meterRepresentation, partOfSpeech FROM " + db.getDb_Table() + " WHERE textWord in (";
         Map<String, Set<String>> stressMap = new HashMap<>();//returnimg service map
@@ -252,8 +253,8 @@ public class VocalAnalisysWordRu implements Alphabetable {
             for (int i = 0; i < prepareWords.size(); i++) {
                 String prepWord = prepareWords.get(i).trim();
                 //if word is in temporary dictionary - that's enough
-                if (tempWordDictionary.get(prepWord) != null) {
-                    stressMap.put(prepWord, tempWordDictionary.get(prepWord));
+                if (CommonConstants.getTempWordDictionary().get(prepWord) != null) {
+                    stressMap.put(prepWord, CommonConstants.getTempWordDictionary().get(prepWord));
                     n0++;
                     if (i != (prepareWords.size() - 1)) {
                         continue;

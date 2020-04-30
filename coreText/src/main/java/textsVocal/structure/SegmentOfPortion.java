@@ -3,7 +3,7 @@ package textsVocal.structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import textsVocal.ru.VocalAnalisysSegmentRu;
-import textsVocal.utils.DynamicTableRythm;
+import textsVocal.utilsCommon.DynamicTableRythm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class SegmentOfPortion {
     private String meterRepresentationForUser;//first meter representation with "?", whether they are
     private Integer segmentIdentifier;// number of segment
     private int numberSyllable;
-    private double duration = 0;// in our case duration == namberSyllable, but theoretically may be something other
+    private double duration = 0;// in our case duration == numberSyllable, but theoretically may be something other
     private String meter;//classic meter definition, if there is
     private int numberOfTonicFoot;// classic number of foots, if there is
     private int shiftRegularMeterOnSyllable;// number of syllable with shift regular stress, if there is
@@ -458,6 +458,13 @@ public class SegmentOfPortion {
 
     //=== private instance methods ===
 
+    public void setEndingByRepresentation(String repr){
+        int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
+        if (posLastSymbolOfStress >= 0) {
+            setEnding("..." + repr.substring(posLastSymbolOfStress, repr.length()));
+        }
+    }
+
     /**
      * filling segment fields, when we have all lines with meter-definitions
      * @param dtMeters
@@ -471,10 +478,7 @@ public class SegmentOfPortion {
         setNumberOfTonicFoot((Integer) dtMeters.getValueFromColumnAndRow("Number tonic foot", nRow));
         setShiftRegularMeterOnSyllable((Integer) dtMeters.getValueFromColumnAndRow("Shift regular meter on syllable", nRow));
         // ending
-        int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
-        if (posLastSymbolOfStress >= 0) {
-            setEnding("..." + repr.substring(posLastSymbolOfStress, repr.length()));
-        }
+        setEndingByRepresentation(repr);
         setDuration(repr);
     }
 }

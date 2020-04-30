@@ -13,24 +13,27 @@
 
     <dependencies>
 
-        <!-- logging -->
+        <!-- starter springboot -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <!-- <scope>test</scope>-->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- spring context -->
+ <!--       <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        &lt;!&ndash; devtools &ndash;&gt;
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>-->
+
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-
-        <!-- java Annotation API post-init, post-destroy beans and so on -->
-        <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <artifactId>spring-web</artifactId>
         </dependency>
 
         <!-- other moduls -->
@@ -39,12 +42,6 @@
             <artifactId>textsVocal.utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>textsVocal.structure</groupId>
-            <artifactId>console</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>-->
 
     </dependencies>
 

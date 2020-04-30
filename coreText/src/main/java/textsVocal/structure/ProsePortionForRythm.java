@@ -1,13 +1,15 @@
 package textsVocal.structure;
 
-import textsVocal.utils.DynamicTableRythm;
-import textsVocal.utils.FileTreatment;
+import textsVocal.config.CommonConstants;
+import textsVocal.config.HeaderAnFooterListsForWebOutput;
+import textsVocal.utilsCommon.DynamicTableRythm;
+import textsVocal.utilsCommon.FileTreatment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static textsVocal.structure.PortionOfTextAnalyser.*;
+import static textsVocal.structure.PortionOfTextAnalyser.getStressProfileFromWholeText;
 
 public class ProsePortionForRythm extends TextForRythm {
 
@@ -24,35 +26,46 @@ public class ProsePortionForRythm extends TextForRythm {
     }
 
     //== static method ==
-    public static void outputStressProfileOfWholeText(StringBuilder outputAccumulation, String pathToFileOutput) {
+    public static void outputStressProfileOfWholeText(StringBuilder outputAccumulation, CommonConstants commonConstants) {
 
         outputAccumulation.append("Stress profile\n");
         outputAccumulation.append("Number of syllable\n");
 
-        double[] stressProfile = getStressProfileFromWholeText();
+        String[] stressProfile = getStressProfileFromWholeText();
         for (int i = 0; i < stressProfile.length; i++) {
             outputAccumulation.append("\t" + (i + 1));
         }
         outputAccumulation.append("\n");
-        outputAccumulation.append("% of stress      \n");
+        outputAccumulation.append("% of stress.\n");
         for (int i = 0; i < stressProfile.length; i++) {
-            outputAccumulation.append("\t" + (int) stressProfile[i]);
+            outputAccumulation.append("\t" + stressProfile[i]);
         }
         outputAccumulation.append("\n");
         outputAccumulation.append("==========================\n");
+        //count of sentences
+        int countLength = 0;
+        int countSentences = 0;
+        for (int i = 0; i < PortionOfTextAnalyser.getListOfInstance().size() ; i++) {
+            List<SegmentOfPortion> listSegments = PortionOfTextAnalyser.getListOfInstance().get(i).getListOfSegments();
+            for (int j = 0; j < listSegments.size(); j++) {
+                countSentences++;
+                countLength += listSegments.get(j).getSelectedMeterRepresentation().length();
+            }
+        }
+        outputAccumulation.append("Number of sentence: " + countSentences + "\n");
+        outputAccumulation.append("Average length of sentence in syllables: " + (int) countLength / countSentences + "\n");
+        outputAccumulation.append("==========================\n");
 
-        if (pathToFileOutput.isEmpty()) {//output to console
+        if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, pathToFileOutput);
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
-        //clear static variable:
-        ClearListMeterRepresentation();
-
     }
+
     // === public instance overriden methods ============================
     @Override
     public void reset(String pText) {
@@ -160,11 +173,53 @@ public class ProsePortionForRythm extends TextForRythm {
         fillProsePortionWithCommonRythmCharacteristics();
     }
 
-    @Override
-    public void resumeOutput(int nPortion, StringBuilder outputAccumulation, String pathToFileOutput) {
-        outputAccumulation.append("\n");
-        outputAccumulation.append("Paragraph #" + nPortion + "\n");
-        outputAccumulation.append("==========================\n");
+    /**
+     * form header for output
+     * @return
+     */
+    public List<String> formHeaderLines(int nPortion){
+        List<String> headerLines = new ArrayList<>();
+        headerLines.add("\n");
+        headerLines.add("Paragraph #" + nPortion + "\n");
+        headerLines.add("==========================\n");
+        return headerLines;
+    }
+
+    /**
+     * form footer lines for output
+     * * @return
+     */
+    public List<String> formFooterLines(){
+        List<String> footerLines = new ArrayList<>();
+        footerLines.add("\n");
+        return footerLines;
+    }
+
+    /**
+     * resume output web
+     *
+     * @param nPortion
+     * @param outputAccumulation
+     * @param commonConstants
+     */
+    public void prepareResumeOutputWeb(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+        HeaderAnFooterListsForWebOutput.getPortionHeaders().add(formHeaderLines(nPortion));
+        HeaderAnFooterListsForWebOutput.getPortionFooters().add(formFooterLines());
+    }
+
+    /**
+     * resume output without web (console)
+     *
+     * @param nPortion
+     * @param outputAccumulation
+     * @param commonConstants
+     */
+    public void resumeOutputConsole(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+
+        List<String> headerLines = formHeaderLines(nPortion);
+        for(String line: headerLines){
+            outputAccumulation.append(line);
+        }
 
         DynamicTableRythm dt = this.getDtOfTextSegmentsAndStresses();
         List<SegmentOfPortion> listSegments = this.getListOfSegments();
@@ -177,20 +232,39 @@ public class ProsePortionForRythm extends TextForRythm {
             String line = words.stream().map(s -> s + " ").reduce("", String::concat).trim();
             String meterRepresentationWithSpaces = listSegments.get(i).getMeterRepresentationWithSpaces().trim();
             outputAccumulation.append(line + "\n");
-            meterRepresentationOfPortion.add(listSegments.get(i).getSelectedMeterRepresentation());//all portion
+            //meterRepresentationOfPortion.add(listSegments.get(i).getSelectedMeterRepresentation());//all portion
             outputAccumulation.append("[" + meterRepresentationWithSpaces + "]\n");
         }
         outputAccumulation.append("==========================\n");
-        outputAccumulation.append("\n");
+        List<String> footerLines = formFooterLines();
+        for(String line: footerLines) {
+            outputAccumulation.append(line);
+        }
 
-        if (pathToFileOutput.isEmpty()) {//output to console
+        if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, pathToFileOutput);
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
+    }
+
+    /**
+     * resume output
+     *
+     * @param nPortion
+     * @param outputAccumulation
+     * @param commonConstants
+     */
+    @Override
+    public void resumeOutput(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+        if (!commonConstants.isThisIsWebApp()) {
+            resumeOutputConsole(nPortion, outputAccumulation, commonConstants);
+        } else {
+            prepareResumeOutputWeb(nPortion, outputAccumulation, commonConstants);
+        }
     }
 
 

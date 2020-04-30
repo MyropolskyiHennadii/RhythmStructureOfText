@@ -1,21 +1,23 @@
 package textsVocal.structure;
 
-import textsVocal.utils.DynamicTableRythm;
-import textsVocal.utils.FileTreatment;
+import textsVocal.config.CommonConstants;
+import textsVocal.config.HeaderAnFooterListsForWebOutput;
+import textsVocal.utilsCommon.DynamicTableRythm;
+import textsVocal.utilsCommon.FileTreatment;
+import textsVocal.utilsCore.ErrorsInterractionWithWebUser;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static textsVocal.structure.PortionOfTextAnalyser.meterRepresentationOfPortion;
 
 public class VersePortionForRythm extends TextForRythm {
 
     //== fields ========================================================
     private String pText;//formatted text
     private String originalText;//original text
-    private static int validLevelOfMainMeterGroupInVerseText ;
-    private static int validDifferenceBetweenTwoMainGroupsInVerseText;
     private String mainMeter;//meter of whole text
     private String regularEndingsOfFirstStrophe;//ending's formula
     private String regularDurationOfFirstStrophe;//duration's formula
@@ -24,15 +26,16 @@ public class VersePortionForRythm extends TextForRythm {
     private double maxDuration = 0;//maximal duration in lines
     private double minDuration = Integer.MAX_VALUE;////minimal duration in lines
 
+    private static int validLevelOfMainMeterGroupInVerseText;//in %
+    private static int validDifferenceBetweenTwoMainGroupsInVerseText;// in %
 
     // == constructor ==============================================================
+    public VersePortionForRythm() {
+    }
+
     public VersePortionForRythm(String pText) {
         this.pText = prepareStringForParsing(pText, SYMB_BRIEF_PUNCTUATION, SYMB_SPACE).toString();
         this.originalText = pText;
-    }
-
-    public VersePortionForRythm(){
-
     }
 
     //== setters and getters ==========================================
@@ -41,7 +44,7 @@ public class VersePortionForRythm extends TextForRythm {
      * reset fields by initialisation
      */
     @Override
-    public void reset(String pText){
+    public void reset(String pText) {
         this.mainMeter = "";
         this.regularEndingsOfFirstStrophe = "";
         this.regularDurationOfFirstStrophe = "";
@@ -140,6 +143,7 @@ public class VersePortionForRythm extends TextForRythm {
 
     /**
      * identify rated verse meter with patterns - enum verseMeterPatterns/ Without pentons
+     *
      * @param s
      * @return
      */
@@ -268,6 +272,7 @@ public class VersePortionForRythm extends TextForRythm {
 
     /**
      * identify rated verse meter with patterns - enum verseMeterPatterns/ Only pentons
+     *
      * @param s
      * @return
      */
@@ -322,6 +327,7 @@ public class VersePortionForRythm extends TextForRythm {
 
     /**
      * service function for rating meter by pattern (nested in WhatIsTheMettersPatternForStringWithoutPentons)
+     *
      * @param descriptionMeter
      * @param sWithoutEnding
      * @param pattern
@@ -370,7 +376,7 @@ public class VersePortionForRythm extends TextForRythm {
 
             }
 
-            if (strPattern.charAt(iPattern)== symbolOfNoStress) //defined content (we have not found pattern):
+            if (strPattern.charAt(iPattern) == symbolOfNoStress) //defined content (we have not found pattern):
             {
                 nMistake++;
                 nShiftRegularMeterOnSyllable = i + 1;//+1 because i begins from 0
@@ -383,6 +389,104 @@ public class VersePortionForRythm extends TextForRythm {
 
         }
         return nShiftRegularMeterOnSyllable;
+    }
+
+    /**
+     * input corrections in portion's characteristics from web-user
+     */
+    public static void makeCorrectionInVerseCharacteristicFromWebUser(List<String> checkedItems, List<String> changedValues) {
+
+        String id = "";
+        int numberPortion = -1;
+        for (int i = 0; i < checkedItems.size(); i++) {
+            //parse id
+            id = checkedItems.get(i);
+            int posPoint = id.indexOf(".");
+            int numberSegment = -1;
+            if (posPoint > -1) {
+                numberPortion = Integer.parseInt(id.substring(0, posPoint));
+                numberSegment = Integer.parseInt(id.substring(posPoint + 1));
+
+                String newMeterRepresentation = changedValues.get(numberSegment - 1).trim();
+                if (newMeterRepresentation.isEmpty()) {
+                    continue;
+                }
+
+                //if it was a mistake in new representation
+                boolean itHappensMistake = false;
+                for (int j = 0; j < newMeterRepresentation.length(); j++) {
+                    if ((!("" + newMeterRepresentation.charAt(j)).equals("" + symbolOfStress) && !("" + newMeterRepresentation.charAt(j)).equals("" + symbolOfNoStress))) {
+                        itHappensMistake = true;
+                        for (CharSequence c : SYMB_SPACE) {
+                            if (("" + c).equals("" + newMeterRepresentation.charAt(j))) {
+                                itHappensMistake = false;
+                            }
+                        }
+                    }
+                }
+                if (itHappensMistake) {
+                    ErrorsInterractionWithWebUser.errors.add("Impossible meter schema from user "
+                            + newMeterRepresentation + ". Portion #" + (numberPortion + 1)
+                            + ", segment = " + (numberSegment + 1));
+                    continue;
+                }
+
+                //we'll clean and fill all values for this segment
+
+                //code from VocalAnalysisSegmentRu
+                Set<String> setMeters = new HashSet<>();//set of represantations
+
+                List<SegmentOfPortion> listSegments = PortionOfTextAnalyser.getListOfInstance().get(numberPortion - 1).getListOfSegments();
+                SegmentOfPortion segment = listSegments.get(numberSegment - 1);
+                segment.setSelectedMeterRepresentation(newMeterRepresentation);
+                segment.setMeterRepresentationForUser(newMeterRepresentation);
+                segment.setDuration(newMeterRepresentation);
+                segment.setNumberSyllable(newMeterRepresentation.length());
+                segment.setEndingByRepresentation(newMeterRepresentation);
+
+                Map<String, String> descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringWithoutPentons(newMeterRepresentation);
+                DynamicTableRythm dtSegment = segment.getTableOfMeterDefinitions();
+                dtSegment.clearDynamicTable();
+
+                if (!"Unknown".equals(descriptionMeter.get("meter").trim()) || newMeterRepresentation.length() <= 10) {//without pentons
+                    String repr = newMeterRepresentation + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
+
+                    if (!setMeters.contains(repr)) {//without duplicates
+                        dtSegment.setRow(Stream.of(newMeterRepresentation, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nShiftRegularMeterOnSyllable").trim())).collect(Collectors.toList()));
+                        segment.setMeter(descriptionMeter.get("meter").trim());
+                        segment.setNumberOfTonicFoot(Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()));
+                        segment.setShiftRegularMeterOnSyllable(Integer.valueOf(descriptionMeter.get("nShiftRegularMeterOnSyllable").trim()));
+                        setMeters.add(repr);
+                    }
+                } else {//pentons
+                    descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringPentons(newMeterRepresentation);
+                    String repr = newMeterRepresentation + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
+
+                    if (!setMeters.contains(repr)) {//without duplicates
+                        dtSegment.setRow(Stream.of(newMeterRepresentation, descriptionMeter.get("meter").trim(), Integer.valueOf(descriptionMeter.get("nTonicFoot").trim()), Integer.valueOf(descriptionMeter.get("nShiftRegularMeterOnSyllable").trim())).collect(Collectors.toList()));
+                        setMeters.add(repr);
+                    }
+                }
+                //if there is no row in dtSegment, that means: no word was recognized
+                //Probably it was the line with foreign language
+                if (dtSegment.getSize() == 0) {
+                    dtSegment.setRow(Stream.of("0", "Unknown. Probably unknown language", 0, 0).collect(Collectors.toList()));
+                    segment.setMeter("" + symbolOfNoStress);
+                    segment.setSelectedMeterRepresentation("" + symbolOfNoStress);
+                }
+            }
+        }
+
+        //and at least refine
+        if (numberPortion >= 0) {
+
+            VersePortionForRythm instance = (VersePortionForRythm) PortionOfTextAnalyser.getListOfInstance().get(numberPortion-1);
+            PortionOfTextAnalyser.refineVerseCharacteristics(instance);
+
+            HeaderAnFooterListsForWebOutput.getPortionHeaders().set(numberPortion-1, instance.formHeaderLines(numberPortion));
+            //there is no footer in web-verse (we have there the table)
+            //PortionsListsForWebOutput.getPortionFooters().set(numberPortion-1, instance.formFooterLinesWithoutWeb());
+        }
     }
 
     // == public instance overriden methods ========================================
@@ -423,9 +527,21 @@ public class VersePortionForRythm extends TextForRythm {
         int posSymbol = -1;
         List<Object> addData = new ArrayList<>();
 
+        //for cleaning string from unusefull paragraph symbol
+        List<CharSequence[]> allCharsParagraph = new ArrayList<>();
+        allCharsParagraph.add(SYMB_PARAGRAPH);
+
         do {
             fragment = textFragmentToDelimiter(sbText, SYMB_PARAGRAPH);
             StringBuilder fragmentToWords = (fragment == null ? new StringBuilder(sbText.toString()) : new StringBuilder(fragment));
+
+            //cleaning from unusefull paragraph symbols in empty lines
+            if (fragment != null) {
+                fragment = cleanTextFromSymbols(fragment, allCharsParagraph);
+                if (fragment.isEmpty()) {
+                    continue;
+                }
+            }
 
             do {
                 word = textFragmentToDelimiter(fragmentToWords, SYMB_SPACE);
@@ -468,10 +584,11 @@ public class VersePortionForRythm extends TextForRythm {
 
     @Override
     public <T> void fillPortionWithCommonRythmCharacteristics(T t) {
-        fillVersePortionWithCommonRythmCharacteristics((Map)t);
+        fillVersePortionWithCommonRythmCharacteristics((Map) t);
     }
 
     //== public insyance methods ==
+
     /**
      * What sre the most popular meters in portion
      */
@@ -512,6 +629,7 @@ public class VersePortionForRythm extends TextForRythm {
 
     /**
      * service function: sorting map by value
+     *
      * @param unsortMap
      * @param order
      * @return
@@ -565,7 +683,6 @@ public class VersePortionForRythm extends TextForRythm {
         String mainGroupName = ((String) (priorityMap.keySet().stream().findFirst().get())).trim();
         int mainPart = 100 * (Integer) (priorityMap.get(mainGroupName)) / preparedListOfSegment.size();
 
-        //System.out.println("main group " + mainGroupName + "part " + mainPart);
         int secondPart = 0;
         String secondGroupName = "-------";
         Optional<String> secondGroup = priorityMap.keySet().stream().skip(1).findFirst();
@@ -574,7 +691,6 @@ public class VersePortionForRythm extends TextForRythm {
             secondGroupName = (String) priorityMap.keySet().stream().skip(1).findFirst().get();
         }
 
-        //System.out.println("second group " + secondGroupName + "part " + secondPart);
         if ((mainPart >= getValidLevelOfMainMeterGroupInVerseText()) && (mainPart - secondPart) >= getValidDifferenceBetweenTwoMainGroupsInVerseText()
                 && !mainGroupName.equals("Unknown")) {
             this.setMainMeter(mainGroupName);
@@ -592,6 +708,7 @@ public class VersePortionForRythm extends TextForRythm {
 
     /**
      * check regularity endings, durations, so on
+     *
      * @param arr
      * @return
      */
@@ -776,27 +893,27 @@ public class VersePortionForRythm extends TextForRythm {
     public void IsThereRegularСaesura() {
         List<SegmentOfPortion> listSegment = this.getListOfSegments();
         int[] caesura = new int[12];//considerate for ceasure max 12 syllables
-        int lineCount =  listSegment.size()>=10? 10 : listSegment.size();
+        int lineCount = listSegment.size() >= 10 ? 10 : listSegment.size();
 
 
         for (int i = 0; i < lineCount; i++) {
             List<Integer> potentialСaesura = listSegment.get(i).getSchemaOfSpaces();
             int countSyllable = listSegment.get(i).getNumberSyllable();
             for (int j = 0; j < potentialСaesura.size(); j++) {
-                if( j > 12 || potentialСaesura.get(j) > 12 || potentialСaesura.get(j) < 1
-                        || potentialСaesura.get(j) > countSyllable-1){
+                if (j > 12 || potentialСaesura.get(j) > 12 || potentialСaesura.get(j) < 1
+                        || potentialСaesura.get(j) > countSyllable - 1) {
                     continue;
                 }
-                caesura[potentialСaesura.get(j)-1]++;
+                caesura[potentialСaesura.get(j) - 1]++;
             }
         }
         String reg = "";
         for (int i = 0; i < caesura.length; i++) {
-            if((int)100*caesura[i]/lineCount > 50){
-                reg = reg + (i + 1) +" (" + (int)100*caesura[i]/lineCount + "%) | ";
+            if ((int) 100 * caesura[i] / lineCount > 50) {
+                reg = reg + (i + 1) + " (" + (int) 100 * caesura[i] / lineCount + "%) | ";
             }
         }
-        reg = reg.isEmpty()? "Not regular": reg;
+        reg = reg.isEmpty() ? "Not regular" : reg;
         setRegularSpaceOnSyllable(reg);
     }
 
@@ -857,27 +974,77 @@ public class VersePortionForRythm extends TextForRythm {
         }
     }
 
-    @Override
     /**
-     * output resume
+     * form header for output
+     *
+     * @return
      */
-    public void resumeOutput(int nPortion, StringBuilder outputAccumulation, String pathToFileOutput) {
+    public List<String> formHeaderLines(int nPortion) {
+        List<String> headerLines = new ArrayList<>();
+        headerLines.add("\n");
+        headerLines.add("Portion #" + nPortion + "\n");
+        headerLines.add("Main meter: " + this.getMainMeter() + "\n");
+        headerLines.add("Max. duration (in syllables): " + (int) this.getMaxDuration() + "\n");
+        headerLines.add("Min. duration (in syllables): " + (int) this.getMinDuration() + "\n");
+        headerLines.add("Endings of the first lines: " + this.getRegularEndingsOfFirstStrophe() + "\n");
+        headerLines.add("Duration of the first lines: " + this.getRegularDurationOfFirstStrophe() + "\n");
+        headerLines.add("Quantity of stresses in the first lines: " + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
+        headerLines.add("Regular spaces after syllable in the first lines (may be ceasura): " + this.getRegularSpaceOnSyllable() + "\n");
+        headerLines.add("==========================\n");
+        return headerLines;
+    }
 
-        outputAccumulation.append("\n");
-        outputAccumulation.append("Portion #" + nPortion + "\n");
-        outputAccumulation.append("Main meter: " + this.getMainMeter() + "\n");
-        outputAccumulation.append("Max. duration (in syllables): " + (int) this.getMaxDuration() + "\n");
-        outputAccumulation.append("Min. duration (in syllables): " + (int) this.getMinDuration() + "\n");
-        outputAccumulation.append("Endings of the first lines: " + this.getRegularEndingsOfFirstStrophe() + "\n");
-        outputAccumulation.append("Duration of the first lines: " + this.getRegularDurationOfFirstStrophe() + "\n");
-        outputAccumulation.append("Quantity of stresses in the first lines: " + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
-        outputAccumulation.append("Regular spaces after syllable in the first lines (may be ceasura): " + this.getRegularSpaceOnSyllable() + "\n");
-        outputAccumulation.append("\n");
-        outputAccumulation.append("==========================\n");
+    /**
+     * form footer for output
+     *
+     * @return
+     */
+    public List<String> formFooterLinesWithoutWeb() {
+        List<String> footLines = new ArrayList<>();
+        footLines.add("Stress profile\n");
+        footLines.add("Number of syllable\n");
+
+        Function<SegmentOfPortion, String> funcGetMeter = (s -> s.getSelectedMeterRepresentation());
+        double[] stressProfile = getStressProfileFromSegments(funcGetMeter);
+        for (int i = 0; i < stressProfile.length; i++) {
+            footLines.add("\t" + (i + 1));
+        }
+        footLines.add("\n");
+        footLines.add("% of stress      \n");
+        for (int i = 0; i < stressProfile.length; i++) {
+            footLines.add("\t" + (int) stressProfile[i]);
+        }
+        footLines.add("\n");
+        footLines.add("==========================\n");
+        footLines.add("Junctures profile\n");
+        footLines.add("Number of syllable\n");
+        double[] junctureProfile = getJunctureProfileFromSegments(funcGetMeter);
+        for (int i = 0; i < junctureProfile.length; i++) {
+            footLines.add("\t" + (i + 1));
+        }
+        footLines.add("\n");
+        footLines.add("% of words junctures      \n");
+        for (int i = 0; i < junctureProfile.length; i++) {
+            footLines.add("\t" + (int) junctureProfile[i]);
+        }
+        footLines.add("\n");
+        footLines.add("==========================\n");
+        return footLines;
+    }
+
+    /**
+     * output resume without web
+     */
+    public void resumeOutputConsole(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+
+        List<String> headerLines = formHeaderLines(nPortion);
+        for (String line : headerLines) {
+            outputAccumulation.append(line);
+        }
 
         DynamicTableRythm dt = this.getDtOfTextSegmentsAndStresses();
         List<SegmentOfPortion> listSegments = this.getListOfSegments();
-        String nameOfFirstColumn = (String)dt.getNamesOfColumn().toArray()[1];
+        String nameOfFirstColumn = (String) dt.getNamesOfColumn().toArray()[1];
 
         outputLineInResume(outputAccumulation, new String[]{"Line", "Meter representation", "Meter-number of foots", "Shift meter (N syllable)", "Quantity of syllables"});
         for (int i = 0; i < listSegments.size(); i++) {
@@ -885,8 +1052,6 @@ public class VersePortionForRythm extends TextForRythm {
             List<String> words = (List<String>) dt.getValueFromColumnAndRowByCondition("Word", nameOfFirstColumn, nSegment);
             String line = words.stream().map(s -> s + " ").reduce("", String::concat).trim();
             String meterRepresentation = listSegments.get(i).getSelectedMeterRepresentation().trim();
-            meterRepresentationOfPortion.add(listSegments.get(i).getSelectedMeterRepresentation());//all portion
-            //String meterRepresentationWithSpaces = listSegments.get(i).getMeterRepresentationWithSpaces().trim();
             String meter = listSegments.get(i).getMeter().trim();
             int numberOfTonicFoot = listSegments.get(i).getNumberOfTonicFoot();
             int shiftRegularMeterOnSyllable = listSegments.get(i).getShiftRegularMeterOnSyllable();
@@ -895,37 +1060,49 @@ public class VersePortionForRythm extends TextForRythm {
         }
         outputAccumulation.append("==========================\n");
         outputAccumulation.append("\n");
-        outputAccumulation.append("Stress profile\n");
-        outputAccumulation.append("Number of syllable\n");
 
-        Function<SegmentOfPortion, String> funcGetMeter = (s -> s.getSelectedMeterRepresentation());
-        double[] stressProfile = getStressProfileFromSegments(funcGetMeter);
-        for (int i = 0; i < stressProfile.length; i++) {
-            outputAccumulation.append("\t" + (i + 1));
+        List<String> footLines = formFooterLinesWithoutWeb();
+        for (String line : footLines) {
+            outputAccumulation.append(line);
         }
-        outputAccumulation.append("\n");
-        outputAccumulation.append("% of stress      \n");
-        for (int i = 0; i < stressProfile.length; i++) {
-            outputAccumulation.append("\t" + (int) stressProfile[i]);
-        }
-        outputAccumulation.append("\n");
-        outputAccumulation.append("==========================\n");
-        if (pathToFileOutput.isEmpty()) {//output to console
+
+        if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, pathToFileOutput);
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
         }
         //clear outputAccumulation before next portion
-        outputAccumulation.delete(0, outputAccumulation.length()-1);
+        outputAccumulation.delete(0, outputAccumulation.length() - 1);
+    }
+
+    /**
+     * output resume with web
+     */
+    public void prepareResumeOutputWeb(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+        HeaderAnFooterListsForWebOutput.getPortionHeaders().add(formHeaderLines(nPortion));
+        HeaderAnFooterListsForWebOutput.getPortionFooters().add(new ArrayList<String>());
+    }
+
+    @Override
+    /**
+     * output resume without web
+     */
+    public void resumeOutput(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+        if (!commonConstants.isThisIsWebApp()) {
+            resumeOutputConsole(nPortion, outputAccumulation, commonConstants);
+        } else {
+            prepareResumeOutputWeb(nPortion, outputAccumulation, commonConstants);
+        }
     }
 
     /**
      * service function: forming output line
+     *
      * @param out
      * @param outputArr
      */
-    private void outputLineInResume(StringBuilder out, String[] outputArr){
+    private void outputLineInResume(StringBuilder out, String[] outputArr) {
         int[] lengthInSymbols = new int[5];//length of columns in symbols
         lengthInSymbols[0] = 48;
         lengthInSymbols[1] = 24;
@@ -933,19 +1110,19 @@ public class VersePortionForRythm extends TextForRythm {
         lengthInSymbols[3] = 24;
         lengthInSymbols[4] = 24;
 
-        if (outputArr.length != lengthInSymbols.length){
+        if (outputArr.length != lengthInSymbols.length) {
             getLog().error("Non-equal arrays!");
             throw new IllegalArgumentException();
         }
 
-        for (int i=0; i<lengthInSymbols.length;i++){
+        for (int i = 0; i < lengthInSymbols.length; i++) {
             String s = outputArr[i];
             int l = lengthInSymbols[i];
-            if (s.length() > l){
-                s = s.substring(0, l-1);
+            if (s.length() > l) {
+                s = s.substring(0, l - 1);
             }
-            if (s.length() < l){
-                while(s.length() < l){
+            if (s.length() < l) {
+                while (s.length() < l) {
                     s += " ";
                 }
             }

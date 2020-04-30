@@ -3,10 +3,10 @@ package textsVocal.structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import textsVocal.dialogs.ConsoleDialog;
+import textsVocal.config.CommonConstants;
 import textsVocal.ru.VocalAnalisysWordRu;
-import textsVocal.utils.DynamicTableRythm;
+import textsVocal.utilsCommon.DynamicTableRythm;
+import textsVocal.utilsCore.ConsoleDialog;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +21,6 @@ public abstract class TextForRythm {
     public static final char symbolOfStress = '1';
     public static final char symbolOfNoStress = '0';
     public static final String[] stressRepresentations = {"" + symbolOfNoStress, "" + symbolOfStress};
-    public static final Set<Word> unKnownWords = new HashSet<>();//set of words with unknown stresses
     public static final CharSequence[] SYMB_PARAGRAPH = {"" + (char) 10, "" + (char) 12, "" + (char) 13};// unicodes return
     public static final CharSequence[] SYMB_SPACE = {"" + (char) 32, "" + (char) 160, "" + (char) 9};// unicodes spaces
     // strings with different marks end of sentence
@@ -34,9 +33,9 @@ public abstract class TextForRythm {
             "" + (char) -1};
     //brief punctuation
     public static final CharSequence[] SYMB_BRIEF_PUNCTUATION = {",", ".", ";", ":", "!", "?", "-", "_", "" + (char) 8212, "" + (char) -1, "" + (char) 65279};
+    //symbols of quote
+    public static final CharSequence[] SYMB_QUOTE = {"" + (char) 34};
 
-    //temporary dictionary
-    public static Map<String, Set<String>> tempWordDictionary = new HashMap<>();//temporary dictionary ("cash")
     private static Logger log = LoggerFactory.getLogger(VersePortionForRythm.class);//logger
 
     private final String pText = "";//original text
@@ -106,26 +105,6 @@ public abstract class TextForRythm {
     }
 
     //== static methods =========================================================
-    public static CharSequence[] getSYMB_SEGMENT() {
-        return SYMB_PARAGRAPH;
-    }
-
-    public static CharSequence[] getSYMB_SPACE() {
-        return SYMB_SPACE;
-    }
-
-    public static CharSequence[] getSYMB_SENTENCE() {
-        return SYMB_SENTENCE;
-    }
-
-    public static CharSequence[] getSYMB_PUNCTUATION() {
-        return SYMB_PUNCTUATION;
-    }
-
-    public static CharSequence[] getSYMB_BRIEF_PUNCTUATION() {
-        return SYMB_BRIEF_PUNCTUATION;
-    }
-
 
     /**
      * as split(), but not split(), because of 'any' segment for segments
@@ -188,6 +167,15 @@ public abstract class TextForRythm {
 
         // because of the string like "abc ! ! !"
         pText.reverse();
+
+        //if first symbol in reverse order is symbol of quote => trow last quote
+        for (CharSequence delimiter : SYMB_QUOTE) {
+            String lastSymbol = "" + pText.charAt(0);
+            if (lastSymbol.equals("" + delimiter)) {
+                pText = new StringBuilder(pText.substring(1, pText.length()));
+            }
+        }
+
         int finishdLength = 0;
         int beginningLength = pText.length();
 
@@ -310,11 +298,15 @@ public abstract class TextForRythm {
     }
 
     //create dynamic table with all data about portion of text
-    public static DynamicTableRythm CreateDynamicTableOfPortionSegmentsAndStresses(TextForRythm instance, String language) throws InterruptedException, ExecutionException {
+    public static DynamicTableRythm CreateDynamicTableOfPortionSegmentsAndStresses(TextForRythm instance, CommonConstants commonConstants) throws InterruptedException, ExecutionException {
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("beansCoreText.xml");
+        ApplicationContext context = CommonConstants.getApplicationContext();
         ConsoleDialog consoleDialog = context.getBean(ConsoleDialog.class);
+        BuildingPortion buildingPortion = context.getBean(BuildingPortion.class);
+        boolean thisIsWeb = commonConstants.isThisIsWebApp();
+
         String entranceText = instance.getpText();
+        String language = commonConstants.getLanguageOfText();
         ExecutorService exService = Executors.newCachedThreadPool();
 
         //1. parallel: receive stresses and dynamic table without stresses
@@ -386,8 +378,19 @@ public abstract class TextForRythm {
                     }
                 } else {//unknown word
                     if (instance.isRequireUnknownWordsByUser()) {//try to ask user about...
-                        String schema = consoleDialog.giveMePleaseStressSchema(textWord, duration);
-                        if(schema.equals("N")){
+
+                        String schema = "";
+                        if (!thisIsWeb) {
+                            schema = consoleDialog.giveMePleaseStressSchema(textWord, duration);}
+                        else{
+                            buildingPortion.getNewUnKnownWord().firePropertyChange("word","###", textWord);
+                            while (CommonConstants.getTempWordDictionary().get(textWord) == null){
+                                //waiting for answer from web
+                            }
+                            schema = ((String[])CommonConstants.getTempWordDictionary().get(textWord).toArray())[0];
+                        }
+
+                        if (schema.equals("N")) {
                             addUnkownWordToSet(objWord, textWord, duration);
                         } else {
                             objWord.addMeterRepresentation(schema);
@@ -395,7 +398,7 @@ public abstract class TextForRythm {
                             //adding to temporary dictionary:
                             Set<String> serviceSet = new HashSet<>();
                             serviceSet.add(schema);
-                            tempWordDictionary.put(textWord, serviceSet);
+                            CommonConstants.getTempWordDictionary().put(textWord, serviceSet);
                         }
                     } else {//add word to set of unknown words
                         addUnkownWordToSet(objWord, textWord, duration);
@@ -410,9 +413,10 @@ public abstract class TextForRythm {
 
     /**
      * service method for adding unknown word to set
+     *
      * @param objWord
      */
-    private static void addUnkownWordToSet(Word objWord, String textWord, int duration){
+    private static void addUnkownWordToSet(Word objWord, String textWord, int duration) {
         objWord.setMeterRepresentationForUser(textWord);
         String pMeterRepresentation = "";
         //all cases
@@ -430,7 +434,8 @@ public abstract class TextForRythm {
             pMeterRepresentation += "?";
         }
         objWord.setMeterRepresentationForUser(pMeterRepresentation);
-        unKnownWords.add(objWord);
+        CommonConstants.getUnKnownWords().add(objWord);
+
     }
 
     /**
@@ -451,7 +456,7 @@ public abstract class TextForRythm {
         Integer min = dt.getMinimumValue(nameColumnSegmentIdentifier);
         Integer max = dt.getMaximumValue(nameColumnSegmentIdentifier);
         if ((min < 0) || (max < 0)) {
-            log.error("Impossible to define min and max values in segment identifier. May be, incorrect names of columns "+ nameColumnSegmentIdentifier);
+            log.error("Impossible to define min and max values in segment identifier. May be, incorrect names of columns " + nameColumnSegmentIdentifier);
             throw new IllegalArgumentException("Impossible to define min and max values in segment identifier. May be, incorrect names of columns " + nameColumnSegmentIdentifier);
         }
 
@@ -486,8 +491,76 @@ public abstract class TextForRythm {
         return listSegments;
     }
 
+    /**
+     * @return static: array with average stress per syllable from segments
+     */
+    public static Double[] getStressProfileFromSegments(List<SegmentOfPortion> listSegments, Function<SegmentOfPortion, String> func) {
+        int maxLength = 0;
+        int lineLength = 0;
+        String line = "";
+        for (int i = 0; i < listSegments.size(); i++) {
+            line = func.apply(listSegments.get(i));
+            lineLength = line.length();
+            if (lineLength > maxLength) {
+                maxLength = lineLength;
+            }
+        }
+        int[] numberOfStress = new int[maxLength];
+        int[] numberOfLines = new int[maxLength];
+        for (int i = 0; i < listSegments.size(); i++) {
+            line = func.apply(listSegments.get(i));
+            for (int j = 0; j < line.length(); j++) {
+                numberOfLines[j] = numberOfLines[j] + 1;
+                if (line.charAt(j) == symbolOfStress) {
+                    numberOfStress[j] = numberOfStress[j] + 1;
+                }
+            }
+        }
 
+        Double[] stressProfile = new Double[maxLength];
+        for (int i = 0; i < maxLength; i++) {
+            stressProfile[i] = (double) (1000 * numberOfStress[i] / numberOfLines[i]) /10 ;
+        }
+
+        return stressProfile;
+    }
+
+    /**
+     * @return static: array with average juncture between words per syllable from segments
+     */
+    public static Double[] getJunctureProfileFromSegments(List<SegmentOfPortion> listSegments, Function<SegmentOfPortion, String> func) {
+        int maxLength = 0;
+        int lineLength = 0;
+        String line = "";
+        for (int i = 0; i < listSegments.size(); i++) {
+            line = func.apply(listSegments.get(i));
+            lineLength = line.length();
+            if (lineLength > maxLength) {
+                maxLength = lineLength;
+            }
+        }
+        int[] numberOfJunctures = new int[maxLength];
+        int[] numberOfLines = new int[maxLength];
+        for (int i = 0; i < listSegments.size(); i++) {
+            List<Integer> listJuncture = listSegments.get(i).getSchemaOfSpaces();
+            line = func.apply(listSegments.get(i));
+            for (int j = 0; j < line.length(); j++) {
+                numberOfLines[j] = numberOfLines[j] + 1;
+                if (listJuncture.contains(j+1)) {
+                    numberOfJunctures[j] = numberOfJunctures[j] + 1;
+                }
+            }
+        }
+
+        Double[] junctureProfile = new Double[maxLength];
+        for (int i = 0; i < maxLength; i++) {
+            junctureProfile[i] = (double) (1000 * numberOfJunctures[i] / numberOfLines[i])/10;
+        }
+
+        return junctureProfile;
+    }
     //== instance-methods ======================================================================================
+
     /**
      * @return array with average stress per syllable from segments
      */
@@ -506,7 +579,7 @@ public abstract class TextForRythm {
         int[] numberOfStress = new int[maxLength];
         int[] numberOfLines = new int[maxLength];
         for (int i = 0; i < listSegments.size(); i++) {
-            line = line = func.apply(listSegments.get(i));
+            line = func.apply(listSegments.get(i));
             for (int j = 0; j < line.length(); j++) {
                 numberOfLines[j] = numberOfLines[j] + 1;
                 if (line.charAt(j) == symbolOfStress) {
@@ -523,6 +596,41 @@ public abstract class TextForRythm {
         return stressProfile;
     }
 
+    /**
+     * @return array with average juncture between words per syllable from segments
+     */
+    public double[] getJunctureProfileFromSegments(Function<SegmentOfPortion, String> func) {
+        List<SegmentOfPortion> listSegments = getListOfSegments();
+        int maxLength = 0;
+        int lineLength = 0;
+        String line = "";
+        for (int i = 0; i < listSegments.size(); i++) {
+            line = func.apply(listSegments.get(i));
+            lineLength = line.length();
+            if (lineLength > maxLength) {
+                maxLength = lineLength;
+            }
+        }
+        int[] numberOfJunctures = new int[maxLength];
+        int[] numberOfLines = new int[maxLength];
+        for (int i = 0; i < listSegments.size(); i++) {
+            List<Integer> listJuncture = listSegments.get(i).getSchemaOfSpaces();
+            line = func.apply(listSegments.get(i));
+            for (int j = 0; j < line.length(); j++) {
+                numberOfLines[j] = numberOfLines[j] + 1;
+                if (listJuncture.contains(j+1)) {
+                    numberOfJunctures[j] = numberOfJunctures[j] + 1;
+                }
+            }
+        }
+
+        double[] junctureProfile = new double[maxLength];
+        for (int i = 0; i < maxLength; i++) {
+            junctureProfile[i] = 100 * numberOfJunctures[i] / numberOfLines[i];
+        }
+
+        return junctureProfile;
+    }
     //== abstract methods ===================================================================
 
     /**
@@ -547,9 +655,9 @@ public abstract class TextForRythm {
      * organize output
      *
      * @param nPortion
-     * @param pathToFileOutput
+     * @param commonConstants
      */
-    public abstract void resumeOutput(int nPortion, StringBuilder outputAccumulation, String pathToFileOutput);
+    public abstract void resumeOutput(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants);
 
 }
 

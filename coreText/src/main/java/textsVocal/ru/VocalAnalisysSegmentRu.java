@@ -4,7 +4,7 @@ import textsVocal.structure.Alphabetable;
 import textsVocal.structure.SegmentOfPortion;
 import textsVocal.structure.VersePortionForRythm;
 import textsVocal.structure.Word;
-import textsVocal.utils.DynamicTableRythm;
+import textsVocal.utilsCommon.DynamicTableRythm;
 
 import java.util.*;
 import java.util.stream.Collectors;
