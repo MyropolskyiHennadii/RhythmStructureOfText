@@ -18,6 +18,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
+/**
+ * copy-past from Spring examples https://spring.io/guides/gs/uploading-files/
+ */
 @Service
 public class FileSystemStorageService implements StorageService {
 

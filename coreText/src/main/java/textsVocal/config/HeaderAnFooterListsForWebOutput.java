@@ -5,6 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * class with static variables for web-output
+ */
 @ConfigurationProperties
 public final class HeaderAnFooterListsForWebOutput {
 

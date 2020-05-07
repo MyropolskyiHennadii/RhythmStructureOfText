@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import textsVocal.web.utilsWeb.Mappings;
 import textsVocal.web.utilsWeb.ViewNames;
 
+/**
+ * class for homepage control
+ */
 @Controller
 public class HomeController {
 

@@ -7,8 +7,8 @@
 <body>
 <header th:replace="~{fragments/header :: header}"/>
 <div align="center">
-    <!--   <form method="POST" enctype="multipart/form-data" action="/">-->
-    <form method="POST" enctype="multipart/form-data" action="setAnalysisAttributes">
+
+       <form method="POST" enctype="multipart/form-data" action="setAnalysisAttributes">
 
         <p><b>Enter your small text here or upload your file below:</b></p>
         <p><b>Введите ваш небольшой текст в это поле или загрузите ваш файл ниже:</b></p>
@@ -51,8 +51,8 @@
     <h2 th:text="${message}"/>
 </div>
 
-<div>
-    <a th:href="home">Home (В начало)</a>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}"> Home (В начало) </a>
 </div>
 
 <div>

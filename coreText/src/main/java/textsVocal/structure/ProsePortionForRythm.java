@@ -2,16 +2,17 @@ package textsVocal.structure;
 
 import textsVocal.config.CommonConstants;
 import textsVocal.config.HeaderAnFooterListsForWebOutput;
-import textsVocal.utilsCommon.DynamicTableRythm;
+import textsVocal.utilsCommon.DataTable;
 import textsVocal.utilsCommon.FileTreatment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static textsVocal.structure.PortionOfTextAnalyser.getStressProfileFromWholeText;
-
-public class ProsePortionForRythm extends TextForRythm {
+/**
+ * class for prose portion
+ */
+public class ProsePortionForRythm extends TextPortionForRythm {
 
     private String pText;//formatted text
     private String originalText;//original text
@@ -25,35 +26,49 @@ public class ProsePortionForRythm extends TextForRythm {
     public ProsePortionForRythm() {
     }
 
-    //== static method ==
-    public static void outputStressProfileOfWholeText(StringBuilder outputAccumulation, CommonConstants commonConstants) {
 
-        outputAccumulation.append("Stress profile\n");
+    //== static method ==
+
+    /**
+     * output footer for prose in console
+     * @param outputAccumulation StringBuilder stores output
+     * @param commonConstants commom app constants
+     */
+    public static void outputFootProseConsole(StringBuilder outputAccumulation, CommonConstants commonConstants) {
+
+        outputAccumulation.append("Stress profile of whole text\n");
         outputAccumulation.append("Number of syllable\n");
 
-        String[] stressProfile = getStressProfileFromWholeText();
+        String[] stressProfile = AnalyserPortionOfText.getStressProfileOfAllPortions();
         for (int i = 0; i < stressProfile.length; i++) {
-            outputAccumulation.append("\t" + (i + 1));
+            outputAccumulation.append("\t").append(i + 1);
         }
         outputAccumulation.append("\n");
         outputAccumulation.append("% of stress.\n");
-        for (int i = 0; i < stressProfile.length; i++) {
-            outputAccumulation.append("\t" + stressProfile[i]);
+        for (String s : stressProfile) {
+            outputAccumulation.append("\t").append(s);
         }
         outputAccumulation.append("\n");
         outputAccumulation.append("==========================\n");
+
         //count of sentences
-        int countLength = 0;
-        int countSentences = 0;
-        for (int i = 0; i < PortionOfTextAnalyser.getListOfInstance().size() ; i++) {
-            List<SegmentOfPortion> listSegments = PortionOfTextAnalyser.getListOfInstance().get(i).getListOfSegments();
-            for (int j = 0; j < listSegments.size(); j++) {
-                countSentences++;
-                countLength += listSegments.get(j).getSelectedMeterRepresentation().length();
-            }
+        outputAccumulation.append("Number of sentence: ").append(AnalyserPortionOfText.getNumberOfSegments()).append("\n");
+        outputAccumulation.append("Average length of sentence in syllables: ").append(AnalyserPortionOfText.getAverageLengthOfSegments()).append("\n");
+        outputAccumulation.append("Maximal length of sentence in syllables: ").append(AnalyserPortionOfText.getMaxLengthSegment()).append("\n");
+        outputAccumulation.append("==========================\n");
+
+        outputAccumulation.append("Distribution by length\n");
+        outputAccumulation.append("Number of syllable\n");
+        String[] distributionProfile = AnalyserPortionOfText.getDistributionSegmentByLength();
+        for (int i = 0; i < distributionProfile.length; i++) {
+            outputAccumulation.append("\t").append(i + 1);
         }
-        outputAccumulation.append("Number of sentence: " + countSentences + "\n");
-        outputAccumulation.append("Average length of sentence in syllables: " + (int) countLength / countSentences + "\n");
+        outputAccumulation.append("\n");
+        outputAccumulation.append("% of all.\n");
+        for (String s : distributionProfile) {
+            outputAccumulation.append("\t").append(s);
+        }
+        outputAccumulation.append("\n");
         outputAccumulation.append("==========================\n");
 
         if (!commonConstants.isReadingFromFile()) {//output to console
@@ -64,6 +79,74 @@ public class ProsePortionForRythm extends TextForRythm {
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
+    }
+
+    /**
+     * input corrections in portion's characteristics from web-user
+     */
+    public static void makeCorrectionInProseCharacteristicFromWebUser(List<String> checkedItems, List<String> changedValues) {
+
+        String id;
+        int numberPortion = -1;
+        for (String checkedItem : checkedItems) {
+            //parse id
+            id = checkedItem;
+            int posPoint = id.indexOf(".");
+            int numberSegment;
+            if (posPoint > -1) {
+                numberPortion = Integer.parseInt(id.substring(0, posPoint));
+                numberSegment = Integer.parseInt(id.substring(posPoint + 1));
+
+                String newMeterRepresentation = changedValues.get(numberSegment - 1).trim();
+                if (newMeterRepresentation.isEmpty()) {
+                    continue;
+                }
+
+                //we'll clean and fill all values for this segment
+
+                //code from VocalAnalysisSegmentRu
+                List<SegmentOfPortion> listSegments = AnalyserPortionOfText.getListOfInstance().get(numberPortion - 1).getListOfSegments();
+                SegmentOfPortion segment = listSegments.get(numberSegment - 1);
+
+                String newMeterRepresentationWithoutSpaces = newMeterRepresentation;
+
+                //probably new space schema
+                segment.getSchemaOfSpaces().clear();
+                for (int j = 0; j < newMeterRepresentation.length(); j++) {
+                    for (CharSequence c : SYMB_SPACE) {
+                        if (("" + c).equals(""+newMeterRepresentation.charAt(j))) {
+                            segment.getSchemaOfSpaces().add(j + 1);
+                        }
+                    }
+                }
+
+                //and cleaning from space
+                for (CharSequence c : SYMB_SPACE) {
+                    newMeterRepresentationWithoutSpaces = newMeterRepresentation.replaceAll("" + c, "");
+                }
+
+                //then set all:
+                segment.setSelectedMeterRepresentation(newMeterRepresentationWithoutSpaces);
+                segment.setMeterRepresentationForUser(newMeterRepresentationWithoutSpaces);
+                segment.getMeterRepresentations().clear();
+                segment.getMeterRepresentations().add(newMeterRepresentationWithoutSpaces);
+                segment.setMeterRepresentationWithSpaces(newMeterRepresentation);
+            }
+        }
+
+        //and at least refine
+        if (numberPortion >= 0) {
+
+            ProsePortionForRythm instance = (ProsePortionForRythm) AnalyserPortionOfText.getListOfInstance().get(numberPortion - 1);
+            HeaderAnFooterListsForWebOutput.getPortionHeaders().set(numberPortion - 1, instance.formHeaderLines(numberPortion));
+            //there is no footer in web-verse (we have there the table)
+            //PortionsListsForWebOutput.getPortionFooters().set(numberPortion-1, instance.formFooterLinesWithoutWeb());
+        }
+    }
+
+    //==getter ==
+    public String getOriginalText() {
+        return originalText;
     }
 
     // === public instance overriden methods ============================
@@ -78,8 +161,12 @@ public class ProsePortionForRythm extends TextForRythm {
         return pText;
     }
 
+    /**
+     * parse portion of text to the table with segments, words, stress schema and so on
+     * @return
+     */
     @Override
-    public DynamicTableRythm parsePortionOfText() {
+    public DataTable parsePortionOfText() {
 
         // names of columns
         List<String> namesOfColumns = new ArrayList<>();
@@ -99,16 +186,15 @@ public class ProsePortionForRythm extends TextForRythm {
         sup.add(ArrayList<String>::new);
         sup.add(ArrayList<Word>::new);
 
-        DynamicTableRythm prepareTable = new DynamicTableRythm(namesOfColumns, sup);
+        DataTable prepareTable = new DataTable(namesOfColumns, sup);
 
-        int NumberOfFragment = 1;
         int NumberOfSentence = 1;
         int NumberOfWord = 1;
-        StringBuilder sbText = new StringBuilder(pText);
-        String fragment = "";
-        String sentence = "";
-        String word = "";
-        int posSymbol = -1;
+        //StringBuilder sbText = new StringBuilder(pText);
+        //String fragment = "";
+        String sentence;
+        String word;
+        int posSymbol;
         List<Object> addData = new ArrayList<>();
 
         //test
@@ -175,9 +261,10 @@ public class ProsePortionForRythm extends TextForRythm {
 
     /**
      * form header for output
-     * @return
+     *
+     * @return list with header's lines
      */
-    public List<String> formHeaderLines(int nPortion){
+    public List<String> formHeaderLines(int nPortion) {
         List<String> headerLines = new ArrayList<>();
         headerLines.add("\n");
         headerLines.add("Paragraph #" + nPortion + "\n");
@@ -189,7 +276,7 @@ public class ProsePortionForRythm extends TextForRythm {
      * form footer lines for output
      * * @return
      */
-    public List<String> formFooterLines(){
+    public List<String> formFooterLines() {
         List<String> footerLines = new ArrayList<>();
         footerLines.add("\n");
         return footerLines;
@@ -198,46 +285,42 @@ public class ProsePortionForRythm extends TextForRythm {
     /**
      * resume output web
      *
-     * @param nPortion
-     * @param outputAccumulation
-     * @param commonConstants
      */
-    public void prepareResumeOutputWeb(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
-        HeaderAnFooterListsForWebOutput.getPortionHeaders().add(formHeaderLines(nPortion));
+    public void prepareResumeOutputWeb() {
+        HeaderAnFooterListsForWebOutput.getPortionHeaders().add(formHeaderLines(getNumberOfPortion()));
         HeaderAnFooterListsForWebOutput.getPortionFooters().add(formFooterLines());
     }
 
     /**
      * resume output without web (console)
      *
-     * @param nPortion
-     * @param outputAccumulation
-     * @param commonConstants
+     * @param outputAccumulation StringBuilder where output stores
+     * @param commonConstants common app constants
      */
-    public void resumeOutputConsole(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+    public void resumeOutputConsole(StringBuilder outputAccumulation, CommonConstants commonConstants) {
 
-        List<String> headerLines = formHeaderLines(nPortion);
-        for(String line: headerLines){
+        List<String> headerLines = formHeaderLines(getNumberOfPortion());
+        for (String line : headerLines) {
             outputAccumulation.append(line);
         }
 
-        DynamicTableRythm dt = this.getDtOfTextSegmentsAndStresses();
+        DataTable dt = this.getDtOfTextSegmentsAndStresses();
         List<SegmentOfPortion> listSegments = this.getListOfSegments();
         String nameOfFirstColumn = (String) dt.getNamesOfColumn().toArray()[1];
 
-        for (int i = 0; i < listSegments.size(); i++) {
-            Integer nSegment = listSegments.get(i).getSegmentIdentifier();
-            outputAccumulation.append("Sentence #" + nSegment + "\n");
+        for (SegmentOfPortion listSegment : listSegments) {
+            Integer nSegment = listSegment.getSegmentIdentifier();
+            outputAccumulation.append("Sentence #").append(nSegment).append("\n");
             List<String> words = (List<String>) dt.getValueFromColumnAndRowByCondition("Word", nameOfFirstColumn, nSegment);
             String line = words.stream().map(s -> s + " ").reduce("", String::concat).trim();
-            String meterRepresentationWithSpaces = listSegments.get(i).getMeterRepresentationWithSpaces().trim();
-            outputAccumulation.append(line + "\n");
+            String meterRepresentationWithSpaces = listSegment.getMeterRepresentationWithSpaces().trim();
+            outputAccumulation.append(line).append("\n");
             //meterRepresentationOfPortion.add(listSegments.get(i).getSelectedMeterRepresentation());//all portion
-            outputAccumulation.append("[" + meterRepresentationWithSpaces + "]\n");
+            outputAccumulation.append("[").append(meterRepresentationWithSpaces).append("]\n");
         }
         outputAccumulation.append("==========================\n");
         List<String> footerLines = formFooterLines();
-        for(String line: footerLines) {
+        for (String line : footerLines) {
             outputAccumulation.append(line);
         }
 
@@ -254,24 +337,21 @@ public class ProsePortionForRythm extends TextForRythm {
     /**
      * resume output
      *
-     * @param nPortion
-     * @param outputAccumulation
-     * @param commonConstants
+     * @param outputAccumulation StringBuilder where output stores
+     * @param commonConstants common app constants
      */
     @Override
-    public void resumeOutput(int nPortion, StringBuilder outputAccumulation, CommonConstants commonConstants) {
+    public void resumeOutput(StringBuilder outputAccumulation, CommonConstants commonConstants) {
         if (!commonConstants.isThisIsWebApp()) {
-            resumeOutputConsole(nPortion, outputAccumulation, commonConstants);
-        } else {
-            prepareResumeOutputWeb(nPortion, outputAccumulation, commonConstants);
-        }
+            resumeOutputConsole(outputAccumulation, commonConstants);
+        } else prepareResumeOutputWeb();
     }
 
 
     //== public instance method ==
 
     /**
-     * fill every segment with rythm schema
+     * fill each segment with rythm schema
      */
     public void fillProsePortionWithCommonRythmCharacteristics() {
         List<SegmentOfPortion> preparedListOfSegment = getListOfSegments();

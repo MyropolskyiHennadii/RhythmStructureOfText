@@ -11,51 +11,60 @@
     <h1>Попробуйте определить ритмическое строение текста (русский язык)</h1>
 </div>
 
-<div align="left">
-    <br></br>
-    <br> Before you start you have to define wether your text is a poem or prose (checkbox = prose).</br>
-    <br> Don't forget, please, submit your choice. If you have poems (not prose) you can miss this checkbox.</br>
-    <br> You can enter your small text in text field OR upload your txt-file.</br>
-    <br> You can use only *.txt file, UTF-8, size < 2000Kb</br>
-    <br></br>
-    <br> You also have to define portions separator in your file and at the form (for ex. //////////) to recognize
-    during analysis different
-    poems in your file exact as different (not as one long poem).</br>
-    <br> Don't use in text titles of poems (number or titles chapters in prose) and so on. You'll receive results as
-    portions, numerated by your separators. </br>
-    <br> In analysis relults symbol '1' means syllable under the stress, symbol '0' - syllable without stress and space
-    - interval between words.</br>
-    <br> During analysis sysytem can ask you abot stress-schems in unknown words, because of not 'all' Russian words
-    with stress it has in dictionary. </br>
-    <br> In such cases you have to define stresses schema for unknown word. For example Russian word 'корова' has
-    stresses schema 010.</br>
-    <br> Position of stress in Russian words (for instance words with one syllable) isn't always single-valued, that is
-    why mistakes in common stress representation are inevitable. Be careful with machine's results.</br>
-    <br></br>
-    <br> Перед началом вам следует определить, является ли ваш текст стихами или прозой (флажок = проза).</br>
-    <br> Не забудьте, пожалуйста, подтвердить свой выбор нажатием на кнопку. Если вы анализируете стихи (не прозу),
-    можете этот флажок не трогать вообще.</br>
-    <br> Вы можете ввести ваш небольшой текст в текстовое поле ИЛИ загрузить файл на сервер.</br>
-    <br> Вы можете использовать только *.txt файл, UTF-8, размер файла < 2000Kb</br>
-    <br></br>
-    <br> Вам также следует следует задать разделитель порций в файле и на форме (например //////////), чтобы при анализе
-    можно было разграничить
-    различные стихотворения в вашем файле именно как различные (не как одно длинное стихотворение).</br>
-    <br> Не используйте в анализируемом тексте наименования стихотворений (номера или названия частей прозы) и т.п.
-    Результаты анализа вы получите как пронумерованные согласно вами же расставленным сепараторам порции. </br>
-    <br> В резульатах анализа символ '1'означает ударный слог, символ '0' - безударный слог и пробел - интервал между
-    словамим.</br>
-    <br> В ходе анализа система может запросить у вас схему ударений в незнакомых для нее словах, потому что не 'все'
-    русские слова есть у нее в словаре. </br>
-    <br> В таких случаях вам следует задать схему ударений для незнакомого системе слова. Например, для русского слова
-    'корова' такой схемой будет 010.</br>
-    <br> Позиция ударения в русских словах (в частности, в односложных словах) не всегда однозначна, поэтому ошибки в
-    анализе неизбежны. Будьте внимательны к результатам машинного анализа.</br>
-    <br></br>
+<br align="left">
+<br></br>
+<br> Before you start you have to define wether your text is a poem or prose (checkbox = prose).</br>
+<br> Don't forget, please, submit your choice. If you have poems (not prose) you can miss this checkbox.</br>
+<br> You can enter your small text in text field OR upload your txt-file.</br>
+<br> You can use only *.txt file, UTF-8, size < 2000Kb</br>
+<br></br>
+<br> In poems you also have to define portions separator in your file and at the form (for ex. //////////) to recognize
+during analysis different
+poems in your file exact as different (not as one long poem).</br>
+<br> For prose you doesn't need separator. In case prose paragraphs bound portions. Sentences are the segments (like lines in poem).</br>
+<br> Sentences are recognized by punctuation (. ; ? and so on), there is no syntax analyzer.</br>
+<br> Don't use in text titles of poems (number or titles chapters in prose) and so on. You'll receive results as
+portions, numerated by your separators in poems or by number of paragraph in prose. </br>
+<br> In analysis relults symbol '1' means syllable under the stress, symbol '0' - syllable without stress and space
+- interval between words.</br>
+<br> During analysis sysytem can ask you abot stress-schems in unknown words, because of not 'all' Russian words
+with stress it has in dictionary. </br>
+<br> In such cases you have to define stresses schema for unknown word. For example Russian word 'корова' has
+stresses schema 010.</br>
+<br> Position of stress in Russian words (for instance words with one syllable) isn't always single-valued, that is
+why mistakes in common stress representation are inevitable. Be careful with machine's results.</br>
+<br>You'll may correct results and recalculate average characteristics.</br>
+<br></br>
+<br> Перед началом вам следует определить, является ли ваш текст стихами или прозой (флажок = проза).</br>
+<br> Не забудьте, пожалуйста, подтвердить свой выбор нажатием на кнопку. Если вы анализируете стихи (не прозу),
+можете этот флажок не трогать вообще.</br>
+<br> Вы можете ввести ваш небольшой текст в текстовое поле ИЛИ загрузить файл на сервер.</br>
+<br> Вы можете использовать только *.txt файл, UTF-8, размер файла < 2000Kb</br>
+<br></br>
+<br> Для стихов также следует следует задать разделитель порций в файле и на форме (например //////////), чтобы при
+анализе
+можно было разграничить различные стихотворения в вашем файле именно как различные (не как одно длинное
+стихотворение).</br>
+<br> Для прозы указание сепаратора не требуется. В качестве порций рассматриваются абзацы, в качестве сегментов -
+предложения (в стихах сегмент - стихотворная строка).</br>
+<br>Предложение в прозе распознается по знакам препинания (. ; ? и т.п.), синтаксический анализ отсутствует.</br>
+<br> Не используйте в анализируемом тексте наименования стихотворений (номера или названия частей прозы) и т.п.
+Результаты анализа вы получите как пронумерованные согласно вами же расставленным сепараторам порции в стихах или согласно номерам абзацев в прозе. </br>
+<br> В резульатах анализа символ '1'означает ударный слог, символ '0' - безударный слог и пробел - интервал между
+словамим.</br>
+<br> В ходе анализа система может запросить у вас схему ударений в незнакомых для нее словах, потому что не 'все'
+русские слова есть у нее в словаре. </br>
+<br> В таких случаях вам следует задать схему ударений для незнакомого системе слова. Например, для русского слова
+'корова' такой схемой будет 010.</br>
+<br> Позиция ударения в русских словах (в частности, в односложных словах) не всегда однозначна, поэтому ошибки в
+анализе неизбежны. Будьте внимательны к результатам машинного анализа.</br>
+<br>Вы сможете откорректировать результаты и пересчитать усредненные характеристики.</br>
+<br></br>
 </div>
 
 <div align="center">
-    <h1><a th:href="${setAttributePage}"> <p th:text="#{web.homeStart}"/> </a></h1>
+    <h1><a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}"><p
+            th:text="#{web.homeStart}"/></a></h1>
 </div>
 
 <div align="center">

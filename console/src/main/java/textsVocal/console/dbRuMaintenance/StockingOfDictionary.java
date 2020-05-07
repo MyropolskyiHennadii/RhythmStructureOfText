@@ -16,31 +16,32 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import static textsVocal.ru.VocalAnalisysWordRu.calculateDurationOnlyVocale;
-import static textsVocal.structure.TextForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextForRythm.symbolOfStress;
+import static textsVocal.ru.VocalAnalisysRu.calculateDurationOnlyVocale;
+import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
 
+/**
+ * organize console menu and record to Russian dictionary
+ */
 @ConfigurationPropertiesScan("coreText.textsVocal.config")
 public class StockingOfDictionary {
 
+    private static final Logger log = LoggerFactory.getLogger(StockingOfDictionary.class);
     public static Scanner scanner;
     private static DB_RussianDictionary db;
     private static Connection conn;
     private static Set<String> words = new HashSet<>();
 
-    private static final Logger log = LoggerFactory.getLogger(StockingOfDictionary.class);
-
     /**
-     * select punkt menu from any list
+     * select punct menu from any list
      *
-     * @param menu
-     * @return
+     * @param menu - puncts menu
+     * @return punct menu number
      */
     public static int selectPunctMenuFromConsole(Collection<HaveID> menu) {
         while (true) {
-            Iterator<HaveID> it = menu.iterator();
-            while (it.hasNext()) {
-                System.out.println(it.next());
+            for (HaveID haveID : menu) {
+                System.out.println(haveID);
             }
             String answer = scanner.next();
             scanner.nextLine();
@@ -56,14 +57,13 @@ public class StockingOfDictionary {
     /**
      * mapping word with form's endings and ancodes
      *
-     * @param word
-     * @param pattern
-     * @return
+     * @param word any string
+     * @param pattern pattern from patterns list
+     * @return grammatic forms from main word
      */
     public static Map<String, String> checkPatternAndAddRecordToMainDB(String word, DB_PatternItemRu pattern) {
-        String sqlUnknownWords = "SELECT distinct id, textWord, MainForm, meterRepresentation, Ancode FROM " + db.getDb_Table() +
+        String sqlUnknownWords = "SELECT distinct id, textWord, MainForm, meterRepresentation, Ancode FROM " + DB_RussianDictionary.getDb_Table() +
                 " WHERE MainForm = '" + pattern.getMainForm() + "' AND partOfSpeech = '" + pattern.getPartOfSpeech() + "'";
-        int countUnchangableSymbols = pattern.getMainForm().trim().length() - pattern.getNumberSymbolsInEndingMainForm();
         Map<String, String> wordForms = new HashMap<>();
         try {
             conn = db.getConnectionMainStressTable();
@@ -76,12 +76,11 @@ public class StockingOfDictionary {
                     continue;
                 }
 
-                String ending = "";
+                StringBuilder ending = new StringBuilder();
                 for (int i = patternMainForm.length() - pattern.getNumberSymbolsInEndingMainForm(); i < patternWord.length(); i++) {
-                    ending += patternWord.charAt(i);
+                    ending.append(patternWord.charAt(i));
                 }
-                String ancode = rs.getString(5).trim();
-                wordForms.put(rs.getString(5).trim(), word.substring(0, word.length() - pattern.getNumberSymbolsInEndingMainForm()) + ending);
+                wordForms.put(rs.getString(5).trim(), word.substring(0, word.length() - pattern.getNumberSymbolsInEndingMainForm()) + ending.toString());
             }
 
         } catch (SQLException e) {
@@ -125,8 +124,8 @@ public class StockingOfDictionary {
         ResultSet rs = null;
         Statement stmtInsert = null;//for records insert
 
-        String sqlUnknownWords = "SELECT distinct textWord, meterRepresentation FROM " + db.getDb_TableUnKnownWords();
-        String sqlInsert = "INSERT INTO " + db.getDb_Table() + " (textWord, partOfSpeech, MainForm, meterRepresentation, Ancode) " + "VALUES ('";
+        String sqlUnknownWords = "SELECT distinct textWord, meterRepresentation FROM " + DB_RussianDictionary.getDb_TableUnKnownWords();
+        String sqlInsert = "INSERT INTO " + DB_RussianDictionary.getDb_Table() + " (textWord, partOfSpeech, MainForm, meterRepresentation, Ancode) " + "VALUES ('";
         try {
             conn = db.getConnectionMainStressTable();
             Statement stmt = conn.createStatement();
@@ -183,34 +182,27 @@ public class StockingOfDictionary {
                         Map<String, String> wordForms = checkPatternAndAddRecordToMainDB(mainForm, pattern);
                         String mainFormWithoutEnding = mainForm.substring(0, mainForm.length() - pattern.getNumberSymbolsInEndingMainForm());
                         int durationWordWithoutEnding = (int) calculateDurationOnlyVocale(mainFormWithoutEnding);
-                        //System.out.println("Main form without ending "+mainFormWithoutEnding);
-                        //System.out.println("durationWordWithoutEnding " + durationWordWithoutEnding);
 
                         String baseSchema = meterRepresentation.substring(0, durationWordWithoutEnding);
-                        //System.out.println("baseSchema " + baseSchema);
 
                         for (Map.Entry<String, String> entry : wordForms.entrySet()) {
-                            //System.out.println("ID =  " + entry.getKey() + ": " + entry.getValue());
                             int durationEnding = (int) calculateDurationOnlyVocale(entry.getValue()) - durationWordWithoutEnding;
-                            String finalMeterSchema = baseSchema;
-                            //System.out.println("duration ending = " + durationEnding);
+                            StringBuilder finalMeterSchema = new StringBuilder(baseSchema);
                             for (int i = 0; i < durationEnding; i++) {
-                                finalMeterSchema += "0";
+                                finalMeterSchema.append("0");
                             }
                             if (("" + meterRepresentation.charAt(meterRepresentation.length() - 1)).equals("" + symbolOfStress)
-                                    && !finalMeterSchema.contains("" + symbolOfStress)) {
-                                finalMeterSchema = finalMeterSchema.substring(0, meterRepresentation.length() - 1) + symbolOfStress;
+                                    && !finalMeterSchema.toString().contains("" + symbolOfStress)) {
+                                finalMeterSchema = new StringBuilder(finalMeterSchema.substring(0, meterRepresentation.length() - 1) + symbolOfStress);
                                 while (finalMeterSchema.length() < (int) calculateDurationOnlyVocale(entry.getValue())) {
-                                    finalMeterSchema += symbolOfNoStress;
+                                    finalMeterSchema.append(symbolOfNoStress);
                                 }
                             }
-                            //String sqlInsert = "INSERT INTO " + db.getDb_Table() + " (textWord, partOfSpeech, MainForm, meterRepresentation, Ancode) " + "VALUES ('";
-                            int nRecords = stmtInsert.executeUpdate(sqlInsert + entry.getValue().trim() + "', '"
+                            stmtInsert.executeUpdate(sqlInsert + entry.getValue().trim() + "', '"
                                     + pattern.getPartOfSpeech().trim() +  "', '"
                                     + mainForm.trim() + "', '"
-                                    + finalMeterSchema.trim()  + "', '"
+                                    + finalMeterSchema.toString().trim()  + "', '"
                                     + entry.getKey().trim() + "')");
-                            //log.info("Added records " + nRecords + " in unknown words database. Word = " + word);
                             System.out.println(entry.getValue().trim() + "; " + finalMeterSchema + ";");
                         }
                         words.add(word);

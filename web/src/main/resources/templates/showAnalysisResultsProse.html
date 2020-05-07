@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rythm structure</title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"/>
+<div align="center">
+    <h1>Analysis results</h1>
+    <h1>Результаты анализа</h1>
+    <h1></h1>
+    <h3>You can correct meter schema in every table and recalculate results with button Submit changes under the
+        table</h3>
+    <h3>(In this case don't forget click checkbox at the row with changes.)</h3>
+    <h3>Вы можете исправить метрическую схему в каждой таблице и пересчитать результаты по кнопке Submit changes под
+        таблицей</h3>
+    <h3>(В этом случае не забудьте кликнуть флажок в строке с изменениями.)</h3>
+</div>
+
+<br/>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}"> Repeat setting analysis
+        attributes (Повторить задание атрибутов анализа) </a>
+</div>
+
+<div align="left">
+    <tr th:each="rows, indPortion : ${listListHeaders}"><!--loop by portions -->
+        <!--header-->
+        <br th:each="head: ${rows}"
+            th:text="${head}">
+        </br>
+        <!-- data -->
+        <table border="1">
+            <tr>
+                <th>id</th>
+                <th>sentence</th>
+                <th>stress schema</th>
+                <th>corrected stress schema</th>
+                <th>submit changes</th>
+            </tr>
+            <form action="#" th:action="@{/tableStressesProse}" th:object="${changedValuesInHTMLTable}" method="post">
+                <tr th:each="rowTable, stateMainTable : ${listTableData.get(indPortion.count-1)}">
+                    <td align="left" th:utext="${rowTable.getId()}"></td>
+                    <td align="left" th:utext="${rowTable.getWords()}"></td>
+                    <td align="left" th:utext="${rowTable.getMeterRepresentationWithSpaces()}"
+                        contenteditable="true"></td>
+                    <td><input type="text" th:field="*{newValuesItems}"></td>
+                    <td><input type="checkbox" th:field="*{checkedItems}" th:value="${rowTable.getId()}"/></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit changes"/></td>
+                </tr>
+            </form>
+        </table>
+
+        <!--footer-->
+        <!--        <div align="left">
+                    <br th:each="foot: ${listListFooters.get(indPortion.count-1)}"
+                        th:text="${foot}">
+                    </br>
+                </div>-->
+    </tr>
+</div>
+
+<div align="left">
+    <h4>Number of sentences (количество предложений) </h4><br th:text="${numberOfCentences}"/>
+    <h4>Max.length of sentences (макс. длина предложений) </h4><br th:text="${maxLength}"/>
+    <h4>Average length of sentences (средняя длина предложений) </h4><br th:text="${averageLength}"/>
+</div>
+
+<!-- whole stress profile -->
+<div>
+    <h4>Full stress profile (Полный профиль ударности)</h4>
+    <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
+    <br>% of stress (% ударности)</br>
+    <!--    <tr th:each="rows, ind : ${listStressesProfile}">-->
+    <table border="1">
+        <tr>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 0} ? '1': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 1} ? '2': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 2} ? '3': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 3} ? '4': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 4} ? '5': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 5} ? '6': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 6} ? '7': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 7} ? '8': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 8} ? '9': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 9} ? '10': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 10} ? '11': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 11} ? '12': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 12} ? '13': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 13} ? '14': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 14} ? '15': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 15} ? '16': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 16} ? '17': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 17} ? '18': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 18} ? '19': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 19} ? '20': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 20} ? '21': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 21} ? '22': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 22} ? '23': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 23} ? '24': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 24} ? '25': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 25} ? '26': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 26} ? '27': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 27} ? '28': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 28} ? '29': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 29} ? '30': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 30} ? '31': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 31} ? '32': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 32} ? '33': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 33} ? '34': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 34} ? '35': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 35} ? '36': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 36} ? '37': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 37} ? '38': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 38} ? '39': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 39} ? '40': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 40} ? '41': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 41} ? '42': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 42} ? '43': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 43} ? '44': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 44} ? '45': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 45} ? '46': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 46} ? '47': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 47} ? '48': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 48} ? '49': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 49} ? '50': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 50} ? '51': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 51} ? '52': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 52} ? '53': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 53} ? '54': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 54} ? '55': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 55} ? '56': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 56} ? '57': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 57} ? '58': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 58} ? '59': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 59} ? '60': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 60} ? '61': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 61} ? '62': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 62} ? '63': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 63} ? '64': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 64} ? '65': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 65} ? '66': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 66} ? '67': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 67} ? '68': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 68} ? '69': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 69} ? '70': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 70} ? '71': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 71} ? '72': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 72} ? '73': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 73} ? '74': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 74} ? '75': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 75} ? '76': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 76} ? '77': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 77} ? '78': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 78} ? '79': ''"></td>
+            <td align="center"
+                th:utext="${listStressesProfile.size() > 79} ? '80': ''"></td>
+        </tr>
+        <tr>
+            <td th:utext="${listStressesProfile.size() > 0} ? ${listStressesProfile.get(0)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 1} ? ${listStressesProfile.get(1)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 2} ? ${listStressesProfile.get(2)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 3} ? ${listStressesProfile.get(3)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 4} ? ${listStressesProfile.get(4)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 5} ? ${listStressesProfile.get(5)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 6} ? ${listStressesProfile.get(6)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 7} ? ${listStressesProfile.get(7)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 8} ? ${listStressesProfile.get(8)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 9} ? ${listStressesProfile.get(9)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 10} ? ${listStressesProfile.get(10)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 11} ? ${listStressesProfile.get(11)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 12} ? ${listStressesProfile.get(12)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 13} ? ${listStressesProfile.get(13)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 14} ? ${listStressesProfile.get(14)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 15} ? ${listStressesProfile.get(15)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 16} ? ${listStressesProfile.get(16)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 17} ? ${listStressesProfile.get(17)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 18} ? ${listStressesProfile.get(18)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 19} ? ${listStressesProfile.get(19)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 20} ? ${listStressesProfile.get(20)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 21} ? ${listStressesProfile.get(21)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 22} ? ${listStressesProfile.get(22)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 23} ? ${listStressesProfile.get(23)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 24} ? ${listStressesProfile.get(24)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 25} ? ${listStressesProfile.get(25)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 26} ? ${listStressesProfile.get(26)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 27} ? ${listStressesProfile.get(27)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 28} ? ${listStressesProfile.get(28)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 29} ? ${listStressesProfile.get(29)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 30} ? ${listStressesProfile.get(30)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 31} ? ${listStressesProfile.get(31)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 32} ? ${listStressesProfile.get(32)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 33} ? ${listStressesProfile.get(33)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 34} ? ${listStressesProfile.get(34)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 35} ? ${listStressesProfile.get(35)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 36} ? ${listStressesProfile.get(36)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 37} ? ${listStressesProfile.get(37)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 38} ? ${listStressesProfile.get(38)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 39} ? ${listStressesProfile.get(39)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 40} ? ${listStressesProfile.get(40)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 41} ? ${listStressesProfile.get(41)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 42} ? ${listStressesProfile.get(42)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 43} ? ${listStressesProfile.get(43)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 44} ? ${listStressesProfile.get(44)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 45} ? ${listStressesProfile.get(45)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 46} ? ${listStressesProfile.get(46)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 47} ? ${listStressesProfile.get(47)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 48} ? ${listStressesProfile.get(48)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 49} ? ${listStressesProfile.get(49)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 50} ? ${listStressesProfile.get(50)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 51} ? ${listStressesProfile.get(51)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 52} ? ${listStressesProfile.get(52)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 53} ? ${listStressesProfile.get(53)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 54} ? ${listStressesProfile.get(54)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 55} ? ${listStressesProfile.get(55)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 56} ? ${listStressesProfile.get(56)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 57} ? ${listStressesProfile.get(57)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 58} ? ${listStressesProfile.get(58)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 59} ? ${listStressesProfile.get(59)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 60} ? ${listStressesProfile.get(60)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 61} ? ${listStressesProfile.get(61)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 62} ? ${listStressesProfile.get(62)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 63} ? ${listStressesProfile.get(63)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 64} ? ${listStressesProfile.get(64)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 65} ? ${listStressesProfile.get(65)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 66} ? ${listStressesProfile.get(66)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 67} ? ${listStressesProfile.get(67)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 68} ? ${listStressesProfile.get(68)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 69} ? ${listStressesProfile.get(69)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 70} ? ${listStressesProfile.get(70)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 71} ? ${listStressesProfile.get(71)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 72} ? ${listStressesProfile.get(72)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 73} ? ${listStressesProfile.get(73)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 74} ? ${listStressesProfile.get(74)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 75} ? ${listStressesProfile.get(75)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 76} ? ${listStressesProfile.get(76)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 77} ? ${listStressesProfile.get(77)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 78} ? ${listStressesProfile.get(78)}: ''"></td>
+            <td th:utext="${listStressesProfile.size() > 79} ? ${listStressesProfile.get(79)}: ''"></td>
+        </tr>
+    </table>
+</div>
+
+<!-- distribution by lenthg -->
+<div>
+    <h4>Distribution by sentence's length in syllable (Распределение по длинам в слогах)</h4>
+    <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
+    <br>% of all (% от всех)</br>
+    <!--    <tr th:each="rows, ind : ${listStressesProfile}">-->
+    <table border="1">
+        <tr>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 0} ? '1': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 1} ? '2': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 2} ? '3': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 3} ? '4': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 4} ? '5': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 5} ? '6': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 6} ? '7': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 7} ? '8': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 8} ? '9': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 9} ? '10': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 10} ? '11': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 11} ? '12': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 12} ? '13': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 13} ? '14': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 14} ? '15': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 15} ? '16': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 16} ? '17': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 17} ? '18': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 18} ? '19': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 19} ? '20': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 20} ? '21': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 21} ? '22': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 22} ? '23': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 23} ? '24': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 24} ? '25': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 25} ? '26': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 26} ? '27': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 27} ? '28': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 28} ? '29': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 29} ? '30': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 30} ? '31': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 31} ? '32': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 32} ? '33': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 33} ? '34': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 34} ? '35': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 35} ? '36': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 36} ? '37': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 37} ? '38': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 38} ? '39': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 39} ? '40': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 40} ? '41': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 41} ? '42': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 42} ? '43': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 43} ? '44': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 44} ? '45': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 45} ? '46': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 46} ? '47': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 47} ? '48': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 48} ? '49': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 49} ? '50': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 50} ? '51': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 51} ? '52': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 52} ? '53': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 53} ? '54': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 54} ? '55': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 55} ? '56': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 56} ? '57': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 57} ? '58': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 58} ? '59': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 59} ? '60': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 60} ? '61': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 61} ? '62': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 62} ? '63': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 63} ? '64': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 64} ? '65': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 65} ? '66': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 66} ? '67': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 67} ? '68': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 68} ? '69': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 69} ? '70': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 70} ? '71': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 71} ? '72': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 72} ? '73': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 73} ? '74': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 74} ? '75': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 75} ? '76': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 76} ? '77': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 77} ? '78': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 78} ? '79': ''"></td>
+            <td align="center"
+                th:utext="${listDistributionByLength.size() > 79} ? '80': ''"></td>
+        </tr>
+        <tr>
+            <td th:utext="${listDistributionByLength.size() > 0} ? ${listDistributionByLength.get(0)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 1} ? ${listDistributionByLength.get(1)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 2} ? ${listDistributionByLength.get(2)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 3} ? ${listDistributionByLength.get(3)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 4} ? ${listDistributionByLength.get(4)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 5} ? ${listDistributionByLength.get(5)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 6} ? ${listDistributionByLength.get(6)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 7} ? ${listDistributionByLength.get(7)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 8} ? ${listDistributionByLength.get(8)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 9} ? ${listDistributionByLength.get(9)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 10} ? ${listDistributionByLength.get(10)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 11} ? ${listDistributionByLength.get(11)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 12} ? ${listDistributionByLength.get(12)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 13} ? ${listDistributionByLength.get(13)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 14} ? ${listDistributionByLength.get(14)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 15} ? ${listDistributionByLength.get(15)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 16} ? ${listDistributionByLength.get(16)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 17} ? ${listDistributionByLength.get(17)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 18} ? ${listDistributionByLength.get(18)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 19} ? ${listDistributionByLength.get(19)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 20} ? ${listDistributionByLength.get(20)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 21} ? ${listDistributionByLength.get(21)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 22} ? ${listDistributionByLength.get(22)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 23} ? ${listDistributionByLength.get(23)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 24} ? ${listDistributionByLength.get(24)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 25} ? ${listDistributionByLength.get(25)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 26} ? ${listDistributionByLength.get(26)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 27} ? ${listDistributionByLength.get(27)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 28} ? ${listDistributionByLength.get(28)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 29} ? ${listDistributionByLength.get(29)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 30} ? ${listDistributionByLength.get(30)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 31} ? ${listDistributionByLength.get(31)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 32} ? ${listDistributionByLength.get(32)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 33} ? ${listDistributionByLength.get(33)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 34} ? ${listDistributionByLength.get(34)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 35} ? ${listDistributionByLength.get(35)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 36} ? ${listDistributionByLength.get(36)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 37} ? ${listDistributionByLength.get(37)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 38} ? ${listDistributionByLength.get(38)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 39} ? ${listDistributionByLength.get(39)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 40} ? ${listDistributionByLength.get(40)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 41} ? ${listDistributionByLength.get(41)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 42} ? ${listDistributionByLength.get(42)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 43} ? ${listDistributionByLength.get(43)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 44} ? ${listDistributionByLength.get(44)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 45} ? ${listDistributionByLength.get(45)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 46} ? ${listDistributionByLength.get(46)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 47} ? ${listDistributionByLength.get(47)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 48} ? ${listDistributionByLength.get(48)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 49} ? ${listDistributionByLength.get(49)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 50} ? ${listDistributionByLength.get(50)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 51} ? ${listDistributionByLength.get(51)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 52} ? ${listDistributionByLength.get(52)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 53} ? ${listDistributionByLength.get(53)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 54} ? ${listDistributionByLength.get(54)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 55} ? ${listDistributionByLength.get(55)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 56} ? ${listDistributionByLength.get(56)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 57} ? ${listDistributionByLength.get(57)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 58} ? ${listDistributionByLength.get(58)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 59} ? ${listDistributionByLength.get(59)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 60} ? ${listDistributionByLength.get(60)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 61} ? ${listDistributionByLength.get(61)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 62} ? ${listDistributionByLength.get(62)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 63} ? ${listDistributionByLength.get(63)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 64} ? ${listDistributionByLength.get(64)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 65} ? ${listDistributionByLength.get(65)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 66} ? ${listDistributionByLength.get(66)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 67} ? ${listDistributionByLength.get(67)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 68} ? ${listDistributionByLength.get(68)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 69} ? ${listDistributionByLength.get(69)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 70} ? ${listDistributionByLength.get(70)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 71} ? ${listDistributionByLength.get(71)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 72} ? ${listDistributionByLength.get(72)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 73} ? ${listDistributionByLength.get(73)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 74} ? ${listDistributionByLength.get(74)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 75} ? ${listDistributionByLength.get(75)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 76} ? ${listDistributionByLength.get(76)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 77} ? ${listDistributionByLength.get(77)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 78} ? ${listDistributionByLength.get(78)}: ''"></td>
+            <td th:utext="${listDistributionByLength.size() > 79} ? ${listDistributionByLength.get(79)}: ''"></td>
+        </tr>
+    </table>
+</div>
+
+<br/>
+<br/>
+
+<div align="center">
+    <footer th:replace="~{fragments/footer :: footer}"/>
+</div>
+
+</body>
+</html>

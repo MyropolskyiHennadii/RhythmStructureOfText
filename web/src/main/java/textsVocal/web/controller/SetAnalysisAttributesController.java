@@ -15,14 +15,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import textsVocal.config.CommonConstants;
+import textsVocal.structure.AnalyserPortionOfText;
+import textsVocal.structure.BuildingPortion;
+import textsVocal.structure.TextPortionForRythm;
 import textsVocal.web.uploadingfiles.StorageFileNotFoundException;
 import textsVocal.web.uploadingfiles.StorageService;
 import textsVocal.web.utilsWeb.Mappings;
 import textsVocal.web.utilsWeb.ViewNames;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * class for "setAnalysisAttributes" page control
+ */
 @Controller
 public class SetAnalysisAttributesController {
 
@@ -60,24 +67,47 @@ public class SetAnalysisAttributesController {
                                               boolean checkBoxThisIsProse,
                                               String textFromForm,
                                               String portionsSepataror,
-                                              Model model) {
+                                              Model model) throws InterruptedException, ExecutionException, IOException {
 
         ApplicationContext context = CommonConstants.getApplicationContext();
         CommonConstants constants = context.getBean(CommonConstants.class);
         constants.setPortionSeparator(portionsSepataror);
         constants.setThisIsVerse(!checkBoxThisIsProse);
         constants.setThisIsWebApp(true);
-        constants.setTextFromWebForm(""+textFromForm.trim());
+        constants.setTextFromWebForm("" + textFromForm.trim());
 
-        if (textFromForm.trim().isEmpty() && file.isEmpty()){
+        if (textFromForm.trim().isEmpty() && file.isEmpty()) {
             model.addAttribute("mistakeMessage", "You must set either text on the form either file!");
             return ViewNames.SET_ANALYSIS_ATTRIBUTES;
         }
-        if (!file.isEmpty()) {
-            handleFileUpload(file, redirectAttributes, constants);
+        if (!textFromForm.trim().isEmpty()) {
+            constants.setReadingFromFile(false);
+        } else {
+            if (!file.isEmpty()) {
+                handleFileUpload(file, redirectAttributes, constants);
+            }
         }
 
-        return "redirect:/" + "unknownWords";
+        BuildingPortion buildingPortion = context.getBean(BuildingPortion.class);
+        buildingPortion.startPortionBuilding("" + textFromForm.trim(), constants);
+
+        for (TextPortionForRythm instance : AnalyserPortionOfText.getListOfInstance()) {
+            AnalyserPortionOfText.prepareSetOfWordsForFurtherDefineMeterSchema(instance.getNumberOfPortion());
+        }
+
+        AnalyserPortionOfText.prepareUnknownAndKnownWords();
+
+        //if there are no unknown words
+        if (CommonConstants.getUnKnownWords().size() == 0) {
+            AnalyserPortionOfText.portionAnalysys(constants);
+            if (constants.isThisIsVerse()) {
+                return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_VERSE;
+            }
+            return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_PROSE;
+        }
+
+        //if there are unknown words
+        return "redirect:/" + ViewNames.DEFINE_STRESSES_UNKNOWN_WORDS;
     }
 
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
@@ -92,7 +122,7 @@ public class SetAnalysisAttributesController {
         commonConstants.setFileInputName("");
         commonConstants.setReadingFromFile(true);
 
-        return "redirect:/" + "unknownWords";
+        return "redirect:/" + ViewNames.SET_ANALYSIS_ATTRIBUTES;
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

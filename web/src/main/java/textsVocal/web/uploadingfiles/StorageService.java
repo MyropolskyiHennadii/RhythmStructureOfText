@@ -6,6 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+/**
+ * copy-past from Spring examples https://spring.io/guides/gs/uploading-files/
+ */
 public interface StorageService {
 
     void init();

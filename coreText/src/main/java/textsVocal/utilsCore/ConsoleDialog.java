@@ -1,25 +1,18 @@
 package textsVocal.utilsCore;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import textsVocal.config.CommonConstants;
 import textsVocal.ru.DB_RussianDictionary;
-import textsVocal.ru.VocalAnalisysWordRu;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
 
-import static textsVocal.structure.TextForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
 
+/**
+ * class for dialog with user in console-case
+ */
 @Component
 public class ConsoleDialog {
-
-    private static final Logger log = LoggerFactory.getLogger(VocalAnalisysWordRu.class);
 
     //=== non-static fields ===
     private final Scanner scanner = new Scanner(System.in);
@@ -30,14 +23,11 @@ public class ConsoleDialog {
 
     /**
      * dialog: ask user about meter representation of unknown word
-     * @param word
-     * @param duration
-     * @return
+     * @param word word we want to define stress schema
+     * @param duration duration of the word in syllables
+     * @return stress schema
      */
     public String giveMePleaseStressSchema(String word, int duration) {
-
-        ApplicationContext context = CommonConstants.getApplicationContext();
-        DB_RussianDictionary db = context.getBean(DB_RussianDictionary.class);
 
         boolean check = false;
         String schema = "";
@@ -60,20 +50,13 @@ public class ConsoleDialog {
                     if (!schema.substring(i, i + 1).equals("" + symbolOfStress) && !schema.substring(i, i + 1).equals("" + symbolOfNoStress)) {
                         System.out.println("Wrong symbol " + schema.substring(i, i + 1));
                         check = false;
+                        break;
                     }
                 }
             }
         }
         if (!schema.equals("N")) {
-            String sql = "INSERT INTO " + db.getDb_TableUnKnownWords() + " (textWord, meterRepresentation) " + "VALUES ('" + word + "', '";
-            try {
-                Connection conn = db.getConnectionMainStressTable();
-                Statement stmt = conn.createStatement();
-                int nRecords = stmt.executeUpdate(sql + schema + "')");
-                log.info("Added records "+nRecords + " in unknown words database. Word = " + word);
-            } catch (SQLException e) {
-                log.error("Something wrong with SQL! {}", e.getMessage());
-            }
+            DB_RussianDictionary.addNewRecordToUnknownWordsDataBase(word, schema);
         }
         return schema;
     }

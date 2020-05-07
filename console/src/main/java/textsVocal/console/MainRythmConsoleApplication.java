@@ -7,14 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import textsVocal.config.CommonConstants;
+import textsVocal.structure.AnalyserPortionOfText;
 import textsVocal.structure.BuildingPortion;
-import textsVocal.structure.Word;
+import textsVocal.structure.TextPortionForRythm;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-//import static textsVocal.structure.PortionOfTextAnalyser.portionsList;
-
+/**
+ * main class console
+ */
 @SpringBootApplication
 @ConfigurationPropertiesScan("coreText.textsVocal.config")
 public class MainRythmConsoleApplication {
@@ -49,13 +51,18 @@ public class MainRythmConsoleApplication {
         BuildingPortion buildingPortion = context.getBean(BuildingPortion.class);
         buildingPortion.startPortionBuilding(testText, commonConstants);
 
-        //publish unknown words
-        if (CommonConstants.getUnKnownWords().size() > 0) {
-            log.info("====== Unknown words ======");
-            for (Word w : CommonConstants.getUnKnownWords()) {
-                log.info(w.toString());
-            }
+        for(TextPortionForRythm instance: AnalyserPortionOfText.getListOfInstance()){
+            AnalyserPortionOfText.prepareSetOfWordsForFurtherDefineMeterSchema(instance.getNumberOfPortion());
         }
+
+        AnalyserPortionOfText.prepareUnknownAndKnownWords();
+
+        if (commonConstants.isRequireUnknownWordsByUser()){
+            AnalyserPortionOfText.whatIsStressSchemaOfUnknownWordsConsole();
+            CommonConstants.getUnKnownWords().clear();
+        }
+
+        AnalyserPortionOfText.portionAnalysys(commonConstants);
 
         log.info("End main console ...");
     }

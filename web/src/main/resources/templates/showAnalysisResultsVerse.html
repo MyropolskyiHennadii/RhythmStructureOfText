@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rythm structure</title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"/>
+<div align="center">
+    <h1>Analysis results</h1>
+    <h1>Результаты анализа</h1>
+    <h1></h1>
+    <h3>You can correct meter schema and recalculate result in every table with button Submit under the table.</h3>
+    <h3>(In this case don't forget click checkbox at the row with changes.)</h3>
+    <h3>Вы можете исправить метрическую схему и пересчитать результаты в каждой таблице по кнопке Submit под таблицей.</h3>
+    <h3>(В этом случае не забудьте кликнуть флажок в строке с изменениями.)</h3>
+</div>
+
+<br/>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}"> Repeat setting analysis attributes (Повторить задание атрибутов анализа) </a>
+</div>
+
+<div align="left">
+
+
+    <tr th:each="rows, indPortion : ${listListHeaders}"><!--loop by portions headers-->
+
+        <!--header-->
+        <br th:each="head: ${rows}"
+            th:text="${head}">
+        </br>
+
+        <!-- data -->
+        <table border="1">
+            <tr>
+                <th>id</th>
+                <th>line</th>
+                <th>meter schema</th>
+                <th>corrected meter schema</th>
+                <th>submit changes</th>
+                <th>meter</th>
+                <th align="center">number of syllables</th>
+                <th align="center">shift meter on syllable</th>
+            </tr>
+
+            <form action="#" th:action="@{/tableStressesVerse}" th:object="${changedValuesInHTMLTable}" method="post">
+                <tr th:each="rowTable, stateMainTable : ${listTableData.get(indPortion.count-1)}">
+                    <td align="left" th:utext="${rowTable.getId()}"></td>
+                    <td align="left" th:utext="${rowTable.getWords()}"></td>
+                    <td align="left" th:utext="${rowTable.getMeterRepresentation()}" contenteditable="false"></td>
+                    <td><input type="text" th:field="*{newValuesItems}"></td>
+                    <td><input type="checkbox" th:field="*{checkedItems}" th:value="${rowTable.getId()}"/></td>
+                    <td align="left" th:utext="${rowTable.getMeter() == null} ? ' ': ${rowTable.toString()}"></td>
+                    <td align="center"
+                        th:utext="${rowTable.getNumberOfSyllable() == 0} ? ' ': ${rowTable.getNumberOfSyllable()}"></td>
+                    <td align="center"
+                        th:utext="${rowTable.getShiftRegularMeterOnSyllable() == 0} ? ' ': ${rowTable.getShiftRegularMeterOnSyllable()}"></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit changes"/></td>
+                </tr>
+            </form>
+        </table>
+
+        <!-- stress profile -->
+        <div>
+            <br/>
+            <h4>Stress profile (Профиль ударности)</h4>
+            <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
+            <br>% of stress (% ударности)</br>
+            <table border="1">
+                <tr>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 0} ? '1': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 1} ? '2': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 2} ? '3': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 3} ? '4': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 4} ? '5': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 5} ? '6': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 6} ? '7': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 7} ? '8': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 8} ? '9': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 9} ? '10': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 10} ? '11': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 11} ? '12': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 12} ? '13': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 13} ? '14': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 14} ? '15': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 15} ? '16': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 16} ? '17': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 17} ? '18': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 18} ? '19': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 19} ? '20': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 20} ? '21': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 21} ? '22': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 22} ? '23': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 23} ? '24': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 24} ? '25': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 25} ? '26': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 26} ? '27': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 27} ? '28': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 28} ? '29': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 29} ? '30': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 30} ? '31': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 31} ? '32': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 32} ? '33': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 33} ? '34': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 34} ? '35': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 35} ? '36': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 36} ? '37': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 37} ? '38': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 38} ? '39': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 39} ? '40': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 40} ? '41': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 41} ? '42': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 42} ? '43': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 43} ? '44': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 44} ? '45': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 45} ? '46': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 46} ? '47': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 47} ? '48': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 48} ? '49': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 49} ? '50': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 50} ? '51': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 51} ? '52': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 52} ? '53': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 53} ? '54': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 54} ? '55': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 55} ? '56': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 56} ? '57': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 57} ? '58': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 58} ? '59': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 59} ? '60': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 60} ? '61': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 61} ? '62': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 62} ? '63': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 63} ? '64': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 64} ? '65': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 65} ? '66': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 66} ? '67': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 67} ? '68': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 68} ? '69': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 69} ? '70': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 70} ? '71': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 71} ? '72': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 72} ? '73': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 73} ? '74': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 74} ? '75': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 75} ? '76': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 76} ? '77': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 77} ? '78': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 78} ? '79': ''"></td>
+                    <td align="center"
+                        th:utext="${listStressesProfile.get(indPortion.count-1).length > 79} ? '80': ''"></td>
+                </tr>
+                <tr>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 0} ? ${listStressesProfile.get(indPortion.count-1)[0]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 1} ? ${listStressesProfile.get(indPortion.count-1)[1]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 2} ? ${listStressesProfile.get(indPortion.count-1)[2]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 3} ? ${listStressesProfile.get(indPortion.count-1)[3]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 4} ? ${listStressesProfile.get(indPortion.count-1)[4]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 5} ? ${listStressesProfile.get(indPortion.count-1)[5]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 6} ? ${listStressesProfile.get(indPortion.count-1)[6]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 7} ? ${listStressesProfile.get(indPortion.count-1)[7]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 8} ? ${listStressesProfile.get(indPortion.count-1)[8]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 9} ? ${listStressesProfile.get(indPortion.count-1)[9]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 10} ? ${listStressesProfile.get(indPortion.count-1)[10]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 11} ? ${listStressesProfile.get(indPortion.count-1)[11]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 12} ? ${listStressesProfile.get(indPortion.count-1)[12]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 13} ? ${listStressesProfile.get(indPortion.count-1)[13]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 14} ? ${listStressesProfile.get(indPortion.count-1)[14]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 15} ? ${listStressesProfile.get(indPortion.count-1)[15]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 16} ? ${listStressesProfile.get(indPortion.count-1)[16]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 17} ? ${listStressesProfile.get(indPortion.count-1)[17]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 18} ? ${listStressesProfile.get(indPortion.count-1)[18]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 19} ? ${listStressesProfile.get(indPortion.count-1)[19]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 20} ? ${listStressesProfile.get(indPortion.count-1)[20]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 21} ? ${listStressesProfile.get(indPortion.count-1)[21]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 22} ? ${listStressesProfile.get(indPortion.count-1)[22]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 23} ? ${listStressesProfile.get(indPortion.count-1)[23]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 24} ? ${listStressesProfile.get(indPortion.count-1)[24]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 25} ? ${listStressesProfile.get(indPortion.count-1)[25]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 26} ? ${listStressesProfile.get(indPortion.count-1)[26]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 27} ? ${listStressesProfile.get(indPortion.count-1)[27]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 28} ? ${listStressesProfile.get(indPortion.count-1)[28]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 29} ? ${listStressesProfile.get(indPortion.count-1)[29]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 30} ? ${listStressesProfile.get(indPortion.count-1)[30]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 31} ? ${listStressesProfile.get(indPortion.count-1)[31]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 32} ? ${listStressesProfile.get(indPortion.count-1)[32]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 33} ? ${listStressesProfile.get(indPortion.count-1)[33]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 34} ? ${listStressesProfile.get(indPortion.count-1)[34]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 35} ? ${listStressesProfile.get(indPortion.count-1)[35]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 36} ? ${listStressesProfile.get(indPortion.count-1)[36]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 37} ? ${listStressesProfile.get(indPortion.count-1)[37]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 38} ? ${listStressesProfile.get(indPortion.count-1)[38]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 39} ? ${listStressesProfile.get(indPortion.count-1)[39]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 40} ? ${listStressesProfile.get(indPortion.count-1)[40]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 41} ? ${listStressesProfile.get(indPortion.count-1)[41]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 42} ? ${listStressesProfile.get(indPortion.count-1)[42]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 43} ? ${listStressesProfile.get(indPortion.count-1)[43]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 44} ? ${listStressesProfile.get(indPortion.count-1)[44]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 45} ? ${listStressesProfile.get(indPortion.count-1)[45]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 46} ? ${listStressesProfile.get(indPortion.count-1)[46]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 47} ? ${listStressesProfile.get(indPortion.count-1)[47]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 48} ? ${listStressesProfile.get(indPortion.count-1)[48]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 49} ? ${listStressesProfile.get(indPortion.count-1)[49]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 50} ? ${listStressesProfile.get(indPortion.count-1)[50]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 51} ? ${listStressesProfile.get(indPortion.count-1)[51]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 52} ? ${listStressesProfile.get(indPortion.count-1)[52]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 53} ? ${listStressesProfile.get(indPortion.count-1)[53]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 54} ? ${listStressesProfile.get(indPortion.count-1)[54]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 55} ? ${listStressesProfile.get(indPortion.count-1)[55]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 56} ? ${listStressesProfile.get(indPortion.count-1)[56]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 57} ? ${listStressesProfile.get(indPortion.count-1)[57]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 58} ? ${listStressesProfile.get(indPortion.count-1)[58]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 59} ? ${listStressesProfile.get(indPortion.count-1)[59]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 60} ? ${listStressesProfile.get(indPortion.count-1)[60]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 61} ? ${listStressesProfile.get(indPortion.count-1)[61]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 62} ? ${listStressesProfile.get(indPortion.count-1)[62]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 63} ? ${listStressesProfile.get(indPortion.count-1)[63]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 64} ? ${listStressesProfile.get(indPortion.count-1)[64]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 65} ? ${listStressesProfile.get(indPortion.count-1)[65]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 66} ? ${listStressesProfile.get(indPortion.count-1)[66]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 67} ? ${listStressesProfile.get(indPortion.count-1)[67]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 68} ? ${listStressesProfile.get(indPortion.count-1)[68]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 69} ? ${listStressesProfile.get(indPortion.count-1)[69]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 70} ? ${listStressesProfile.get(indPortion.count-1)[70]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 71} ? ${listStressesProfile.get(indPortion.count-1)[71]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 72} ? ${listStressesProfile.get(indPortion.count-1)[72]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 73} ? ${listStressesProfile.get(indPortion.count-1)[73]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 74} ? ${listStressesProfile.get(indPortion.count-1)[74]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 75} ? ${listStressesProfile.get(indPortion.count-1)[75]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 76} ? ${listStressesProfile.get(indPortion.count-1)[76]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 77} ? ${listStressesProfile.get(indPortion.count-1)[77]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 78} ? ${listStressesProfile.get(indPortion.count-1)[78]}: ''"></td>
+                    <td th:utext="${listStressesProfile.get(indPortion.count-1).length > 79} ? ${listStressesProfile.get(indPortion.count-1)[79]}: ''"></td>
+                </tr>
+            </table>
+
+        </div>
+
+        <!--juncture profile-->
+        <div>
+            <br/>
+            <h4>Juncture profile (Профиль словоразделов)</h4>
+            <br>Number of syllable, max.80 syllables (Номер слога, макс.80 слогов)</br>
+            <br>% of juncture (% словоразделов)</br>
+
+            <table border="1">
+                <tr>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 0} ? '1': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 1} ? '2': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 2} ? '3': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 3} ? '4': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 4} ? '5': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 5} ? '6': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 6} ? '7': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 7} ? '8': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 8} ? '9': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 9} ? '10': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 10} ? '11': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 11} ? '12': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 12} ? '13': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 13} ? '14': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 14} ? '15': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 15} ? '16': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 16} ? '17': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 17} ? '18': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 18} ? '19': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 19} ? '20': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 20} ? '21': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 21} ? '22': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 22} ? '23': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 23} ? '24': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 24} ? '25': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 25} ? '26': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 26} ? '27': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 27} ? '28': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 28} ? '29': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 29} ? '30': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 30} ? '31': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 31} ? '32': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 32} ? '33': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 33} ? '34': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 34} ? '35': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 35} ? '36': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 36} ? '37': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 37} ? '38': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 38} ? '39': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 39} ? '40': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 40} ? '41': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 41} ? '42': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 42} ? '43': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 43} ? '44': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 44} ? '45': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 45} ? '46': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 46} ? '47': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 47} ? '48': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 48} ? '49': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 49} ? '50': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 50} ? '51': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 51} ? '52': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 52} ? '53': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 53} ? '54': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 54} ? '55': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 55} ? '56': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 56} ? '57': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 57} ? '58': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 58} ? '59': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 59} ? '60': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 60} ? '61': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 61} ? '62': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 62} ? '63': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 63} ? '64': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 64} ? '65': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 65} ? '66': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 66} ? '67': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 67} ? '68': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 68} ? '69': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 69} ? '70': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 70} ? '71': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 71} ? '72': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 72} ? '73': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 73} ? '74': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 74} ? '75': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 75} ? '76': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 76} ? '77': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 77} ? '78': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 78} ? '79': ''"></td>
+                    <td align="center"
+                        th:utext="${listJunctureProfile.get(indPortion.count-1).length > 79} ? '80': ''"></td>
+                </tr>
+                <tr>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 0} ? ${listJunctureProfile.get(indPortion.count-1)[0]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 1} ? ${listJunctureProfile.get(indPortion.count-1)[1]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 2} ? ${listJunctureProfile.get(indPortion.count-1)[2]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 3} ? ${listJunctureProfile.get(indPortion.count-1)[3]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 4} ? ${listJunctureProfile.get(indPortion.count-1)[4]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 5} ? ${listJunctureProfile.get(indPortion.count-1)[5]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 6} ? ${listJunctureProfile.get(indPortion.count-1)[6]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 7} ? ${listJunctureProfile.get(indPortion.count-1)[7]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 8} ? ${listJunctureProfile.get(indPortion.count-1)[8]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 9} ? ${listJunctureProfile.get(indPortion.count-1)[9]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 10} ? ${listJunctureProfile.get(indPortion.count-1)[10]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 11} ? ${listJunctureProfile.get(indPortion.count-1)[11]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 12} ? ${listJunctureProfile.get(indPortion.count-1)[12]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 13} ? ${listJunctureProfile.get(indPortion.count-1)[13]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 14} ? ${listJunctureProfile.get(indPortion.count-1)[14]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 15} ? ${listJunctureProfile.get(indPortion.count-1)[15]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 16} ? ${listJunctureProfile.get(indPortion.count-1)[16]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 17} ? ${listJunctureProfile.get(indPortion.count-1)[17]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 18} ? ${listJunctureProfile.get(indPortion.count-1)[18]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 19} ? ${listJunctureProfile.get(indPortion.count-1)[19]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 20} ? ${listJunctureProfile.get(indPortion.count-1)[20]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 21} ? ${listJunctureProfile.get(indPortion.count-1)[21]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 22} ? ${listJunctureProfile.get(indPortion.count-1)[22]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 23} ? ${listJunctureProfile.get(indPortion.count-1)[23]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 24} ? ${listJunctureProfile.get(indPortion.count-1)[24]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 25} ? ${listJunctureProfile.get(indPortion.count-1)[25]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 26} ? ${listJunctureProfile.get(indPortion.count-1)[26]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 27} ? ${listJunctureProfile.get(indPortion.count-1)[27]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 28} ? ${listJunctureProfile.get(indPortion.count-1)[28]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 29} ? ${listJunctureProfile.get(indPortion.count-1)[29]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 30} ? ${listJunctureProfile.get(indPortion.count-1)[30]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 31} ? ${listJunctureProfile.get(indPortion.count-1)[31]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 32} ? ${listJunctureProfile.get(indPortion.count-1)[32]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 33} ? ${listJunctureProfile.get(indPortion.count-1)[33]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 34} ? ${listJunctureProfile.get(indPortion.count-1)[34]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 35} ? ${listJunctureProfile.get(indPortion.count-1)[35]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 36} ? ${listJunctureProfile.get(indPortion.count-1)[36]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 37} ? ${listJunctureProfile.get(indPortion.count-1)[37]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 38} ? ${listJunctureProfile.get(indPortion.count-1)[38]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 39} ? ${listJunctureProfile.get(indPortion.count-1)[39]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 40} ? ${listJunctureProfile.get(indPortion.count-1)[40]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 41} ? ${listJunctureProfile.get(indPortion.count-1)[41]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 42} ? ${listJunctureProfile.get(indPortion.count-1)[42]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 43} ? ${listJunctureProfile.get(indPortion.count-1)[43]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 44} ? ${listJunctureProfile.get(indPortion.count-1)[44]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 45} ? ${listJunctureProfile.get(indPortion.count-1)[45]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 46} ? ${listJunctureProfile.get(indPortion.count-1)[46]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 47} ? ${listJunctureProfile.get(indPortion.count-1)[47]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 48} ? ${listJunctureProfile.get(indPortion.count-1)[48]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 49} ? ${listJunctureProfile.get(indPortion.count-1)[49]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 50} ? ${listJunctureProfile.get(indPortion.count-1)[50]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 51} ? ${listJunctureProfile.get(indPortion.count-1)[51]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 52} ? ${listJunctureProfile.get(indPortion.count-1)[52]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 53} ? ${listJunctureProfile.get(indPortion.count-1)[53]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 54} ? ${listJunctureProfile.get(indPortion.count-1)[54]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 55} ? ${listJunctureProfile.get(indPortion.count-1)[55]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 56} ? ${listJunctureProfile.get(indPortion.count-1)[56]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 57} ? ${listJunctureProfile.get(indPortion.count-1)[57]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 58} ? ${listJunctureProfile.get(indPortion.count-1)[58]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 59} ? ${listJunctureProfile.get(indPortion.count-1)[59]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 60} ? ${listJunctureProfile.get(indPortion.count-1)[60]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 61} ? ${listJunctureProfile.get(indPortion.count-1)[61]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 62} ? ${listJunctureProfile.get(indPortion.count-1)[62]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 63} ? ${listJunctureProfile.get(indPortion.count-1)[63]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 64} ? ${listJunctureProfile.get(indPortion.count-1)[64]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 65} ? ${listJunctureProfile.get(indPortion.count-1)[65]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 66} ? ${listJunctureProfile.get(indPortion.count-1)[66]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 67} ? ${listJunctureProfile.get(indPortion.count-1)[67]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 68} ? ${listJunctureProfile.get(indPortion.count-1)[68]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 69} ? ${listJunctureProfile.get(indPortion.count-1)[69]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 70} ? ${listJunctureProfile.get(indPortion.count-1)[70]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 71} ? ${listJunctureProfile.get(indPortion.count-1)[71]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 72} ? ${listJunctureProfile.get(indPortion.count-1)[72]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 73} ? ${listJunctureProfile.get(indPortion.count-1)[73]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 74} ? ${listJunctureProfile.get(indPortion.count-1)[74]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 75} ? ${listJunctureProfile.get(indPortion.count-1)[75]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 76} ? ${listJunctureProfile.get(indPortion.count-1)[76]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 77} ? ${listJunctureProfile.get(indPortion.count-1)[77]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 78} ? ${listJunctureProfile.get(indPortion.count-1)[78]}: ''"></td>
+                    <td th:utext="${listJunctureProfile.get(indPortion.count-1).length > 79} ? ${listJunctureProfile.get(indPortion.count-1)[79]}: ''"></td>
+                </tr>
+            </table>
+
+        </div>
+
+        <!--footer-->
+        <div align="left">
+            <br th:each="foot: ${listListFooters.get(indPortion.count-1)}"
+                th:text="${foot}">
+            </br>
+        </div>
+    </tr>
+</div>
+
+<div align="left">
+    <h4>Number of lines (количество строк) </h4><br th:text="${numberOfCentences}"/>
+    <h4>Max.length of lines (макс. длина строки) </h4><br th:text="${maxLength}"/>
+    <h4>Average length of lines (средняя длина строки) </h4><br th:text="${averageLength}"/>
+</div>
+
+<br/>
+<div>
+    <a th:href="home">Home (в начало) | </a> <a th:href="setAnalysisAttributes"> Set new text and attributes for
+    analysis (Задать новый текст и атрибуты для анализа)</a>
+</div>
+
+<br/>
+
+<div align="center">
+    <footer th:replace="~{fragments/footer :: footer}"/>
+</div>
+
+</body>
+</html>

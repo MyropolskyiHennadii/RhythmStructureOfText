@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * class for future needs. Only for stresses it's redundant, but if we need grammatic...
+ */
 public class Word {
 
 //=== fields ============================================================
@@ -98,10 +101,7 @@ public class Word {
             return false;
         }
         final Word other = (Word) obj;
-        if (!Objects.equals(this.textWord.toLowerCase().trim(), other.textWord.toLowerCase().trim())) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.textWord.toLowerCase().trim(), other.textWord.toLowerCase().trim());
     }
 
     @Override

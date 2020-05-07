@@ -1,0 +1,54 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rythm structure</title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"/>
+<div align="center">
+    <h3>Define, please, stress-schema for unknown words:</h3>
+    <br/>
+    <p>with '1'(stress syllable) and '0"(without stress syllable). Without any other symbols. </p>
+    <p>For example, stress schema for Russian 'корова' is 010 </p>
+    <p>Empty stress schema will be omit and system define schema for such a word itself (arbitrary).<p/>
+    <h3>Don't forget to press button Submit</h3>
+    <br/>
+    <h3>Определите, пожалуйста, схему ударений в неизвестных словах:</h3>
+    <br/>
+    <p>'1'(ударный) и '0"(безударный) слоги. Без каких-либо других символов.</p>
+    <p>Например, схема ударений в слове 'корова' 010 </p>
+    <p>Незаполненная схема будет проигнорирована и при анализе система определит схему самостоятельно (случайно).</p>
+    <h3>Не забудьте нажать на кнопку Submit</h3>
+    <br/>
+    <br/>
+    <br/>
+    <!-- data -->
+    <table border="1">
+        <tr>
+            <th>word</th>
+            <th>stress schema</th>
+        </tr>
+
+        <form action="#" th:action="@{/tableStressesWords}" th:object="${stressSchemaUnknownWordsInHTMLTable}"
+              method="post">
+            <tr th:each="rowTable, stateMainTable : ${unknownWords}">
+                <td align="left" th:utext="${rowTable}"></td>
+                <td><input type="text" th:field="*{newValuesItems}"></td>
+            <tr>
+                <td><input type="submit" value="Submit changes"/></td>
+            </tr>
+        </form>
+    </table>
+
+
+</div>
+
+<p/>
+<p/>
+
+<div align="center">
+    <footer th:replace="~{fragments/footer :: footer}"/>
+</div>
+
+</body>
+</html>

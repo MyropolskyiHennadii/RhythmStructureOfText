@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * class stores users changes in stresses table
+ */
 @Component
 public class ChangedValuesInHTMLTable {
     private List<String> checkedItems = new ArrayList<>();

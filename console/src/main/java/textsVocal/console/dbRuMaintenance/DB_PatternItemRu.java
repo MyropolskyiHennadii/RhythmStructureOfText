@@ -1,5 +1,8 @@
 package textsVocal.console.dbRuMaintenance;
 
+/**
+ * class patterns for quick adding records to Russian dictionary
+ */
 public class DB_PatternItemRu implements HaveID{
     private int id;
     private int idPatternInDB;

@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * class for quick adding records to Russian dictionary from pattern list
+ */
 public class DB_PatternDataRu {
 
     // == fields ==

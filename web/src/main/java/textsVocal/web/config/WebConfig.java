@@ -10,7 +10,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import textsVocal.config.AppConfigCore;
 import textsVocal.config.CommonConstants;
-import textsVocal.web.interceptor.RequestInterceptor;
 
 @Configuration
 @Import(AppConfigCore.class)
@@ -31,6 +30,5 @@ public class WebConfig implements WebMvcConfigurer {
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
         localeChangeInterceptor.setParamName("locale");
         registry.addInterceptor(localeChangeInterceptor);
-        registry.addInterceptor(new RequestInterceptor());
     }
 }

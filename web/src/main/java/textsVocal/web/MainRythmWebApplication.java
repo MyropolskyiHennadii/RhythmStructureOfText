@@ -10,6 +10,9 @@ import textsVocal.config.CommonConstants;
 import textsVocal.web.uploadingfiles.StorageProperties;
 import textsVocal.web.uploadingfiles.StorageService;
 
+/**
+ * main class webapp
+ */
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 public class MainRythmWebApplication {

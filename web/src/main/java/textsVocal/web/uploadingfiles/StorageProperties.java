@@ -3,6 +3,9 @@ package textsVocal.web.uploadingfiles;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * copy-past from Spring examples https://spring.io/guides/gs/uploading-files/
+ */
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
