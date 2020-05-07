@@ -262,7 +262,7 @@ public class AnalyserPortionOfText {
         log.info("Number or portions {}", getListOfInstance().size());
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        outputAccumulation.append("Begin: "+localDateTime).append(" ------------!\n");
+        outputAccumulation.append("Begin: ").append(localDateTime).append(" ------------!\n");
 
         //todo executor service
         for (TextPortionForRythm instance : getListOfInstance()) {

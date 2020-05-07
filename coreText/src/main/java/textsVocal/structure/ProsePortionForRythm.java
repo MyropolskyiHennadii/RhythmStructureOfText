@@ -73,8 +73,8 @@ public class ProsePortionForRythm extends TextPortionForRythm {
         outputAccumulation.append("==========================\n");
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        outputAccumulation.append("End: "+localDateTime).append(" ------------!\n");
-        
+        outputAccumulation.append("End: ").append(localDateTime).append(" ------------!\n");
+
         if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file

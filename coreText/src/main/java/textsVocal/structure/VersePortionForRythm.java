@@ -1053,7 +1053,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
         if (getNumberOfPortion() == AnalyserPortionOfText.getListOfInstance().size()) {
             outputAccumulation.append("==========================\n");
             LocalDateTime localDateTime = LocalDateTime.now();
-            outputAccumulation.append("End: " + localDateTime).append(" ------------!\n");
+            outputAccumulation.append("End: ").append(localDateTime).append(" ------------!\n");
         }
 
         if (!commonConstants.isReadingFromFile()) {//output to console
