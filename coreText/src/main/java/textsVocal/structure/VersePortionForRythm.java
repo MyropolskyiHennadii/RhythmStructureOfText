@@ -6,6 +6,7 @@ import textsVocal.utilsCommon.DataTable;
 import textsVocal.utilsCommon.FileTreatment;
 import textsVocal.utilsCore.ErrorsInterractionWithWebUser;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,6 +37,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
     }
 
     //== static methods ==
+
     /**
      * identify rated verse meter with patterns - enum verseMeterPatterns/ Without pentons
      *
@@ -391,7 +393,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
      * service function: sorting map by value
      *
      * @param unsortMap unsorted map
-     * @param order order of sorting
+     * @param order     order of sorting
      * @return sorted map
      */
     private static Map<String, Integer> sortMapByComparator(Map<String, Integer> unsortMap, final boolean order) {
@@ -422,6 +424,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
     }
 
     //== setters and getters ==========================================
+
     /**
      * reset fields by initialisation
      */
@@ -513,6 +516,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
 
     /**
      * parse portion of text to the table with segments, words, stress schema and so on
+     *
      * @return
      */
     @Override
@@ -954,6 +958,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
 
     /**
      * form header for output
+     *
      * @param nPortion number of portion
      * @return list with header lines for output
      */
@@ -1044,6 +1049,13 @@ public class VersePortionForRythm extends TextPortionForRythm {
             outputAccumulation.append(line);
         }
 
+        //if it is last portion
+        if (getNumberOfPortion() == AnalyserPortionOfText.getListOfInstance().size()) {
+            outputAccumulation.append("==========================\n");
+            LocalDateTime localDateTime = LocalDateTime.now();
+            outputAccumulation.append("End: " + localDateTime).append(" ------------!\n");
+        }
+
         if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file
@@ -1077,7 +1089,7 @@ public class VersePortionForRythm extends TextPortionForRythm {
     /**
      * forms output lines
      *
-     * @param out StringBuilder with output
+     * @param out       StringBuilder with output
      * @param outputArr array we have appent to StringBuilder
      */
     private void outputLineInResume(StringBuilder out, String[] outputArr) {

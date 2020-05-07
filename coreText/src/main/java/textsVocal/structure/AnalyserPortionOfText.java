@@ -9,6 +9,7 @@ import textsVocal.utilsCommon.DataTable;
 import textsVocal.utilsCore.ConsoleDialog;
 import textsVocal.utilsCore.OutputWebCharacteristics;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class AnalyserPortionOfText {
     private static String[] distributionSegmentByLength;//how sentetnces are distributed by their length in syllable
     private static String[] stressProfileOfAllPortions;//stress profile for all portions
 
-    //=== getter ===//
+//=== static methods =========================
     public static List<TextPortionForRythm> getListOfInstance() {
         return listOfInstance;
     }
@@ -115,12 +116,10 @@ public class AnalyserPortionOfText {
 
     }
 
-//=== static methods =========================
-
     /**
      * refine verse characteristics
      *
-     * @param verseInstance if somthing was changed in instance verseInstance we have to refine all caharcteristics
+     * @param verseInstance if something was changed in instance verseInstance we have to refine all characteristics
      */
     public static void refineVerseCharacteristics(VersePortionForRythm verseInstance) {
 
@@ -261,6 +260,9 @@ public class AnalyserPortionOfText {
 
         boolean thisIsVerse = constants.isThisIsVerse();
         log.info("Number or portions {}", getListOfInstance().size());
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        outputAccumulation.append("Begin: "+localDateTime).append(" ------------!\n");
 
         //todo executor service
         for (TextPortionForRythm instance : getListOfInstance()) {

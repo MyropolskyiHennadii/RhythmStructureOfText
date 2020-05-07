@@ -584,7 +584,7 @@ public abstract class TextPortionForRythm {
     public abstract void resumeOutput(StringBuilder outputAccumulation, CommonConstants commonConstants);
 
     //== enums ================================================================
-    //must have to define verse meter
+    //must have to define verse meters
     public enum verseMeterPatterns {
 
         Trochee("10"), Iambus("01"), Dactyl("100"), Amphibrach("010"), Anapaest("001"),

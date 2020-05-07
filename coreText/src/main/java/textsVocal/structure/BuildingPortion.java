@@ -10,7 +10,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutionException;
 
 import static textsVocal.structure.TextPortionForRythm.SYMB_PARAGRAPH;
 
@@ -30,44 +29,40 @@ public class BuildingPortion {
 
     /**
      * create portion and fill list of instances
-     * @param text string with porttion text
-     * @param numPortion number of portion
+     *
+     * @param text        string with porttion text
+     * @param numPortion  number of portion
      * @param thisIsVerse true or false
      */
-    public void createTextPortionInstance(String text, int numPortion, boolean thisIsVerse){
+    public void createTextPortionInstance(String text, int numPortion, boolean thisIsVerse) {
         TextPortionForRythm instance =
-                thisIsVerse?
-                        new VersePortionForRythm(text):
+                thisIsVerse ?
+                        new VersePortionForRythm(text) :
                         new ProsePortionForRythm(text);
 
         instance.setNumberOfPortion(numPortion);
-        AnalyserPortionOfText.getListOfInstance().add(thisIsVerse? (VersePortionForRythm)instance: (ProsePortionForRythm)instance);
+        AnalyserPortionOfText.getListOfInstance().add(thisIsVerse ? (VersePortionForRythm) instance : (ProsePortionForRythm) instance);
     }
 
 
     /**
      * build portion in verse by separator
      */
-    public void buildVersePortions(String testText, CommonConstants constants) throws ExecutionException, InterruptedException, IOException {
+    public void buildVersePortions(String testText, CommonConstants constants) throws IOException {
 
         boolean readingFromFile = constants.isReadingFromFile();
-        ;
-        String languageOfText = constants.getLanguageOfText();
         int numPortion = getNumPortion();
         String directoryInput = constants.getFileInputDirectory();
         String fileInputName = constants.getFileInputName();
-        String directoryOuput = constants.getFileOutputDirectory();
-        String fileOutputName = constants.getFileOutputName();
         String charsetName = constants.getCharsetName();
         String portionSeparator = constants.getPortionSeparator();
 
         //if user didn't give portion separator = there is only one portion
-        if(portionSeparator.trim().isEmpty()){
+        if (portionSeparator.trim().isEmpty()) {
             portionSeparator = "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
         }
 
         if (!readingFromFile) {
-            //PortionOfTextAnalyser.portionAnalysys(numPortion, testText, constants);
             createTextPortionInstance(testText, numPortion, true);
         } else {
 
@@ -114,8 +109,6 @@ public class BuildingPortion {
                         sPortion.append(line);
                         sPortion.append((char) 12);
                     } else {
-/*                        PortionOfTextAnalyser
-                                .portionAnalysys(numPortion, sPortion.toString().trim(), constants);*/
                         createTextPortionInstance(sPortion.toString().trim(), numPortion, true);
                         sPortion.delete(0, sPortion.length());
                         numPortion++;
@@ -127,8 +120,6 @@ public class BuildingPortion {
                 //last portion
                 if (!sPortion.toString()
                         .isEmpty()) {
-               /*     PortionOfTextAnalyser
-                            .portionAnalysys(numPortion, sPortion.toString().trim(), constants);*/
                     createTextPortionInstance(sPortion.toString().trim(), numPortion, true);
                 }
             } catch (FileNotFoundException e) {
@@ -159,7 +150,6 @@ public class BuildingPortion {
                 for (CharSequence charSequence : SYMB_PARAGRAPH) {
                     if (("" + testText.charAt(i)).equals("" + charSequence)) {
                         if (portionText.length() > 0) {
-                            /* PortionOfTextAnalyser.portionAnalysys(numPortion, portionText, constants);*/
                             createTextPortionInstance(portionText.toString(), numPortion, false);
                             portionText = new StringBuilder();
                             mustAdd = false;
@@ -216,13 +206,17 @@ public class BuildingPortion {
             }
 
         }
-        //outputStressProfileOfWholeText(outputAccumulation, constants);
-
     }
 
-    public void startPortionBuilding(String testText, CommonConstants constants) throws InterruptedException, ExecutionException, IOException {
+    /**
+     * clears static variables and builds new portions
+     * @param testText text from webpage or from console (main)
+     * @param constants common app constants
+     * @throws IOException
+     */
+    public void startPortionBuilding(String testText, CommonConstants constants) throws IOException {
 
-        if (constants.isThisIsWebApp()){
+        if (constants.isThisIsWebApp()) {
             //clean static fields
             HeaderAnFooterListsForWebOutput.getPortionFooters().clear();
             HeaderAnFooterListsForWebOutput.getPortionHeaders().clear();

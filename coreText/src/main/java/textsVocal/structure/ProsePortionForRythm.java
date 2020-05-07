@@ -5,6 +5,7 @@ import textsVocal.config.HeaderAnFooterListsForWebOutput;
 import textsVocal.utilsCommon.DataTable;
 import textsVocal.utilsCommon.FileTreatment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -71,6 +72,9 @@ public class ProsePortionForRythm extends TextPortionForRythm {
         outputAccumulation.append("\n");
         outputAccumulation.append("==========================\n");
 
+        LocalDateTime localDateTime = LocalDateTime.now();
+        outputAccumulation.append("End: "+localDateTime).append(" ------------!\n");
+        
         if (!commonConstants.isReadingFromFile()) {//output to console
             System.out.println(outputAccumulation.toString());
         } else // writing to file
