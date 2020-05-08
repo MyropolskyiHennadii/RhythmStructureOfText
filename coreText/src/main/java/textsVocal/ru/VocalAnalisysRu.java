@@ -53,15 +53,12 @@ public class VocalAnalisysRu {
                 .distinct();
         List<String> prepareWords = prepare.filter(s -> calculateDurationOnlyVocale(s).intValue() > 1)
                 .collect(Collectors.toList());
-
         try {
             Connection conn = db.getConnectionMainStressTable();
             Statement stmt = conn.createStatement();
             StringBuilder sqlArray = new StringBuilder();
-
             for (int i = 0; i < prepareWords.size(); i++) {
                 String prepWord = prepareWords.get(i).trim();
-
                 // if word is absent in tempWordDictionary
                 if (sqlArray.length() == 0) {
                     sqlArray.append("'").append(prepWord).append("'");

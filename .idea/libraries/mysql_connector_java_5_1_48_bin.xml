@@ -2,7 +2,6 @@
   <library name="mysql-connector-java-5.1.48-bin">
     <CLASSES>
       <root url="jar://D:/Java projects/ODBC/mysql driver/mysql-connector-java-5.1.48-bin.jar!/" />
-      <root url="jar://D:/Java projects/ODBC/mysql driver/mysql-connector-java-5.1.48.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

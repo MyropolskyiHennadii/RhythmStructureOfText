@@ -8,18 +8,18 @@
 <body>
 <header th:replace="~{fragments/header :: header}"/>
 <div align="center">
-    <h1>Analysis results</h1>
-    <h1>Результаты анализа</h1>
+    <h1 th:text="#{web.titleAnalysis}"></h1>
     <h1></h1>
-    <h3>You can correct meter schema and recalculate result in every table with button Submit under the table.</h3>
-    <h3>(In this case don't forget click checkbox at the row with changes.)</h3>
-    <h3>Вы можете исправить метрическую схему и пересчитать результаты в каждой таблице по кнопке Submit под таблицей.</h3>
-    <h3>(В этом случае не забудьте кликнуть флажок в строке с изменениями.)</h3>
+    <h3 th:text="#{web.instruction1AnalysisResults}"></h3>
+    <h3 th:text="#{web.instruction2AnalysisResults}"></h3>
 </div>
 
 <br/>
 <div align="left">
-    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}"> Repeat setting analysis attributes (Повторить задание атрибутов анализа) </a>
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}" th:text="#{web.referenceToHome}"></a>
+</div>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}" th:text="#{web.referenceToSetAttributes}"></a>
 </div>
 
 <div align="left">
@@ -591,11 +591,6 @@
 </div>
 
 <br/>
-<div>
-    <a th:href="home">Home (в начало) | </a> <a th:href="setAnalysisAttributes"> Set new text and attributes for
-    analysis (Задать новый текст и атрибуты для анализа)</a>
-</div>
-
 <br/>
 
 <div align="center">

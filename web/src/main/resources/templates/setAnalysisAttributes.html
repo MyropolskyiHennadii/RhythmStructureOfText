@@ -8,10 +8,9 @@
 <header th:replace="~{fragments/header :: header}"/>
 <div align="center">
 
-       <form method="POST" enctype="multipart/form-data" action="setAnalysisAttributes">
+    <form method="POST" enctype="multipart/form-data" action="setAnalysisAttributes">
 
-        <p><b>Enter your small text here or upload your file below:</b></p>
-        <p><b>Введите ваш небольшой текст в это поле или загрузите ваш файл ниже:</b></p>
+        <p><b><span th:text="#{web.setAttributeText}"/></b></p>
         <textarea id="textFromForm" cols="80" maxlength="500" name="textFromForm" rows="25">
 
             </textarea>
@@ -20,13 +19,13 @@
             <input
                     id="checkBoxThisIsProse"
                     type="checkbox"
-                    name="checkBoxThisIsProse"/>
-            This is prose (Это проза) </p>
+                    name="checkBoxThisIsProse" th:text="#{web.setAttributeProse}"/>
+        </p>
 
 
         <table>
             <tr>
-                <td>File to analyze (Файл для анализа):</td>
+                <td th:text="#{web.setAttributeUlpoadFile}"></td>
                 <td><input type="file" name="file"/></td>
             </tr>
         </table>
@@ -34,7 +33,8 @@
         <br/>
         <table>
             <tr>
-                <td>Portions separator in file with poems [prose doesn't need] (Разделитель порций в файле стихов [в прозе не требуется]):</td>
+                <td th:text="#{web.setAttributePortionSeparator}">
+                </td>
                 <td><input type="String" name="portionsSepataror"/></td>
             </tr>
         </table>
@@ -42,7 +42,7 @@
 
         <tr>
             <td></td>
-            <td><input type="submit" value="Go (Поехали)"/></td>
+            <td><input type="submit" th:value="#{web.setAttributeSubmit}"/></td>
         </tr>
     </form>
 </div>
@@ -52,7 +52,7 @@
 </div>
 
 <div align="left">
-    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}"> Home (В начало) </a>
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}" th:text="#{web.referenceToHome}"></a>
 </div>
 
 <div>
