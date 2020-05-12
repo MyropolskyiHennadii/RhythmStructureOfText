@@ -8,7 +8,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import textsVocal.config.CommonConstants;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -25,12 +27,15 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
+    private final Path outputLocation;//Myropolskyi
 
     private static Logger log = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
-        this.rootLocation = Paths.get(properties.getLocation());
+        this.rootLocation = Paths.get(properties.getInputLocation());
+        //Myropolskyi
+        this.outputLocation = Paths.get(properties.getOutputLocation());
     }
 
     @Override
@@ -38,8 +43,11 @@ public class FileSystemStorageService implements StorageService {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
-            if (file.isEmpty()) {
+            if (file == null || file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
+            }
+            if(!file.getContentType().trim().equals("text/plain")){
+                throw new StorageException("Failed to store no *.txt file " + filename);
             }
             if (filename.contains("..")) {
                 // This is a security check
@@ -52,8 +60,11 @@ public class FileSystemStorageService implements StorageService {
                 //Myropolskyi
        /*         Files.copy(inputStream, this.rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);*/ //I don't know? why in local host this copyes file to itself
-                Files.copy(inputStream, Paths.get(this.rootLocation.toString(), buildNewFileName(filename)),
+                String simpleFilename = new File(filename).getName();
+                Files.copy(inputStream, Paths.get(this.rootLocation.toString(), simpleFilename),
                         StandardCopyOption.REPLACE_EXISTING);
+                //Myropolskyi
+                setFileAttributesToCommonConstants(simpleFilename, true);
             }
         }
         catch (IOException e) {
@@ -71,7 +82,6 @@ public class FileSystemStorageService implements StorageService {
         catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
         }
-
     }
 
     @Override
@@ -115,18 +125,47 @@ public class FileSystemStorageService implements StorageService {
     }
 
     //Myropolskyi
-    public String buildNewFileName(String oldName){
-        int posSlash = 0;
-        for (int i = 0; i < oldName.length(); i++) {
-            if((""+oldName.charAt(i)).equals("/")){
-                posSlash = i;
+    public void setFileAttributesToCommonConstants(String filename, boolean readingFromFile){
+        CommonConstants commonConstants = CommonConstants.getApplicationContext().getBean(CommonConstants.class);
+        commonConstants.setFileInputDirectory(Paths.get(this.rootLocation.toString()).toAbsolutePath().toString());
+        commonConstants.setFileInputName(filename);
+        commonConstants.setFileOutputDirectory(Paths.get(this.outputLocation.toString()).toAbsolutePath().toString());
+        commonConstants.setFileOutputName("out_"+filename);
+        commonConstants.setReadingFromFile(readingFromFile);
+    }
+
+
+    //Myropolskyi
+    public Stream<Path> loadAllOutput() {
+        try {
+            return Files.walk(this.outputLocation, 1)
+                    .filter(path -> !path.equals(this.outputLocation))
+                    .map(this.outputLocation::relativize);
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to read stored files", e);
+        }
+    }
+    //Myropolskyi
+    public Path loadOutput(String filename) {
+        return outputLocation.resolve(filename);
+    }
+
+    //Myropolskyi
+    public Resource loadAsResourceOutput(String filename) {
+        try {
+            Path file = loadOutput(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+            else {
+                throw new StorageFileNotFoundException(
+                        "Could not read file: " + filename);
             }
         }
-        if (posSlash > 0){
-            return oldName.substring(posSlash+1, oldName.length());
-        } else
-        {
-            return "input";
+        catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
     }
 

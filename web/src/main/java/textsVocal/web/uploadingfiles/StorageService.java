@@ -23,4 +23,9 @@ public interface StorageService {
 
     void deleteAll();
 
+    //Myropolskyi
+    Stream<Path> loadAllOutput();
+    Path loadOutput(String filename);
+    Resource loadAsResourceOutput(String filename);
+
 }

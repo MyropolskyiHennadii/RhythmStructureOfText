@@ -22,6 +22,7 @@ public final class CommonConstants implements ApplicationContextAware {
 
     private static final Map<String, Set<String>> tempWordDictionary = new HashMap<>();//temporary dictionary ("cash")
     private static final Set<Word> unKnownWords = new HashSet<>();//set of words with unknown stresses
+    private static Locale webLocale;//Locale from the web app
     private static ApplicationContext context;
     //=== fields =======================================
     private final String languageOfText = "ru";//language of the text
@@ -59,11 +60,20 @@ public final class CommonConstants implements ApplicationContextAware {
         return unKnownWords;
     }
 
+    public static Locale getWebLocale() {
+        return webLocale;
+    }
+
+    public static void setWebLocale(Locale locale) {
+        webLocale = locale;
+    }
+
     /**
      * updating TempWordDictionary from table with web-defined stress schema
+     *
      * @param listStressSchema list web-defined stress schema
      */
-    public static void updateTempWordDictionaryWithUsersDefinition(List<String> listStressSchema){
+    public static void updateTempWordDictionaryWithUsersDefinition(List<String> listStressSchema) {
         List<String> unknownWords = getUnKnownWords().stream().map(Word::getTextWord).collect(Collectors.toList());
         for (int i = 0; i < listStressSchema.size(); i++) {
             String s = listStressSchema.get(i);
@@ -98,7 +108,21 @@ public final class CommonConstants implements ApplicationContextAware {
         }
     }
 
-//== getters and setters ==
+    /**
+     *
+     * @return ResourceBundle from Locale
+     */
+    public static ResourceBundle getResourceBundle() {
+        ApplicationContext context = getApplicationContext();
+        CommonConstants constants = context.getBean(CommonConstants.class);
+        Locale currentLocale = new Locale("en");
+        if (constants.getWebLocale() != null) {
+            currentLocale = constants.getWebLocale();
+        }
+        return ResourceBundle.getBundle("messages", currentLocale);
+    }
+
+    //== getters and setters ==
     public String getLanguageOfText() {
         return languageOfText;
     }
@@ -186,8 +210,6 @@ public final class CommonConstants implements ApplicationContextAware {
     public String getTextFromWebForm() {
         return textFromWebForm;
     }
-
-    //==static method ==
 
     public void setTextFromWebForm(String textFromWebForm) {
         this.textFromWebForm = textFromWebForm;

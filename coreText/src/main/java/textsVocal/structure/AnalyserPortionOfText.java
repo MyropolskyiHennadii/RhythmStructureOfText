@@ -290,7 +290,7 @@ public class AnalyserPortionOfText {
             instance.resumeOutput(outputAccumulation, constants);
         }
 
-        calculateSummeryForAllPortions();
+        calculateSummaryForAllPortions();
 
         if (!thisIsVerse) {
 
@@ -329,7 +329,7 @@ public class AnalyserPortionOfText {
     /**
      * calculate common characteristics of all portions
      */
-    public static void calculateSummeryForAllPortions() {
+    public static void calculateSummaryForAllPortions() {
         setStressProfileOfAllPortions();
         setAverageLengthAndDistributionByLengthForAllPortion();
     }

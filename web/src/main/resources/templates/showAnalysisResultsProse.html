@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Rythm structure</title>
+    <title th:text="#{web.commonTitle}"></title>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"/>
@@ -19,8 +19,27 @@
     <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}" th:text="#{web.referenceToHome}"></a>
 </div>
 <div align="left">
-    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}" th:text="#{web.referenceToSetAttributes}"></a>
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}"
+       th:text="#{web.referenceToSetAttributes}"></a>
 </div>
+
+<!--files with results-->
+<div>
+    <br/>
+    <br/>
+        <form method="POST" action="showAnalysisResultsProse">
+            <td><input type="submit" th:text="#{web.saveResultsToFile}"/></td>
+        </form>
+</div>
+
+<div>
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="${file}" th:text="${file}"/>
+        </li>
+    </ul>
+</div>
+
 
 <div align="left">
     <tr th:each="rows, indPortion : ${listListHeaders}"><!--loop by portions -->
@@ -31,11 +50,11 @@
         <!-- data -->
         <table border="1">
             <tr>
-                <th>id</th>
-                <th>sentence</th>
-                <th>stress schema</th>
-                <th>corrected stress schema</th>
-                <th>submit changes</th>
+                <th th:text="#{web.ResultsProseColumn1}"></th>
+                <th th:text="#{web.ResultsProseColumn2}"></th>
+                <th th:text="#{web.ResultsProseColumn3}"></th>
+                <th th:text="#{web.ResultsProseColumn4}"></th>
+                <th th:text="#{web.ResultsProseColumn5}"></th>
             </tr>
             <form action="#" th:action="@{/tableStressesProse}" th:object="${changedValuesInHTMLTable}" method="post">
                 <tr th:each="rowTable, stateMainTable : ${listTableData.get(indPortion.count-1)}">
@@ -47,32 +66,25 @@
                     <td><input type="checkbox" th:field="*{checkedItems}" th:value="${rowTable.getId()}"/></td>
                 </tr>
                 <tr>
-                    <td><input type="submit" value="Submit changes"/></td>
+                    <td><input type="submit" th:value="#{web.ResultsSubmitChangesInTable}"/></td>
                 </tr>
             </form>
         </table>
-
-        <!--footer-->
-        <!--        <div align="left">
-                    <br th:each="foot: ${listListFooters.get(indPortion.count-1)}"
-                        th:text="${foot}">
-                    </br>
-                </div>-->
     </tr>
 </div>
 
 <div align="left">
-    <h4>Number of sentences (количество предложений) </h4><br th:text="${numberOfCentences}"/>
-    <h4>Max.length of sentences (макс. длина предложений) </h4><br th:text="${maxLength}"/>
-    <h4>Average length of sentences (средняя длина предложений) </h4><br th:text="${averageLength}"/>
+    <h4 th:text="#{web.numberSentencesProse}"></h4><br th:text="${numberOfCentences}"/>
+    <h4 th:text="#{web.maxLengthSentence}"></h4><br th:text="${maxLength}"/>
+    <h4 th:text="#{web.averageLengthSentenseProse}"></h4><br th:text="${averageLength}"/>
 </div>
 
 <!-- whole stress profile -->
 <div>
-    <h4>Full stress profile (Полный профиль ударности)</h4>
-    <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
-    <br>% of stress (% ударности)</br>
-    <!--    <tr th:each="rows, ind : ${listStressesProfile}">-->
+    <h4 th:text="#{web.fullStressProfile}"></h4>
+    <br th:text="#{web.numberSyllable}"></br>
+    <br th:text="#{namePercentStress}"></br>
+
     <table border="1">
         <tr>
             <td align="center"
@@ -323,9 +335,9 @@
 
 <!-- distribution by lenthg -->
 <div>
-    <h4>Distribution by sentence's length in syllable (Распределение по длинам в слогах)</h4>
-    <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
-    <br>% of all (% от всех)</br>
+    <h4 th:text="#{web.distributionByLength}"></h4>
+    <br th:text="#{web.numberSyllable}"></br>
+    <br th:text="#{namePercentOfAll}"></br>
     <!--    <tr th:each="rows, ind : ${listStressesProfile}">-->
     <table border="1">
         <tr>

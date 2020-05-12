@@ -12,14 +12,23 @@ public class StorageProperties {
     /**
      * Folder location for storing files
      */
-    private String location = "upload-dir";
+    private String inputLocation = "upload-dir";
+    private String outputLocation = "saveResults-dir";
 
-    public String getLocation() {
-        return location;
+    public String getInputLocation() {
+        return inputLocation;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setInputLocation(String location) {
+        this.inputLocation = location;
     }
 
+    //Myropolskyi
+    public String getOutputLocation() {
+        return outputLocation;
+    }
+
+    public void setOutputLocation(String outputLocation) {
+        this.outputLocation = outputLocation;
+    }
 }

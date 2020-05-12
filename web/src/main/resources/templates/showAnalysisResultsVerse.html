@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Rythm structure</title>
+    <title th:text="#{web.commonTitle}"></title>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"/>
@@ -22,6 +22,24 @@
     <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}" th:text="#{web.referenceToSetAttributes}"></a>
 </div>
 
+<!--files with results-->
+<div>
+    <br/>
+    <br/>
+    <form method="POST" action="showAnalysisResultsVerse">
+        <td><input type="submit" th:text="#{web.saveResultsToFile}"/></td>
+    </form>
+</div>
+
+<div>
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="${file}" th:text="${file}"/>
+        </li>
+    </ul>
+</div>
+
+
 <div align="left">
 
 
@@ -35,14 +53,14 @@
         <!-- data -->
         <table border="1">
             <tr>
-                <th>id</th>
-                <th>line</th>
-                <th>meter schema</th>
-                <th>corrected meter schema</th>
-                <th>submit changes</th>
-                <th>meter</th>
-                <th align="center">number of syllables</th>
-                <th align="center">shift meter on syllable</th>
+                <th th:text="#{web.ResultsVerseColumn1}"></th>
+                <th th:text="#{web.ResultsVerseColumn2}"></th>
+                <th th:text="#{web.ResultsVerseColumn3}"></th>
+                <th th:text="#{web.ResultsVerseColumn4}"></th>
+                <th th:text="#{web.ResultsVerseColumn5}"></th>
+                <th th:text="#{web.ResultsVerseColumn6}"></th>
+                <th th:text="#{web.ResultsVerseColumn7}"></th>
+                <th th:text="#{web.ResultsVerseColumn8}"></th>
             </tr>
 
             <form action="#" th:action="@{/tableStressesVerse}" th:object="${changedValuesInHTMLTable}" method="post">
@@ -59,7 +77,7 @@
                         th:utext="${rowTable.getShiftRegularMeterOnSyllable() == 0} ? ' ': ${rowTable.getShiftRegularMeterOnSyllable()}"></td>
                 </tr>
                 <tr>
-                    <td><input type="submit" value="Submit changes"/></td>
+                    <td><input type="submit" th:value="#{web.ResultsSubmitChangesInTable}"/></td>
                 </tr>
             </form>
         </table>
@@ -67,9 +85,9 @@
         <!-- stress profile -->
         <div>
             <br/>
-            <h4>Stress profile (Профиль ударности)</h4>
-            <br>Number of syllable, max. 80 syllables (Номер слога, макс. 80 слогов)</br>
-            <br>% of stress (% ударности)</br>
+            <h4 th:text="#{nameStressProfile}"></h4>
+            <br th:text="#{web.numberSyllable}"></br>
+            <br th:text="#{namePercentStress}"></br>
             <table border="1">
                 <tr>
                     <td align="center"
@@ -322,9 +340,9 @@
         <!--juncture profile-->
         <div>
             <br/>
-            <h4>Juncture profile (Профиль словоразделов)</h4>
-            <br>Number of syllable, max.80 syllables (Номер слога, макс.80 слогов)</br>
-            <br>% of juncture (% словоразделов)</br>
+            <h4 th:text="#{nameJunctureProfile}"></h4>
+            <br th:text="#{web.numberSyllable}"></br>
+            <br th:text="#{namePercentJuncture}"></br>
 
             <table border="1">
                 <tr>
@@ -585,9 +603,9 @@
 </div>
 
 <div align="left">
-    <h4>Number of lines (количество строк) </h4><br th:text="${numberOfCentences}"/>
-    <h4>Max.length of lines (макс. длина строки) </h4><br th:text="${maxLength}"/>
-    <h4>Average length of lines (средняя длина строки) </h4><br th:text="${averageLength}"/>
+    <h4 th:text="#{web.numberSentencesVerse}"></h4><br th:text="${numberOfCentences}"/>
+    <h4 th:text="#{web.maxLengthLine}"></h4><br th:text="${maxLength}"/>
+    <h4 th:text="#{web.averageLengthSentenseVerse}"></h4><br th:text="${averageLength}"/>
 </div>
 
 <br/>

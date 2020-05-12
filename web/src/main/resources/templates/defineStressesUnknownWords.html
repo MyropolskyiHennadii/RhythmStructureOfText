@@ -1,32 +1,34 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Rythm structure</title>
+    <title th:text="#{web.commonTitle}"></title>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"/>
+<br/>
+<br/>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}" th:text="#{web.referenceToHome}"></a>
+</div>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}" th:text="#{web.referenceToSetAttributes}"></a>
+</div>
+<bt/>
+
 <div align="center">
-    <h3>Define, please, stress-schema for unknown words:</h3>
+    <h3 th:text="#{web.instruction1DefineStress}"></h3>
     <br/>
-    <p>with '1'(stress syllable) and '0"(without stress syllable). Without any other symbols. </p>
-    <p>For example, stress schema for Russian 'корова' is 010 </p>
-    <p>Empty stress schema will be omit and system define schema for such a word itself (arbitrary).<p/>
-    <h3>Don't forget to press button Submit</h3>
+    <p  th:text="#{web.instruction2DefineStress}"></p>
+    <p  th:text="#{web.instruction3DefineStress}"></p>
+    <p  th:text="#{web.instruction4DefineStress}"></p>
+    <h3 th:text="#{web.instruction5DefineStress}"></h3>
     <br/>
-    <h3>Определите, пожалуйста, схему ударений в неизвестных словах:</h3>
-    <br/>
-    <p>'1'(ударный) и '0"(безударный) слоги. Без каких-либо других символов.</p>
-    <p>Например, схема ударений в слове 'корова' 010 </p>
-    <p>Незаполненная схема будет проигнорирована и при анализе система определит схему самостоятельно (случайно).</p>
-    <h3>Не забудьте нажать на кнопку Submit</h3>
-    <br/>
-    <br/>
-    <br/>
+
     <!-- data -->
     <table border="1">
         <tr>
-            <th>word</th>
-            <th>stress schema</th>
+            <th th:text="#{web.nameWord}"></th>
+            <th th:text="#{web.ResultsVerseColumn3}"></th>
         </tr>
 
         <form action="#" th:action="@{/tableStressesWords}" th:object="${stressSchemaUnknownWordsInHTMLTable}"
@@ -35,7 +37,7 @@
                 <td align="left" th:utext="${rowTable}"></td>
                 <td><input type="text" th:field="*{newValuesItems}"></td>
             <tr>
-                <td><input type="submit" value="Submit changes"/></td>
+                <td><input type="submit" th:value="#{web.ResultsSubmitChangesInTable}"/></td>
             </tr>
         </form>
     </table>

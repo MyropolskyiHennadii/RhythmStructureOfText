@@ -1,21 +1,33 @@
 package textsVocal.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import textsVocal.config.CommonConstants;
 import textsVocal.config.HeaderAnFooterListsForWebOutput;
 import textsVocal.structure.AnalyserPortionOfText;
 import textsVocal.structure.VersePortionForRythm;
+import textsVocal.utilsCommon.FileTreatment;
 import textsVocal.utilsCore.OutputWebCharacteristics;
+import textsVocal.web.uploadingfiles.StorageException;
+import textsVocal.web.uploadingfiles.StorageProperties;
+import textsVocal.web.uploadingfiles.StorageService;
 import textsVocal.web.utilsWeb.ChangedValuesInHTMLTable;
+import textsVocal.web.utilsWeb.Mappings;
 import textsVocal.web.utilsWeb.ViewNames;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * class for "showAnalysisResultsVerse" page control
@@ -24,6 +36,13 @@ import java.util.List;
 public class ShowAnalysisResultsVerseController {
 
     private static List<List<OutputWebCharacteristics>> listStressesTable = new ArrayList<>();
+
+    private final StorageService storageService;
+
+    @Autowired
+    public ShowAnalysisResultsVerseController(StorageService storageService) {
+        this.storageService = storageService;
+    }
 
     @GetMapping(ViewNames.SHOW_ANALYSIS_RESULTS_VERSE)
     public String showAnalysisResults(Model model) {
@@ -54,6 +73,12 @@ public class ShowAnalysisResultsVerseController {
         //for catch checkboxes in the tables
         model.addAttribute("changedValuesInHTMLTable", new ChangedValuesInHTMLTable());
 
+        //file with results
+        model.addAttribute("files", storageService.loadAllOutput().map(
+                path -> MvcUriComponentsBuilder.fromMethodName(SetAnalysisAttributesController.class,
+                        "serveFile", path.getFileName().toString()).build().toUri().toString())
+                .collect(Collectors.toList()));
+
         return ViewNames.SHOW_ANALYSIS_RESULTS_VERSE;
     }
 
@@ -68,7 +93,67 @@ public class ShowAnalysisResultsVerseController {
     @RequestMapping(value = "/tableStressesVerse", method = RequestMethod.POST)
     public String getChangedFlagsVerse(@ModelAttribute ChangedValuesInHTMLTable changedValuesInHTMLTable, BindingResult errors, Model model) {
         VersePortionForRythm.makeCorrectionInVerseCharacteristicFromWebUser(changedValuesInHTMLTable.getCheckedItems(), changedValuesInHTMLTable.getNewValuesItems());
-        AnalyserPortionOfText.calculateSummeryForAllPortions();
+        AnalyserPortionOfText.calculateSummaryForAllPortions();
         return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_VERSE;
     }
+
+
+    @PostMapping(Mappings.SHOW_ANALYSIS_RESULTS_VERSE)
+    public String processingSaveResultsToFile(Model model) {
+        saveResultsToFileForUsersDownloading();
+        return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_VERSE;
+    }
+
+    /**
+     * save results to file for further downloading by user
+     */
+    public void saveResultsToFileForUsersDownloading() {
+        ApplicationContext context = CommonConstants.getApplicationContext();
+        String outputLocation = context.getBean(StorageProperties.class).getOutputLocation();
+        Path saveLocation = Paths.get(outputLocation);
+        try {
+            Files.createDirectories(saveLocation);
+        } catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
+
+        StringBuilder accumulation = new StringBuilder();
+        List<List<String>> listListHeaders = HeaderAnFooterListsForWebOutput.getPortionHeaders();
+        List<List<String>> listListFooters = HeaderAnFooterListsForWebOutput.getPortionFooters();
+
+        for (int i = 0; i < listListHeaders.size(); i++) {
+
+            //header
+            List<String> listHeader = listListHeaders.get(i);
+            for (String s : listHeader) {
+                accumulation.append(s).append("\n");
+            }
+
+            //stresses
+            List<OutputWebCharacteristics> stressTable = listStressesTable.get(i);
+            VersePortionForRythm.outputLineInResume(accumulation, new String[]{"Line", "Meter representation", "Meter-number of foots", "Shift meter (N syllable)", "Quantity of syllables"});
+            for (OutputWebCharacteristics w : stressTable) {
+                VersePortionForRythm.outputLineInResume(accumulation, new String[]{w.getWords(), w.getMeterRepresentation(), "[" + (w.getMeter() == null ? ' ': w.toString())+ "]",
+                        "[" + w.getShiftRegularMeterOnSyllable() + "]", "[" + w.getNumberOfSyllable() + "]"});
+            }
+
+            List<String> listFooters = listListFooters.get(i);
+            for (String line : listFooters) {
+                accumulation.append(line);
+            }
+        }
+        accumulation.append("\n");
+        accumulation.append("============================\n");
+        accumulation.append("\n");
+
+        accumulation.append("Number of lines: ").append(AnalyserPortionOfText.getNumberOfSegments()).append("\n");
+        accumulation.append("Maximal length (in syllables): ").append(AnalyserPortionOfText.getMaxLengthSegment()).append("\n");
+        accumulation.append("Average length (in syllables): ").append(AnalyserPortionOfText.getAverageLengthOfSegments()).append("\n");
+        accumulation.append("----------------------------\n");
+
+        CommonConstants constants = context.getBean(CommonConstants.class);
+        String fileOutput = constants.getFileOutputDirectory() + File.separator + constants.getFileOutputName();
+        FileTreatment.outputResultToFile(accumulation, fileOutput);
+    }
+
 }

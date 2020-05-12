@@ -423,6 +423,40 @@ public class VersePortionForRythm extends TextPortionForRythm {
         return sortedMap;
     }
 
+    /**
+     * forms output lines
+     *
+     * @param out       StringBuilder with output
+     * @param outputArr array we have appent to StringBuilder
+     */
+    public static void outputLineInResume(StringBuilder out, String[] outputArr) {
+        int[] lengthInSymbols = new int[5];//length of columns in symbols
+        lengthInSymbols[0] = 48;
+        lengthInSymbols[1] = 24;
+        lengthInSymbols[2] = 24;
+        lengthInSymbols[3] = 24;
+        lengthInSymbols[4] = 24;
+
+        if (outputArr.length != lengthInSymbols.length) {
+            getLog().error("Non-equal arrays!");
+            throw new IllegalArgumentException();
+        }
+
+        for (int i = 0; i < lengthInSymbols.length; i++) {
+            StringBuilder s = new StringBuilder(outputArr[i]);
+            int l = lengthInSymbols[i];
+            if (s.length() > l) {
+                s = new StringBuilder(s.substring(0, l - 1));
+            }
+            if (s.length() < l) {
+                while (s.length() < l) {
+                    s.append(" ");
+                }
+            }
+            out.append("| ").append(s);
+        }
+        out.append("\n");
+    }
     //== setters and getters ==========================================
 
     /**
@@ -963,16 +997,17 @@ public class VersePortionForRythm extends TextPortionForRythm {
      * @return list with header lines for output
      */
     public List<String> formHeaderLines(int nPortion) {
+        ResourceBundle  messages = CommonConstants.getResourceBundle();
         List<String> headerLines = new ArrayList<>();
         headerLines.add("\n");
-        headerLines.add("Portion #" + nPortion + "\n");
-        headerLines.add("Main meter: " + this.getMainMeter() + "\n");
-        headerLines.add("Max. duration (in syllables): " + (int) this.getMaxDuration() + "\n");
-        headerLines.add("Min. duration (in syllables): " + (int) this.getMinDuration() + "\n");
-        headerLines.add("Endings of the first lines: " + this.getRegularEndingsOfFirstStrophe() + "\n");
-        headerLines.add("Duration of the first lines: " + this.getRegularDurationOfFirstStrophe() + "\n");
-        headerLines.add("Quantity of stresses in the first lines: " + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
-        headerLines.add("Regular spaces after syllable in the first lines (may be ceasura): " + this.getRegularSpaceOnSyllable() + "\n");
+        headerLines.add(messages.getString("portionNumber") + nPortion + "\n");
+        headerLines.add(messages.getString("mainMeter") + this.getMainMeter() + "\n");
+        headerLines.add(messages.getString("maxDuration") + (int) this.getMaxDuration() + "\n");
+        headerLines.add(messages.getString("minDuration") + (int) this.getMinDuration() + "\n");
+        headerLines.add(messages.getString("endingsFirstLines") + this.getRegularEndingsOfFirstStrophe() + "\n");
+        headerLines.add(messages.getString("durationsFirstLines") + this.getRegularDurationOfFirstStrophe() + "\n");
+        headerLines.add(messages.getString("numberStressesFirstLines") + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
+        headerLines.add(messages.getString("regularSpacesFirstLines") + this.getRegularSpaceOnSyllable()  + "\n");
         headerLines.add("==========================\n");
         return headerLines;
     }
@@ -983,9 +1018,10 @@ public class VersePortionForRythm extends TextPortionForRythm {
      * @return list String with footer for output
      */
     public List<String> formFooterLinesWithoutWeb() {
+        ResourceBundle  messages = CommonConstants.getResourceBundle();
         List<String> footLines = new ArrayList<>();
-        footLines.add("Stress profile\n");
-        footLines.add("Number of syllable\n");
+        footLines.add(messages.getString("nameStressProfile") + "\n");
+        footLines.add(messages.getString("nameNumberSyllable") + "\n");
 
         Function<SegmentOfPortion, String> funcGetMeter = (SegmentOfPortion::getSelectedMeterRepresentation);
         double[] stressProfile = getStressProfileFromSegments(funcGetMeter);
@@ -993,20 +1029,20 @@ public class VersePortionForRythm extends TextPortionForRythm {
             footLines.add("\t" + (i + 1));
         }
         footLines.add("\n");
-        footLines.add("% of stress      \n");
+        footLines.add(messages.getString("namePercentStress") + "\n");
         for (double v : stressProfile) {
             footLines.add("\t" + (int) v);
         }
         footLines.add("\n");
         footLines.add("==========================\n");
-        footLines.add("Junctures profile\n");
-        footLines.add("Number of syllable\n");
+        footLines.add(messages.getString("nameJunctureProfile") + "\n");
+        footLines.add(messages.getString("nameNumberSyllable") + "\n");
         double[] junctureProfile = getJunctureProfileFromSegments(funcGetMeter);
         for (int i = 0; i < junctureProfile.length; i++) {
             footLines.add("\t" + (i + 1));
         }
         footLines.add("\n");
-        footLines.add("% of words junctures      \n");
+        footLines.add(messages.getString("namePercentJuncture") + "\n");
         for (double v : junctureProfile) {
             footLines.add("\t" + (int) v);
         }
@@ -1084,40 +1120,5 @@ public class VersePortionForRythm extends TextPortionForRythm {
         } else {
             prepareResumeOutputWeb();
         }
-    }
-
-    /**
-     * forms output lines
-     *
-     * @param out       StringBuilder with output
-     * @param outputArr array we have appent to StringBuilder
-     */
-    private void outputLineInResume(StringBuilder out, String[] outputArr) {
-        int[] lengthInSymbols = new int[5];//length of columns in symbols
-        lengthInSymbols[0] = 48;
-        lengthInSymbols[1] = 24;
-        lengthInSymbols[2] = 24;
-        lengthInSymbols[3] = 24;
-        lengthInSymbols[4] = 24;
-
-        if (outputArr.length != lengthInSymbols.length) {
-            getLog().error("Non-equal arrays!");
-            throw new IllegalArgumentException();
-        }
-
-        for (int i = 0; i < lengthInSymbols.length; i++) {
-            StringBuilder s = new StringBuilder(outputArr[i]);
-            int l = lengthInSymbols[i];
-            if (s.length() > l) {
-                s = new StringBuilder(s.substring(0, l - 1));
-            }
-            if (s.length() < l) {
-                while (s.length() < l) {
-                    s.append(" ");
-                }
-            }
-            out.append("| ").append(s);
-        }
-        out.append("\n");
     }
 }

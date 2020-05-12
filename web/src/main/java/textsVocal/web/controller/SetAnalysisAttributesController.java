@@ -12,19 +12,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import textsVocal.config.CommonConstants;
 import textsVocal.structure.AnalyserPortionOfText;
 import textsVocal.structure.BuildingPortion;
 import textsVocal.structure.TextPortionForRythm;
+import textsVocal.web.uploadingfiles.FileSystemStorageService;
 import textsVocal.web.uploadingfiles.StorageFileNotFoundException;
 import textsVocal.web.uploadingfiles.StorageService;
 import textsVocal.web.utilsWeb.Mappings;
 import textsVocal.web.utilsWeb.ViewNames;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +51,6 @@ public class SetAnalysisAttributesController {
                 path -> MvcUriComponentsBuilder.fromMethodName(SetAnalysisAttributesController.class,
                         "serveFile", path.getFileName().toString()).build().toUri().toString())
                 .collect(Collectors.toList()));
-
         return ViewNames.SET_ANALYSIS_ATTRIBUTES;
     }
 
@@ -56,10 +58,16 @@ public class SetAnalysisAttributesController {
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
-        Resource file = storageService.loadAsResource(filename);
+        Resource file = null;
+        if (filename.substring(0, 3).equals("out")) {
+            file = storageService.loadAsResourceOutput(filename);
+        } else {
+            file = storageService.loadAsResource(filename);
+        }
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
+
 
     @PostMapping(Mappings.SET_ANALYSIS_ATTRIBUTES)
     public String processingSetTextAttributes(@RequestParam("file") MultipartFile file,
@@ -67,7 +75,8 @@ public class SetAnalysisAttributesController {
                                               boolean checkBoxThisIsProse,
                                               String textFromForm,
                                               String portionsSepataror,
-                                              Model model) throws InterruptedException, ExecutionException, IOException {
+                                              HttpServletRequest request,
+                                              Model model) throws IOException {
 
         ApplicationContext context = CommonConstants.getApplicationContext();
         CommonConstants constants = context.getBean(CommonConstants.class);
@@ -76,11 +85,17 @@ public class SetAnalysisAttributesController {
         constants.setThisIsWebApp(true);
         constants.setTextFromWebForm("" + textFromForm.trim());
 
+        Locale locale = context.getBean(LocaleResolver.class).resolveLocale(request);
+        CommonConstants.setWebLocale(locale);
+
         if (textFromForm.trim().isEmpty() && file.isEmpty()) {
             model.addAttribute("mistakeMessage", "You must set either text on the form either file!");
             return ViewNames.SET_ANALYSIS_ATTRIBUTES;
         }
         if (!textFromForm.trim().isEmpty()) {
+            //setting paths, constants
+            FileSystemStorageService service = context.getBean(FileSystemStorageService.class);
+            service.setFileAttributesToCommonConstants("fromWebForm", false);
             constants.setReadingFromFile(false);
         } else {
             if (!file.isEmpty()) {
@@ -116,11 +131,6 @@ public class SetAnalysisAttributesController {
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        log.info("Finishing store file {} " + file.getOriginalFilename());
-        commonConstants.setFileInputDirectory(file.getOriginalFilename());
-        commonConstants.setFileInputName("");
-        commonConstants.setReadingFromFile(true);
 
         return "redirect:/" + ViewNames.SET_ANALYSIS_ATTRIBUTES;
     }
