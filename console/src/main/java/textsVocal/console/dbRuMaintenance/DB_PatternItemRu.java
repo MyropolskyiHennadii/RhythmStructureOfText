@@ -11,6 +11,7 @@ public class DB_PatternItemRu implements HaveID{
     private String partOfSpeech;
     private String mainForm;
     private int numberSymbolsInEndingMainForm;
+    private boolean changable;
 
     @Override
     public int hashCode() {
@@ -65,8 +66,17 @@ public class DB_PatternItemRu implements HaveID{
         return numberSymbolsInEndingMainForm;
     }
 
+    public boolean isChangable() {
+        return changable;
+    }
+
+    public void setChangable(boolean changable) {
+        this.changable = changable;
+    }
+
     public DB_PatternItemRu(int id, int idPatternInDB, String word, String meterSchema,
-                            String partOfSpeech, String mainForm, int numberSymbolsInEndingMainForm) {
+                            String partOfSpeech, String mainForm,
+                            int numberSymbolsInEndingMainForm, boolean changable) {
         this.id = id;
         this.idPatternInDB = idPatternInDB;
         this.word = word;
@@ -74,5 +84,6 @@ public class DB_PatternItemRu implements HaveID{
         this.partOfSpeech = partOfSpeech;
         this.mainForm = mainForm;
         this.numberSymbolsInEndingMainForm = numberSymbolsInEndingMainForm;
+        this.changable = changable;
     }
 }

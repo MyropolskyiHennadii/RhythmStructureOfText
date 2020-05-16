@@ -14,13 +14,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static textsVocal.structure.TextPortionForRythm.*;
+import static textsVocal.structure.TextPortionForRhythm.*;
 
 public class AnalyserPortionOfText {
 
     //=== static fields ===
     public static final StringBuilder outputAccumulation = new StringBuilder();//output accumulation
-    private static final List<TextPortionForRythm> listOfInstance = new ArrayList<>();//list with all portions: verses or prose
+    private static final List<TextPortionForRhythm> listOfInstance = new ArrayList<>();//list with all portions: verses or prose
     private static final Set<String> wordsToDefine = new HashSet<>();//list words to define stress schema
     private static final Logger log = LoggerFactory.getLogger(AnalyserPortionOfText.class);//logger
 
@@ -30,8 +30,8 @@ public class AnalyserPortionOfText {
     private static String[] distributionSegmentByLength;//how sentetnces are distributed by their length in syllable
     private static String[] stressProfileOfAllPortions;//stress profile for all portions
 
-//=== static methods =========================
-    public static List<TextPortionForRythm> getListOfInstance() {
+    //=== static methods =========================
+    public static List<TextPortionForRhythm> getListOfInstance() {
         return listOfInstance;
     }
 
@@ -83,8 +83,8 @@ public class AnalyserPortionOfText {
         int lineLength;
         String line;
         List<String> meterRepresentationOfPortion = new ArrayList<>();
-        for (TextPortionForRythm textPortionForRythm : listOfInstance) {
-            List<SegmentOfPortion> listSegments = textPortionForRythm.getListOfSegments();
+        for (TextPortionForRhythm textPortionForRhythm : listOfInstance) {
+            List<SegmentOfPortion> listSegments = textPortionForRhythm.getListOfSegments();
             for (SegmentOfPortion listSegment : listSegments) {
                 line = listSegment.getSelectedMeterRepresentation();
                 lineLength = line.length();
@@ -121,7 +121,7 @@ public class AnalyserPortionOfText {
      *
      * @param verseInstance if something was changed in instance verseInstance we have to refine all characteristics
      */
-    public static void refineVerseCharacteristics(VersePortionForRythm verseInstance) {
+    public static void refineVerseCharacteristics(VersePortionForRhythm verseInstance) {
 
         //we need to prioritize possible meters in segment and then fill, edit segments and so on
         verseInstance.fillPortionWithCommonRythmCharacteristics(verseInstance.WhatAreMostPolularMetersInMultiplePossibleValues());
@@ -161,7 +161,7 @@ public class AnalyserPortionOfText {
      */
     public static void prepareSetOfWordsForFurtherDefineMeterSchema(int numberOfPortion) {
 
-        TextPortionForRythm instance = getListOfInstance().get(numberOfPortion - 1);
+        TextPortionForRhythm instance = getListOfInstance().get(numberOfPortion - 1);
         String text = instance.getpText();
 
         ApplicationContext context = CommonConstants.getApplicationContext();
@@ -189,7 +189,7 @@ public class AnalyserPortionOfText {
                         continue;
                     } else if (!reprParticularCasesOfWords.isEmpty()) {
                         continue;
-                    } else if (duration == 1) {
+                    } else if ((duration == 1) && constants.isThisIsVerse()) {
                         continue;
                     }
                     wordsToDefine.add(textWord.toLowerCase());
@@ -218,6 +218,14 @@ public class AnalyserPortionOfText {
                     CommonConstants.getTempWordDictionary().put(s.trim(), stressMap.get(s.trim()));
                     continue;
                 }
+                if ((int) VocalAnalisysRu.calculateDurationOnlyVocale(s) == 1) {//this case is possible in prose
+                    Set<String> serviceSet = new HashSet<>();
+                    serviceSet.add("" + symbolOfStress);
+                    serviceSet.add("" + symbolOfNoStress);
+                    CommonConstants.getTempWordDictionary().put(s.trim(), serviceSet);
+                    continue;
+                }
+                //another cases = unknown words
                 Word w = new Word();
                 w.setTextWord(s.trim());
                 CommonConstants.getUnKnownWords().add(w);
@@ -254,7 +262,7 @@ public class AnalyserPortionOfText {
     /**
      * process portion analysis
      *
-     * @param constants - commno constants of the app
+     * @param constants - common constants of the app
      */
     public static void portionAnalysys(CommonConstants constants) {
 
@@ -265,7 +273,7 @@ public class AnalyserPortionOfText {
         outputAccumulation.append("Begin: ").append(localDateTime).append(" ------------!\n");
 
         //todo executor service
-        for (TextPortionForRythm instance : getListOfInstance()) {
+        for (TextPortionForRhythm instance : getListOfInstance()) {
             //creating tables with words, segments and so on
 
             outputAccumulation.append("!----------PORTION N").append(instance.getNumberOfPortion()).append(" ------------!\n");
@@ -281,9 +289,9 @@ public class AnalyserPortionOfText {
             instance.setListOfSegments(buildSegmentMeterPerfomanceWithAllOptions(dtOfTextSegmentsAndStresses, nameOfFirstColumn, "Word-object / Stress form", thisIsVerse, constants.getLanguageOfText()));
 
             if (thisIsVerse) {
-                refineVerseCharacteristics((VersePortionForRythm) instance);
+                refineVerseCharacteristics((VersePortionForRhythm) instance);
             } else {//prose
-                ProsePortionForRythm proseInstance = (ProsePortionForRythm) instance;
+                ProsePortionForRhythm proseInstance = (ProsePortionForRhythm) instance;
                 proseInstance.fillPortionWithCommonRythmCharacteristics(null);
             }
 
@@ -295,13 +303,13 @@ public class AnalyserPortionOfText {
         if (!thisIsVerse) {
 
             if (!constants.isThisIsWebApp()) {//only for console
-                ProsePortionForRythm.outputFootProseConsole(outputAccumulation, constants);
+                ProsePortionForRhythm.outputFootProseConsole(outputAccumulation, constants);
             }
         }
     }
 
     /**
-     * set average lentg and distribution by length for all segments in all portions
+     * set average length and distribution by length for all segments in all portions
      */
     public static void setAverageLengthAndDistributionByLengthForAllPortion() {
         //count of sentences
@@ -312,6 +320,10 @@ public class AnalyserPortionOfText {
         for (int i = 0; i < AnalyserPortionOfText.getListOfInstance().size(); i++) {
             List<SegmentOfPortion> listSegments = AnalyserPortionOfText.getListOfInstance().get(i).getListOfSegments();
             for (SegmentOfPortion listSegment : listSegments) {
+                if(listSegment.getNumberSyllable()==0){
+                    log.error("Something wrong with segment's meter representation. Portion {}", AnalyserPortionOfText.getListOfInstance().get(i).getNumberOfPortion());
+                    throw new ArrayIndexOutOfBoundsException("Something wrong with meter representation. Portion " + AnalyserPortionOfText.getListOfInstance().get(i).getNumberOfPortion());
+                }
                 countSentences++;
                 countLength += listSegment.getNumberSyllable();
                 distributionArray[listSegment.getNumberSyllable() - 1] += 1;
@@ -414,9 +426,9 @@ public class AnalyserPortionOfText {
 
         List<Double[]> listJunctureProfile = new ArrayList<>();
         Function<SegmentOfPortion, String> funcGetMeter = (SegmentOfPortion::getSelectedMeterRepresentation);
-        for (TextPortionForRythm textPortionForRythm : listOfInstance) {
-            List<SegmentOfPortion> listSegments = textPortionForRythm.getListOfSegments();
-            listJunctureProfile.add((TextPortionForRythm.getJunctureProfileFromSegments(listSegments, funcGetMeter)));
+        for (TextPortionForRhythm textPortionForRhythm : listOfInstance) {
+            List<SegmentOfPortion> listSegments = textPortionForRhythm.getListOfSegments();
+            listJunctureProfile.add((TextPortionForRhythm.getJunctureProfileFromSegments(listSegments, funcGetMeter)));
         }
         return listJunctureProfile;
     }
@@ -430,7 +442,7 @@ public class AnalyserPortionOfText {
     public static List<Double[]> prepareListStressesProfileWeb() {
         List<Double[]> listStressesProfile;
         Function<SegmentOfPortion, String> funcGetMeter = (SegmentOfPortion::getSelectedMeterRepresentation);
-        listStressesProfile = listOfInstance.stream().map(TextPortionForRythm::getListOfSegments).map(listSegments -> (getStressProfileFromSegments(listSegments, funcGetMeter))).collect(Collectors.toList());
+        listStressesProfile = listOfInstance.stream().map(TextPortionForRhythm::getListOfSegments).map(listSegments -> (getStressProfileFromSegments(listSegments, funcGetMeter))).collect(Collectors.toList());
         return listStressesProfile;
     }
 }

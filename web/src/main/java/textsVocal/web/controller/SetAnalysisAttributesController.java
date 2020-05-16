@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import textsVocal.config.CommonConstants;
 import textsVocal.structure.AnalyserPortionOfText;
 import textsVocal.structure.BuildingPortion;
-import textsVocal.structure.TextPortionForRythm;
+import textsVocal.structure.TextPortionForRhythm;
 import textsVocal.web.uploadingfiles.FileSystemStorageService;
 import textsVocal.web.uploadingfiles.StorageFileNotFoundException;
 import textsVocal.web.uploadingfiles.StorageService;
@@ -28,6 +28,7 @@ import textsVocal.web.utilsWeb.ViewNames;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -88,10 +89,14 @@ public class SetAnalysisAttributesController {
         Locale locale = context.getBean(LocaleResolver.class).resolveLocale(request);
         CommonConstants.setWebLocale(locale);
 
+        ResourceBundle messages = CommonConstants.getResourceBundle();
         if (textFromForm.trim().isEmpty() && file.isEmpty()) {
-            model.addAttribute("mistakeMessage", "You must set either text on the form either file!");
+            model.addAttribute("mistakeMessage", messages.getString("web.mistakeBySettingsTextAttributes"));
             return ViewNames.SET_ANALYSIS_ATTRIBUTES;
+        } else {
+            model.addAttribute("mistakeMessage", "");
         }
+
         if (!textFromForm.trim().isEmpty()) {
             //setting paths, constants
             FileSystemStorageService service = context.getBean(FileSystemStorageService.class);
@@ -106,7 +111,7 @@ public class SetAnalysisAttributesController {
         BuildingPortion buildingPortion = context.getBean(BuildingPortion.class);
         buildingPortion.startPortionBuilding("" + textFromForm.trim(), constants);
 
-        for (TextPortionForRythm instance : AnalyserPortionOfText.getListOfInstance()) {
+        for (TextPortionForRhythm instance : AnalyserPortionOfText.getListOfInstance()) {
             AnalyserPortionOfText.prepareSetOfWordsForFurtherDefineMeterSchema(instance.getNumberOfPortion());
         }
 

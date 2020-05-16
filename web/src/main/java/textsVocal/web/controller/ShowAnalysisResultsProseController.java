@@ -8,9 +8,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import textsVocal.config.CommonConstants;
-import textsVocal.config.HeaderAnFooterListsForWebOutput;
+import textsVocal.config.HeaderAndFooterListsForWebOutput;
 import textsVocal.structure.AnalyserPortionOfText;
-import textsVocal.structure.ProsePortionForRythm;
+import textsVocal.structure.ProsePortionForRhythm;
 import textsVocal.utilsCommon.FileTreatment;
 import textsVocal.utilsCore.OutputWebCharacteristics;
 import textsVocal.web.uploadingfiles.StorageException;
@@ -51,8 +51,8 @@ public class ShowAnalysisResultsProseController {
     public String showAnalysisResults(Model model) {
 
         //headers and footers
-        List<List<String>> listListHeaders = HeaderAnFooterListsForWebOutput.getPortionHeaders();
-        List<List<String>> listListFooters = HeaderAnFooterListsForWebOutput.getPortionFooters();
+        List<List<String>> listListHeaders = HeaderAndFooterListsForWebOutput.getPortionHeaders();
+        List<List<String>> listListFooters = HeaderAndFooterListsForWebOutput.getPortionFooters();
         model.addAttribute("listListHeaders", listListHeaders);
         model.addAttribute("listListFooters", listListFooters);
 
@@ -94,7 +94,7 @@ public class ShowAnalysisResultsProseController {
      */
     @RequestMapping(value = "/tableStressesProse", method = RequestMethod.POST)
     public String getChangedFlagsProse(@ModelAttribute ChangedValuesInHTMLTable changedValuesInHTMLTable, BindingResult errors, Model model) {
-        ProsePortionForRythm.makeCorrectionInProseCharacteristicFromWebUser(changedValuesInHTMLTable.getCheckedItems(), changedValuesInHTMLTable.getNewValuesItems());
+        ProsePortionForRhythm.makeCorrectionInProseCharacteristicFromWebUser(changedValuesInHTMLTable.getCheckedItems(), changedValuesInHTMLTable.getNewValuesItems());
         AnalyserPortionOfText.calculateSummaryForAllPortions();
         return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_PROSE;
     }
@@ -120,8 +120,8 @@ public class ShowAnalysisResultsProseController {
         }
 
         StringBuilder accumulation = new StringBuilder();
-        List<List<String>> listListHeaders = HeaderAnFooterListsForWebOutput.getPortionHeaders();
-        List<List<String>> listListFooters = HeaderAnFooterListsForWebOutput.getPortionFooters();
+        List<List<String>> listListHeaders = HeaderAndFooterListsForWebOutput.getPortionHeaders();
+        List<List<String>> listListFooters = HeaderAndFooterListsForWebOutput.getPortionFooters();
 
         for (int i = 0; i < listListHeaders.size(); i++) {
 

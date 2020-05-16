@@ -11,8 +11,8 @@ import textsVocal.structure.Word;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfStress;
 
 /**
  * common constants of application

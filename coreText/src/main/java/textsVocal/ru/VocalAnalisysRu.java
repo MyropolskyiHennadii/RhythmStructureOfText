@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import textsVocal.config.CommonConstants;
 import textsVocal.structure.SegmentOfPortion;
-import textsVocal.structure.TextPortionForRythm;
-import textsVocal.structure.VersePortionForRythm;
+import textsVocal.structure.TextPortionForRhythm;
+import textsVocal.structure.VersePortionForRhythm;
 import textsVocal.structure.Word;
 import textsVocal.utilsCommon.DataTable;
 
@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfStress;
 
 /**
  * class for all Russian vocal-analysis methods (mostly static) and near
@@ -30,7 +30,8 @@ public class VocalAnalisysRu {
     private static final Logger log = LoggerFactory.getLogger(VocalAnalisysRu.class);
 
     //=== constructors ======================================================
-    public VocalAnalisysRu() { }
+    public VocalAnalisysRu() {
+    }
 
     /**
      * receive data about stresses from database with stresses and return map with word as key and set of stresses as value
@@ -51,8 +52,14 @@ public class VocalAnalisysRu {
         Stream<String> prepare = words.stream()
                 .map(s -> s.toLowerCase().trim().replaceAll("ё", "е"))//in database there is only "е" but not "ё"
                 .distinct();
-        List<String> prepareWords = prepare.filter(s -> calculateDurationOnlyVocale(s).intValue() > 1)
-                .collect(Collectors.toList());
+        List<String> prepareWords;
+        if (context.getBean(CommonConstants.class).isThisIsVerse()) {
+            prepareWords = prepare.filter(s -> calculateDurationOnlyVocale(s).intValue() > 1)
+                    .collect(Collectors.toList());
+        } else {
+            prepareWords = prepare.filter(s -> calculateDurationOnlyVocale(s).intValue() > 0)
+                    .collect(Collectors.toList());
+        }
         try {
             Connection conn = db.getConnectionMainStressTable();
             Statement stmt = conn.createStatement();
@@ -75,7 +82,6 @@ public class VocalAnalisysRu {
                     sqlArray = new StringBuilder();
                 }
             }
-
         } catch (SQLException e) {
             log.error("Something wrong with SQL!" + e.getMessage());
         }
@@ -85,6 +91,7 @@ public class VocalAnalisysRu {
 
     /**
      * receive meter definitions for Segment
+     *
      * @return map with number of Segment as a key and set of representations as possible values
      */
     public static Map<Integer, Set<String>> getMeterSchemaOfSegment(SegmentOfPortion segment) {
@@ -101,7 +108,7 @@ public class VocalAnalisysRu {
 
             var = meterRepresentation.trim();
 
-            Map<String, String> descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringWithoutPentons(var);
+            Map<String, String> descriptionMeter = VersePortionForRhythm.WhatIsTheMettersPatternForStringWithoutPentons(var);
 
             if (!"Unknown".equals(descriptionMeter.get("meter").trim()) || var.length() <= 10) {//without pentons
                 String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
@@ -111,7 +118,7 @@ public class VocalAnalisysRu {
                     setMeters.add(repr);
                 }
             } else {//pentons
-                descriptionMeter = VersePortionForRythm.WhatIsTheMettersPatternForStringPentons(var);
+                descriptionMeter = VersePortionForRhythm.WhatIsTheMettersPatternForStringPentons(var);
                 String repr = var + ";" + descriptionMeter.get("meter").trim() + "-" + descriptionMeter.get("nTonicFoot").trim() + ";" + descriptionMeter.get("nShiftRegularMeterOnSyllable").trim();
 
                 if (!setMeters.contains(repr)) {//without duplicates
@@ -140,7 +147,7 @@ public class VocalAnalisysRu {
      * check in Russian: whether current representation have sense for every Word from list
      *
      * @param meterRepresentation - sctress schema
-     * @param listWords - list of Words
+     * @param listWords           - list of Words
      * @return true if all is OK with meter representation (representation has sense)
      */
     public static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, boolean thisIsVerse) {
@@ -227,8 +234,8 @@ public class VocalAnalisysRu {
     private static boolean checkSymbolsOfRepresentation(String s) {
         boolean check = true;
         StringBuilder possibleRepresentations = new StringBuilder();
-        for (int i = 0; i < TextPortionForRythm.stressRepresentations.length; i++) {
-            possibleRepresentations.append(TextPortionForRythm.stressRepresentations[i]);
+        for (int i = 0; i < TextPortionForRhythm.stressRepresentations.length; i++) {
+            possibleRepresentations.append(TextPortionForRhythm.stressRepresentations[i]);
         }
         for (int i = 0; i < s.length(); i++) {
             if (!possibleRepresentations.toString().contains("" + s.charAt(i))) {
@@ -250,7 +257,8 @@ public class VocalAnalisysRu {
         try {
             while (rs.next()) {
                 //there are duplicates in database, we are'nt need duplicates
-                Set<String> serviceSet = stressSet.get(rs.getString(1).trim());
+                String textWord = rs.getString(1).trim();
+                Set<String> serviceSet = stressSet.get(textWord);
                 if (serviceSet == null) {
                     serviceSet = new HashSet<>();
                 }
@@ -261,39 +269,51 @@ public class VocalAnalisysRu {
                 boolean servicePart = (partSpeech.startsWith("Союз") ||
                         partSpeech.startsWith("Междоме") ||
                         partSpeech.startsWith("Предлог") ||
-                        partSpeech.startsWith("Частица") ||
-                        partSpeech.startsWith("Местоим"));
+                        partSpeech.startsWith("Частица"));
 
                 //it's a pity, but such thing happen:
                 if (currentRepresentation.length() >= 3 && !currentRepresentation.contains("" + symbolOfStress)) {
                     continue;
                 }
 
-                int indBracketLeft = currentRepresentation.indexOf("(");
-                if (indBracketLeft > -1)// there are such cases, it's a pity
-                {
-                    int indBracketRight = currentRepresentation.indexOf(")");
-                    if (indBracketRight <= indBracketLeft) {
-                        continue; //that's mistake
+                //in case prose we need look at the 1-syllable words
+                if (!CommonConstants.getApplicationContext().getBean(CommonConstants.class).isThisIsVerse()
+                        && ((int) calculateDurationOnlyVocale(textWord) == 1)) {
+                    if (servicePart) {
+                        serviceSet.add("" + symbolOfNoStress);
+                    } else {
+                        serviceSet.add("" + symbolOfStress);
                     }
-
-                    String currentRepresentationWithoutBrackets = currentRepresentation.substring(indBracketLeft + 1, indBracketRight);
-                    if (checkSymbolsOfRepresentation(currentRepresentation.substring(indBracketLeft + 1, indBracketRight))) {
-                        serviceSet.add(currentRepresentation.substring(indBracketLeft + 1, indBracketRight));
-                    }
-                    currentRepresentationWithoutBrackets = currentRepresentation.replace("(" + currentRepresentationWithoutBrackets + ")", "");
-                    if (checkSymbolsOfRepresentation(currentRepresentationWithoutBrackets)) {
-                        serviceSet.add(currentRepresentationWithoutBrackets);
-                    }
-                } else {
-                    if (checkSymbolsOfRepresentation(currentRepresentation)) {
-                        serviceSet.add(currentRepresentation);
-                    }
-                }
-                if (serviceSet.size() > 0) {
-                    stressSet.put(rs.getString(1).trim(), serviceSet);
+                    stressSet.put(textWord, serviceSet);
                     //in the temporary dictionary:
-                    CommonConstants.getTempWordDictionary().put(rs.getString(1).trim(), serviceSet);
+                    CommonConstants.getTempWordDictionary().put(textWord, serviceSet);
+                } else {//in other cases: not prose or duration > 1 syllable
+                    int indBracketLeft = currentRepresentation.indexOf("(");
+                    if (indBracketLeft > -1)// there are such cases, it's a pity
+                    {
+                        int indBracketRight = currentRepresentation.indexOf(")");
+                        if (indBracketRight <= indBracketLeft) {
+                            continue; //that's mistake
+                        }
+
+                        String currentRepresentationWithoutBrackets = currentRepresentation.substring(indBracketLeft + 1, indBracketRight);
+                        if (checkSymbolsOfRepresentation(currentRepresentation.substring(indBracketLeft + 1, indBracketRight))) {
+                            serviceSet.add(currentRepresentation.substring(indBracketLeft + 1, indBracketRight));
+                        }
+                        currentRepresentationWithoutBrackets = currentRepresentation.replace("(" + currentRepresentationWithoutBrackets + ")", "");
+                        if (checkSymbolsOfRepresentation(currentRepresentationWithoutBrackets)) {
+                            serviceSet.add(currentRepresentationWithoutBrackets);
+                        }
+                    } else {
+                        if (checkSymbolsOfRepresentation(currentRepresentation)) {
+                            serviceSet.add(currentRepresentation);
+                        }
+                    }
+                    if (serviceSet.size() > 0) {
+                        stressSet.put(textWord, serviceSet);
+                        //in the temporary dictionary:
+                        CommonConstants.getTempWordDictionary().put(textWord, serviceSet);
+                    }
                 }
             }
         } catch (SQLException ex) {

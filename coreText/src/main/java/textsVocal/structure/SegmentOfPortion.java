@@ -9,7 +9,7 @@ import textsVocal.utilsCommon.DataTable;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfStress;
 
 /**
  * class for segments of portion
@@ -109,9 +109,9 @@ public class SegmentOfPortion {
 
         //correct and remove "impossible" combinations
         varSegmentMeterRepresentations.removeIf(
-                s -> (s.contains("" + symbolOfStress + symbolOfStress + symbolOfStress))
-                        || thisIsVerse && ((s.startsWith("" + symbolOfStress + symbolOfStress))
-                        || (s.endsWith("" + symbolOfStress + symbolOfStress)))
+                s -> (thisIsVerse && s.contains("" + symbolOfStress + symbolOfStress + symbolOfStress))
+                        || (thisIsVerse && s.startsWith("" + symbolOfStress + symbolOfStress)
+                        || (thisIsVerse && s.endsWith("" + symbolOfStress + symbolOfStress)))
                         || (!s.contains("" + symbolOfStress))
                         || (!checkSensibleRepresentationOfMeter(s, listWords, language, thisIsVerse))
         );
@@ -126,7 +126,7 @@ public class SegmentOfPortion {
      * check whether all is OK with representations
      * @param meterRepresentation stress schema
      * @param listWords list of words-objects
-     * @param language labguage of the whole text
+     * @param language language of the whole text
      * @return true if all OK and false otherwise
      */
     private static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, String language, boolean thisIsVerse) {

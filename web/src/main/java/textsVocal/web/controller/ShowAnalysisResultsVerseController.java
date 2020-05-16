@@ -8,9 +8,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import textsVocal.config.CommonConstants;
-import textsVocal.config.HeaderAnFooterListsForWebOutput;
+import textsVocal.config.HeaderAndFooterListsForWebOutput;
 import textsVocal.structure.AnalyserPortionOfText;
-import textsVocal.structure.VersePortionForRythm;
+import textsVocal.structure.VersePortionForRhythm;
 import textsVocal.utilsCommon.FileTreatment;
 import textsVocal.utilsCore.OutputWebCharacteristics;
 import textsVocal.web.uploadingfiles.StorageException;
@@ -48,8 +48,8 @@ public class ShowAnalysisResultsVerseController {
     public String showAnalysisResults(Model model) {
 
         //headers and footers
-        List<List<String>> listListHeaders = HeaderAnFooterListsForWebOutput.getPortionHeaders();
-        List<List<String>> listListFooters = HeaderAnFooterListsForWebOutput.getPortionFooters();
+        List<List<String>> listListHeaders = HeaderAndFooterListsForWebOutput.getPortionHeaders();
+        List<List<String>> listListFooters = HeaderAndFooterListsForWebOutput.getPortionFooters();
         model.addAttribute("listListHeaders", listListHeaders);
         model.addAttribute("listListFooters", listListFooters);
 
@@ -92,7 +92,7 @@ public class ShowAnalysisResultsVerseController {
      */
     @RequestMapping(value = "/tableStressesVerse", method = RequestMethod.POST)
     public String getChangedFlagsVerse(@ModelAttribute ChangedValuesInHTMLTable changedValuesInHTMLTable, BindingResult errors, Model model) {
-        VersePortionForRythm.makeCorrectionInVerseCharacteristicFromWebUser(changedValuesInHTMLTable.getCheckedItems(), changedValuesInHTMLTable.getNewValuesItems());
+        VersePortionForRhythm.makeCorrectionInVerseCharacteristicFromWebUser(changedValuesInHTMLTable.getCheckedItems(), changedValuesInHTMLTable.getNewValuesItems());
         AnalyserPortionOfText.calculateSummaryForAllPortions();
         return "redirect:/" + ViewNames.SHOW_ANALYSIS_RESULTS_VERSE;
     }
@@ -118,8 +118,8 @@ public class ShowAnalysisResultsVerseController {
         }
 
         StringBuilder accumulation = new StringBuilder();
-        List<List<String>> listListHeaders = HeaderAnFooterListsForWebOutput.getPortionHeaders();
-        List<List<String>> listListFooters = HeaderAnFooterListsForWebOutput.getPortionFooters();
+        List<List<String>> listListHeaders = HeaderAndFooterListsForWebOutput.getPortionHeaders();
+        List<List<String>> listListFooters = HeaderAndFooterListsForWebOutput.getPortionFooters();
 
         for (int i = 0; i < listListHeaders.size(); i++) {
 
@@ -131,12 +131,13 @@ public class ShowAnalysisResultsVerseController {
 
             //stresses
             List<OutputWebCharacteristics> stressTable = listStressesTable.get(i);
-            VersePortionForRythm.outputLineInResume(accumulation, new String[]{"Line", "Meter representation", "Meter-number of foots", "Shift meter (N syllable)", "Quantity of syllables"});
+            VersePortionForRhythm.outputLineInResume(accumulation, new String[]{"Line", "Meter representation", "Meter-number of foots", "Shift meter (N syllable)", "Quantity of syllables"});
             for (OutputWebCharacteristics w : stressTable) {
-                VersePortionForRythm.outputLineInResume(accumulation, new String[]{w.getWords(), w.getMeterRepresentation(), "[" + (w.getMeter() == null ? ' ': w.toString())+ "]",
+                VersePortionForRhythm.outputLineInResume(accumulation, new String[]{w.getWords(), w.getMeterRepresentation(), "[" + (w.getMeter() == null ? ' ': w.toString())+ "]",
                         "[" + w.getShiftRegularMeterOnSyllable() + "]", "[" + w.getNumberOfSyllable() + "]"});
             }
 
+            //footers
             List<String> listFooters = listListFooters.get(i);
             for (String line : listFooters) {
                 accumulation.append(line);

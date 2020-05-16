@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import textsVocal.config.CommonConstants;
 import textsVocal.structure.AnalyserPortionOfText;
 import textsVocal.structure.BuildingPortion;
-import textsVocal.structure.TextPortionForRythm;
+import textsVocal.structure.TextPortionForRhythm;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +51,7 @@ public class MainRythmConsoleApplication {
         BuildingPortion buildingPortion = context.getBean(BuildingPortion.class);
         buildingPortion.startPortionBuilding(testText, commonConstants);
 
-        for(TextPortionForRythm instance: AnalyserPortionOfText.getListOfInstance()){
+        for(TextPortionForRhythm instance: AnalyserPortionOfText.getListOfInstance()){
             AnalyserPortionOfText.prepareSetOfWordsForFurtherDefineMeterSchema(instance.getNumberOfPortion());
         }
 

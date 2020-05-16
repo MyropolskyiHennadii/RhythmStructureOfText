@@ -5,8 +5,8 @@ import textsVocal.ru.DB_RussianDictionary;
 
 import java.util.Scanner;
 
-import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfStress;
 
 /**
  * class for dialog with user in console-case

@@ -17,8 +17,8 @@ import java.sql.Statement;
 import java.util.*;
 
 import static textsVocal.ru.VocalAnalisysRu.calculateDurationOnlyVocale;
-import static textsVocal.structure.TextPortionForRythm.symbolOfNoStress;
-import static textsVocal.structure.TextPortionForRythm.symbolOfStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfNoStress;
+import static textsVocal.structure.TextPortionForRhythm.symbolOfStress;
 
 /**
  * organize console menu and record to Russian dictionary
@@ -57,7 +57,7 @@ public class StockingOfDictionary {
     /**
      * mapping word with form's endings and ancodes
      *
-     * @param word any string
+     * @param word    any string
      * @param pattern pattern from patterns list
      * @return grammatic forms from main word
      */
@@ -87,6 +87,42 @@ public class StockingOfDictionary {
             log.error("Something wrong with ResultSet! {}", e.getMessage());
         }
         return wordForms;
+    }
+
+    /**
+     * put unchangable word to main DB by pattern
+     *
+     * @param word    string word
+     * @param schema  string sctress schema
+     * @param pattern db pattern woth ancode, part of speech
+     */
+    public static void putUnchangableWordToMainDBByPattern(String word, String mainForm, String schema, DB_PatternItemRu pattern) {
+        String sqlUnknownWords = "SELECT distinct id, textWord, MainForm, meterRepresentation, Ancode FROM " + DB_RussianDictionary.getDb_Table() +
+                " WHERE id = '" + pattern.getIdPatternInDB() + "'";
+        String sqlInsert = "INSERT INTO " + DB_RussianDictionary.getDb_Table() + " (textWord, partOfSpeech, MainForm, meterRepresentation, Ancode) " + "VALUES ('";
+        try {
+            conn = db.getConnectionMainStressTable();
+            Statement stmt = conn.createStatement();
+            Statement stmtInsert = conn.createStatement();
+            String ancode;
+            ResultSet rs = stmt.executeQuery(sqlUnknownWords);
+            while (rs.next()) {
+                ancode = rs.getString(5).trim();
+                if(!ancode.isEmpty()){
+                    stmtInsert.executeUpdate(sqlInsert + word.trim() + "', '"
+                            + pattern.getPartOfSpeech().trim() + "', '"
+                            + mainForm.trim() + "', '"
+                            + schema.trim() + "', '"
+                            + ancode.trim() + "')");
+                    System.out.println(word.trim() + "; " + schema + ";");
+                    break;
+                }
+            }
+
+        } catch (SQLException e) {
+            log.error("Something wrong with ResultSet! {}", e.getMessage());
+        }
+
     }
 
     /*            2020-04-06 16:45:01,021 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Существительное
@@ -178,34 +214,40 @@ public class StockingOfDictionary {
                         }
 
                         countRecords++;
+                        if (pattern.isChangable()) {//if changebale
 
-                        Map<String, String> wordForms = checkPatternAndAddRecordToMainDB(mainForm, pattern);
-                        String mainFormWithoutEnding = mainForm.substring(0, mainForm.length() - pattern.getNumberSymbolsInEndingMainForm());
-                        int durationWordWithoutEnding = (int) calculateDurationOnlyVocale(mainFormWithoutEnding);
+                            Map<String, String> wordForms = checkPatternAndAddRecordToMainDB(mainForm, pattern);
+                            String mainFormWithoutEnding = mainForm.substring(0, mainForm.length() - pattern.getNumberSymbolsInEndingMainForm());
+                            int durationWordWithoutEnding = (int) calculateDurationOnlyVocale(mainFormWithoutEnding);
 
-                        String baseSchema = meterRepresentation.substring(0, durationWordWithoutEnding);
+                            String baseSchema = meterRepresentation.substring(0, durationWordWithoutEnding);
 
-                        for (Map.Entry<String, String> entry : wordForms.entrySet()) {
-                            int durationEnding = (int) calculateDurationOnlyVocale(entry.getValue()) - durationWordWithoutEnding;
-                            StringBuilder finalMeterSchema = new StringBuilder(baseSchema);
-                            for (int i = 0; i < durationEnding; i++) {
-                                finalMeterSchema.append("0");
-                            }
-                            if (("" + meterRepresentation.charAt(meterRepresentation.length() - 1)).equals("" + symbolOfStress)
-                                    && !finalMeterSchema.toString().contains("" + symbolOfStress)) {
-                                finalMeterSchema = new StringBuilder(finalMeterSchema.substring(0, meterRepresentation.length() - 1) + symbolOfStress);
-                                while (finalMeterSchema.length() < (int) calculateDurationOnlyVocale(entry.getValue())) {
-                                    finalMeterSchema.append(symbolOfNoStress);
+                            for (Map.Entry<String, String> entry : wordForms.entrySet()) {
+                                int durationEnding = (int) calculateDurationOnlyVocale(entry.getValue()) - durationWordWithoutEnding;
+                                StringBuilder finalMeterSchema = new StringBuilder(baseSchema);
+                                for (int i = 0; i < durationEnding; i++) {
+                                    finalMeterSchema.append("0");
                                 }
+                                if (("" + meterRepresentation.charAt(meterRepresentation.length() - 1)).equals("" + symbolOfStress)
+                                        && !finalMeterSchema.toString().contains("" + symbolOfStress)) {
+                                    finalMeterSchema = new StringBuilder(finalMeterSchema.substring(0, meterRepresentation.length() - 1) + symbolOfStress);
+                                    while (finalMeterSchema.length() < (int) calculateDurationOnlyVocale(entry.getValue())) {
+                                        finalMeterSchema.append(symbolOfNoStress);
+                                    }
+                                }
+                                stmtInsert.executeUpdate(sqlInsert + entry.getValue().trim() + "', '"
+                                        + pattern.getPartOfSpeech().trim() + "', '"
+                                        + mainForm.trim() + "', '"
+                                        + finalMeterSchema.toString().trim() + "', '"
+                                        + entry.getKey().trim() + "')");
+                                System.out.println(entry.getValue().trim() + "; " + finalMeterSchema + ";");
                             }
-                            stmtInsert.executeUpdate(sqlInsert + entry.getValue().trim() + "', '"
-                                    + pattern.getPartOfSpeech().trim() +  "', '"
-                                    + mainForm.trim() + "', '"
-                                    + finalMeterSchema.toString().trim()  + "', '"
-                                    + entry.getKey().trim() + "')");
-                            System.out.println(entry.getValue().trim() + "; " + finalMeterSchema + ";");
+                            words.add(word);
+
+                        } else {//unchangable
+                            putUnchangableWordToMainDBByPattern(word, mainForm, meterRepresentation, pattern);
+                            words.add(word);
                         }
-                        words.add(word);
                     }
                 } catch (SQLException e) {
                     log.error("Somеthing wrong with ResultSet! {}", e.getMessage());

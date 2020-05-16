@@ -4,14 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import textsVocal.config.CommonConstants;
-import textsVocal.config.HeaderAnFooterListsForWebOutput;
+import textsVocal.config.HeaderAndFooterListsForWebOutput;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static textsVocal.structure.TextPortionForRythm.SYMB_PARAGRAPH;
+import static textsVocal.structure.TextPortionForRhythm.SYMB_PARAGRAPH;
 
 /**
  * class builds portions
@@ -35,13 +35,13 @@ public class BuildingPortion {
      * @param thisIsVerse true or false
      */
     public void createTextPortionInstance(String text, int numPortion, boolean thisIsVerse) {
-        TextPortionForRythm instance =
+        TextPortionForRhythm instance =
                 thisIsVerse ?
-                        new VersePortionForRythm(text) :
-                        new ProsePortionForRythm(text);
+                        new VersePortionForRhythm(text) :
+                        new ProsePortionForRhythm(text);
 
         instance.setNumberOfPortion(numPortion);
-        AnalyserPortionOfText.getListOfInstance().add(thisIsVerse ? (VersePortionForRythm) instance : (ProsePortionForRythm) instance);
+        AnalyserPortionOfText.getListOfInstance().add(thisIsVerse ? (VersePortionForRhythm) instance : (ProsePortionForRhythm) instance);
     }
 
 
@@ -218,8 +218,8 @@ public class BuildingPortion {
 
         if (constants.isThisIsWebApp()) {
             //clean static fields
-            HeaderAnFooterListsForWebOutput.getPortionFooters().clear();
-            HeaderAnFooterListsForWebOutput.getPortionHeaders().clear();
+            HeaderAndFooterListsForWebOutput.getPortionFooters().clear();
+            HeaderAndFooterListsForWebOutput.getPortionHeaders().clear();
             AnalyserPortionOfText.getListOfInstance().clear();
             CommonConstants.getUnKnownWords().clear();
             CommonConstants.getTempWordDictionary().clear();

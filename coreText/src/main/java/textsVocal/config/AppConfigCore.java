@@ -6,8 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import textsVocal.ru.DB_RussianDictionary;
-import textsVocal.structure.ProsePortionForRythm;
-import textsVocal.structure.VersePortionForRythm;
+import textsVocal.structure.ProsePortionForRhythm;
+import textsVocal.structure.VersePortionForRhythm;
 
 @Configuration
 @ComponentScan(basePackages = "textsVocal")
@@ -21,14 +21,14 @@ public class AppConfigCore {
 
     @Bean
     @Scope("prototype")
-    VersePortionForRythm versePortionForRythm() {
-        return new VersePortionForRythm();
+    VersePortionForRhythm versePortionForRythm() {
+        return new VersePortionForRhythm();
     }
 
     @Bean
     @Scope("prototype")
-    ProsePortionForRythm prosePortionForRythm() {
-        return new ProsePortionForRythm();
+    ProsePortionForRhythm prosePortionForRythm() {
+        return new ProsePortionForRhythm();
     }
 
 }
