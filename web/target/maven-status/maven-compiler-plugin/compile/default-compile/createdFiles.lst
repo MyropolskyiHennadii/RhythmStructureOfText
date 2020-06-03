@@ -1,0 +1,16 @@
+textsVocal\web\uploadingfiles\FileSystemStorageService.class
+textsVocal\web\controller\ShowAnalysisResultsVerseController.class
+textsVocal\web\utilsWeb\Mappings.class
+textsVocal\web\utilsWeb\StressSchemaUnknownWordsInHTMLTable.class
+textsVocal\web\uploadingfiles\StorageProperties.class
+textsVocal\web\controller\HomeController.class
+textsVocal\web\utilsWeb\ViewNames.class
+textsVocal\web\MainRythmWebApplication.class
+textsVocal\web\uploadingfiles\StorageFileNotFoundException.class
+textsVocal\web\uploadingfiles\StorageException.class
+textsVocal\web\uploadingfiles\StorageService.class
+textsVocal\web\config\WebConfig.class
+textsVocal\web\controller\SetAnalysisAttributesController.class
+textsVocal\web\controller\WhatIsStressSchemaOfUnknownWordsWebController.class
+textsVocal\web\controller\ShowAnalysisResultsProseController.class
+textsVocal\web\utilsWeb\ChangedValuesInHTMLTable.class

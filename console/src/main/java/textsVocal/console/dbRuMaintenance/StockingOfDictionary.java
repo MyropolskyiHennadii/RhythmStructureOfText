@@ -108,7 +108,7 @@ public class StockingOfDictionary {
             ResultSet rs = stmt.executeQuery(sqlUnknownWords);
             while (rs.next()) {
                 ancode = rs.getString(5).trim();
-                if(!ancode.isEmpty()){
+                if (!ancode.isEmpty()) {
                     stmtInsert.executeUpdate(sqlInsert + word.trim() + "', '"
                             + pattern.getPartOfSpeech().trim() + "', '"
                             + mainForm.trim() + "', '"
@@ -147,7 +147,7 @@ public class StockingOfDictionary {
             2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Числительное порядковое
             2020-04-06 16:45:01,024 [main] [INFO ] textsVocal.ru.VocalAnalisysWordRu - Местоимение предикатив*/
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         ApplicationContext context = SpringApplication.run(MainRythmConsoleApplication.class, args);
         CommonConstants commonConstants = (CommonConstants) context.getBean("commonConstants");
@@ -175,9 +175,10 @@ public class StockingOfDictionary {
         DB_PatternDataRu db_patternDataRu = new DB_PatternDataRu();
 
         int countRecords = 0;
-        if (rs == null) {
+        if (!rs.next()) {
             System.out.println("There are no records in UnknownWords table! Nothing to define!");
         } else {//there are records
+            rs.beforeFirst();
             while (true) {
                 try {
                     if (rs.next()) {
@@ -248,6 +249,9 @@ public class StockingOfDictionary {
                             putUnchangableWordToMainDBByPattern(word, mainForm, meterRepresentation, pattern);
                             words.add(word);
                         }
+                    }
+                    else{
+                        break;
                     }
                 } catch (SQLException e) {
                     log.error("Somеthing wrong with ResultSet! {}", e.getMessage());
