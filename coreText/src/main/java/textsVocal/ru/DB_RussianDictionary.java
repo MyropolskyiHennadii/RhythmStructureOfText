@@ -139,7 +139,7 @@ public class DB_RussianDictionary {
     public void beforeDestoying() throws SQLException {
         if(mainConnection != null){
             try {
-            mainConnection.close();}
+                mainConnection.close();}
             catch (SQLException e) {
                 log.error("Can't close connection with DB!" + e.getMessage());
                 throw e;

@@ -1,6 +1,7 @@
 textsVocal\ru\DB_RussianDictionary.class
 textsVocal\config\AppConfigCore.class
 textsVocal\utilsCore\ErrorsInterractionWithWebUser.class
+textsVocal\config\HeaderAndFooterListsForWebOutput.class
 textsVocal\ru\VocalAnalisysRu$alphabetAndDuration.class
 textsVocal\utilsCore\OutputWebCharacteristics.class
 textsVocal\structure\BuildingPortion.class
@@ -12,7 +13,6 @@ textsVocal\config\CommonConstants.class
 textsVocal\ru\VocalAnalisysRu.class
 textsVocal\structure\SegmentOfPortion.class
 textsVocal\ru\VocalAnalisysRu$vocals.class
-textsVocal\config\HeaderAnFooterListsForWebOutput.class
 textsVocal\structure\ProsePortionForRhythm.class
 textsVocal\structure\TextPortionForRhythm.class
 textsVocal\structure\AnalyserPortionOfText.class

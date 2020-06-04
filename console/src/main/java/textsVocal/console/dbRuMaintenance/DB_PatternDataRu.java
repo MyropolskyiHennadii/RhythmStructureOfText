@@ -28,11 +28,13 @@ public class DB_PatternDataRu {
         addItem(new DB_PatternItemRu(5, 23, "звездный", "10", "Прилагательное", "звездный", 2, true));
         addItem(new DB_PatternItemRu(6, 2536066, "немецкий", "010", "Прилагательное", "немецкий", 2, true));
         addItem(new DB_PatternItemRu(7, 3748844, "собравшийся", "0100", "Причастие", "собраться", 4, true));
-        addItem(new DB_PatternItemRu(8, 3464832, "разгневанный", "0100", "Причастие", "разгневать", 2, true));
-        addItem(new DB_PatternItemRu(9, 788027, "играющий", "0100", "Причастие", "играть", 2, true));
-        addItem(new DB_PatternItemRu(10, 788027, "ликвидировать", "00100", "Глагол в личной форме", "ликвидировать", 2, true));
-        addItem(new DB_PatternItemRu(11, 3468938, "раздевшись", "010", "Деепричастие", "раздеться", 0, false));
-       // addItem(new DB_PatternItemRu(4, 24770, "аккредитовав", "00001", "Деепричастие", "аккредитовать", 0));
+        addItem(new DB_PatternItemRu(8, 2277163, "любящий", "100", "Прилагательное", "любящий", 2, true));
+        addItem(new DB_PatternItemRu(9, 3464832, "разгневанный", "0100", "Причастие", "разгневать", 2, true));
+        addItem(new DB_PatternItemRu(10, 788027, "играющий", "0100", "Причастие", "играть", 2, true));
+        addItem(new DB_PatternItemRu(11, 788027, "ликвидировать", "00100", "Глагол в личной форме", "ликвидировать", 2, true));
+        addItem(new DB_PatternItemRu(12, 174398, "бросаться", "010", "Глагол в личной форме", "бросаться", 4, true));
+        addItem(new DB_PatternItemRu(13, 3468938, "раздевшись", "010", "Деепричастие", "раздеться", 0, false));
+
     }
 
     // == public methods ==
