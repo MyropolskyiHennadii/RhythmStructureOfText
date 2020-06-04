@@ -1,26 +1,26 @@
 
 
-Порция #1
+Portion #1
 
-Основной размер: Accent verse. Max. 6 stresses.
+Main meter: Accent verse. Max. 6 stresses.
 
-Макс. длительность (в слогах): 19
+Max. duration (in syllables): 19
 
-Мин. длительность (в слогах): 3
+Min. duration (in syllables): 3
 
-Окончания первых строк: Not regular
+Endings of the first lines: Not regular
 
-Длительность первых строк (в слогах): Not regular
+Durations of the first lines (in syllables): Not regular
 
-К-во ударений в перваых строках: 3|3|3|3|3|3|
+Number of stresses in the first lines: 3|6|3|3|3|3|
 
-Регулярные словоразделы в первых строках (возможно, цезура): Not regular
+Regular spaces after syllable in the first lines (probably ceasura): Not regular
 
 ==========================
 
 | Line                                            | Meter representation    | Meter-number of foots   | Shift meter (N syllable)| Quantity of syllables   
 | Моряки старинных фамилий,                       | 001010010               | [Trochee-4]             | [8]                     | [9]                     
-| влюбленные в далекие горизонты,                 | 010001000010            | [Iambus-5]              | [11]                    | [12]                    
+| влюбленные в далекие горизонты,                 | 111111                  | [Unknown-0]             | [0]                     | [6]                     
 | пьющие вино в темных портах,                    | 100010001               | [Trochee-5]             | [0]                     | [9]                     
 | обнимая веселых иностранок;                     | 00100100010             | [Trochee-5]             | [6]                     | [11]                    
 | франты тридцатых годов,                         | 1001001                 | [Dactyl-3]              | [0]                     | [7]                     
@@ -73,21 +73,21 @@
 | за ваше молчаливое благословенье.               | 0100010000010           | [Iambus-6]              | [0]                     | [13]                    
 
 
-Порция #2
+Portion #2
 
-Основной размер: Iambus
+Main meter: Iambus
 
-Макс. длительность (в слогах): 13
+Max. duration (in syllables): 13
 
-Мин. длительность (в слогах): 10
+Min. duration (in syllables): 4
 
-Окончания первых строк: ...10|...10|...1|...10|...1|...10|
+Endings of the first lines: ...10|...10|...1|...10|...1|...10|
 
-Длительность первых строк (в слогах): 11|11|10|11|13|11|
+Durations of the first lines (in syllables): 11|11|10|11|13|11|
 
-К-во ударений в перваых строках: Not regular
+Number of stresses in the first lines: Not regular
 
-Регулярные словоразделы в первых строках (возможно, цезура): 1 (80%) | 4 (80%) | 5 (70%) | 8 (60%) | 
+Regular spaces after syllable in the first lines (probably ceasura): 1 (80%) | 4 (80%) | 5 (70%) | 8 (60%) | 
 
 ==========================
 
@@ -102,28 +102,28 @@
 | Иль Мариво капризное перо.                      | 0001010001              | [Iambus-5]              | [0]                     | [10]                    
 | Твой нос Пьеро и губ разрез пьянящий            | 01010101010             | [Iambus-5]              | [0]                     | [11]                    
 | Мне кружит ум, как "Свадьба Фигаро".            | 0101010001              | [Iambus-5]              | [0]                     | [10]                    
-| Дух мелочей, прелестных и воздушных,            | 00010101010             | [Iambus-5]              | [0]                     | [11]                    
+| Дух мелочей, прелестных и воздушных,            | 1111                    | [Unknown-0]             | [0]                     | [4]                     
 | Любви ночей, то нежащих, то душных,             | 01010100010             | [Iambus-5]              | [0]                     | [11]                    
 | Веселой легкости бездумного житья!              | 010100010001            | [Iambus-6]              | [0]                     | [12]                    
-| Ах, верен я, далек чудес послушных,             | 01010101010             | [Iambus-5]              | [0]                     | [11]                    
+| Ах, верен я, далек чудес послушных,             | 1111                    | [Unknown-0]             | [0]                     | [4]                     
 | Твоим цветам, веселая земля!                    | 0101010001              | [Iambus-5]              | [0]                     | [10]                    
 
 
-Порция #3
+Portion #3
 
-Основной размер: Trochee
+Main meter: Trochee
 
-Макс. длительность (в слогах): 8
+Max. duration (in syllables): 8
 
-Мин. длительность (в слогах): 7
+Min. duration (in syllables): 7
 
-Окончания первых строк: ...10|...10|...1|...10|...10|...1|
+Endings of the first lines: ...10|...10|...1|...10|...10|...1|
 
-Длительность первых строк (в слогах): 8|8|7|8|8|7|
+Durations of the first lines (in syllables): 8|8|7|8|8|7|
 
-К-во ударений в перваых строках: Not regular
+Number of stresses in the first lines: Not regular
 
-Регулярные словоразделы в первых строках (возможно, цезура): 4 (80%) | 
+Regular spaces after syllable in the first lines (probably ceasura): 4 (80%) | 
 
 ==========================
 
@@ -142,21 +142,21 @@
 | И прощанье чрез порог.                          | 1010101                 | [Trochee-4]             | [0]                     | [7]                     
 
 
-Порция #4
+Portion #4
 
-Основной размер: Trochee
+Main meter: Trochee
 
-Макс. длительность (в слогах): 11
+Max. duration (in syllables): 11
 
-Мин. длительность (в слогах): 8
+Min. duration (in syllables): 8
 
-Окончания первых строк: ...100|...10|...100|...10|...100|...10|
+Endings of the first lines: ...100|...10|...100|...10|...100|...10|
 
-Длительность первых строк (в слогах): 11|9|11|8|11|10|
+Durations of the first lines (in syllables): 11|9|11|8|11|10|
 
-К-во ударений в перваых строках: 3|3|3|3|3|3|
+Number of stresses in the first lines: 3|3|3|3|3|3|
 
-Регулярные словоразделы в первых строках (возможно, цезура): 3 (60%) | 
+Regular spaces after syllable in the first lines (probably ceasura): 3 (60%) | 
 
 ==========================
 
@@ -187,21 +187,21 @@
 | Столькими другими устами.                       | 100010010               | [Trochee-4]             | [8]                     | [9]                     
 
 
-Порция #5
+Portion #5
 
-Основной размер: Trochee
+Main meter: Trochee
 
-Макс. длительность (в слогах): 8
+Max. duration (in syllables): 8
 
-Мин. длительность (в слогах): 7
+Min. duration (in syllables): 7
 
-Окончания первых строк: ...10|...10|...1|...10|...10|...1|
+Endings of the first lines: ...10|...10|...1|...10|...10|...1|
 
-Длительность первых строк (в слогах): 8|8|7|8|8|7|
+Durations of the first lines (in syllables): 8|8|7|8|8|7|
 
-К-во ударений в перваых строках: Not regular
+Number of stresses in the first lines: Not regular
 
-Регулярные словоразделы в первых строках (возможно, цезура): 2 (80%) | 4 (80%) | 
+Regular spaces after syllable in the first lines (probably ceasura): 2 (80%) | 4 (80%) | 
 
 ==========================
 
@@ -220,21 +220,21 @@
 | Те, ночные, те- не мы.                          | 1010101                 | [Trochee-4]             | [0]                     | [7]                     
 
 
-Порция #6
+Portion #6
 
-Основной размер: Iambus
+Main meter: Iambus
 
-Макс. длительность (в слогах): 27
+Max. duration (in syllables): 28
 
-Мин. длительность (в слогах): 11
+Min. duration (in syllables): 11
 
-Окончания первых строк: ...10|...10|...10|...1?Probably unknown language|...10|...10|
+Endings of the first lines: ...10|...10|...10|...1.Probably unknown language?|...10|...10|
 
-Длительность первых строк (в слогах): 11|11|11|27|11|11|
+Durations of the first lines (in syllables): 11|11|11|28|11|11|
 
-К-во ударений в перваых строках: Not regular
+Number of stresses in the first lines: Not regular
 
-Регулярные словоразделы в первых строках (возможно, цезура): 5 (70%) | 8 (70%) | 
+Regular spaces after syllable in the first lines (probably ceasura): 5 (70%) | 8 (70%) | 
 
 ==========================
 
@@ -242,7 +242,7 @@
 | Из поднесенной некогда корзины                  | 00010100010             | [Iambus-5]              | [0]                     | [11]                    
 | Печально свесилась сухая роза,                  | 01010001010             | [Iambus-5]              | [0]                     | [11]                    
 | И пели нам ту арию Розины:                      | 01010100010             | [Iambus-5]              | [0]                     | [11]                    
-| "Io sono docile, io sono rispettosa".           | 1?Probably unknown lang | [Unknown-0]             | [0]                     | [27]                    
+| "Io sono docile, io sono rispettosa".           | 1.Probably unknown lang | [Unknown-0]             | [0]                     | [28]                    
 | Горели свечи, теплый дождь, чуть слышен,        | 01010101010             | [Iambus-5]              | [0]                     | [11]                    
 | Стекал с деревьев, наводя дремоту,              | 01010001010             | [Iambus-5]              | [0]                     | [11]                    
 | Пезарский лебедь, сладостен и пышен,            | 01010100010             | [Iambus-5]              | [0]                     | [11]                    
@@ -259,6 +259,6 @@
 ============================
 
 Number of lines: 131
-Maximal length (in syllables): 27
-Average length (in syllables): 9.8
+Maximal length (in syllables): 28
+Average length (in syllables): 9.7
 ----------------------------

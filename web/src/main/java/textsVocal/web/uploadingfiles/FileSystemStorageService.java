@@ -115,7 +115,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void deleteAll() {
-       // FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        // FileSystemUtils.deleteRecursively(rootLocation.toFile());
 
         //Myropolskyi: delete files older then today, not all the files
         LocalDateTime currentDate = LocalDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);

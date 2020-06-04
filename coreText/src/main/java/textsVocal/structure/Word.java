@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class Word {
 
-//=== fields ============================================================
+    //=== fields ============================================================
     private String textWord;//original string
     private String meterRepresentationForUser;//meter representation for user
     private Set<String> meterRepresentation;// set of meter's representations
@@ -31,7 +31,7 @@ public class Word {
         this.meterRepresentation = new HashSet<>();
     }
 
-//=== getters and setters ================================================
+    //=== getters and setters ================================================
     public String getTextWord() {
         return textWord;
     }
