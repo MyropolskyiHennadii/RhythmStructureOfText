@@ -18,6 +18,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 /**
@@ -46,8 +51,8 @@ public class FileSystemStorageService implements StorageService {
             if (file == null || file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
             }
-            if(!file.getContentType().trim().equals("text/plain")){
-                throw new StorageException("Failed to store no *.txt file " + filename);
+            if(!file.getContentType().trim().equals("text/plain")){//Myropolskyi
+                throw new StorageException("Failed to store not *.txt file " + filename);
             }
             if (filename.contains("..")) {
                 // This is a security check
@@ -110,14 +115,53 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void deleteAll() {
-        //Myropolskyi: we don't need in this behavour
-       // FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        // FileSystemUtils.deleteRecursively(rootLocation.toFile());
+
+        //Myropolskyi: delete files older then today, not all the files
+        LocalDateTime currentDate = LocalDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
+        BasicFileAttributes attributes = null;
+
+        //input directory
+        for (File file: new File(rootLocation.toAbsolutePath().toString()).listFiles()){
+            try
+            {
+                attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                Instant stampCreation = attributes.creationTime().toInstant();
+                LocalDateTime creationDate = LocalDateTime.ofInstant(stampCreation, ZoneId.systemDefault());
+                if(currentDate.isAfter(creationDate) && file.isFile()){
+                    file.delete();
+                }
+            }
+            catch (IOException exception)
+            {
+                log.info("Exception handled when trying to get input file attributes: {}", exception.getMessage());
+            }
+        }
+
+        //output directrory
+        for (File file: new File(outputLocation.toAbsolutePath().toString()).listFiles()){
+            try
+            {
+                attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                Instant stampCreation = attributes.creationTime().toInstant();
+                LocalDateTime creationDate = LocalDateTime.ofInstant(stampCreation, ZoneId.systemDefault());
+                if(currentDate.isAfter(creationDate) && file.isFile()){
+                    file.delete();
+                }
+            }
+            catch (IOException exception)
+            {
+                log.info("Exception handled when trying to get output file attributes: {}", exception.getMessage());
+            }
+        }
+
     }
 
     @Override
     public void init() {
         try {
             Files.createDirectories(rootLocation);
+            Files.createDirectories(outputLocation);
         }
         catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);

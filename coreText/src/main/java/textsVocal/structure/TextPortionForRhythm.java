@@ -403,7 +403,7 @@ public abstract class TextPortionForRhythm {
         return junctureProfile;
     }
 
-//==getters and setters ==
+    //==getters and setters ==
     public String getOriginalText() {
         return originalText;
     }

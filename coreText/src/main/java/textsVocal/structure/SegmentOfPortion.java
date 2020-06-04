@@ -66,8 +66,10 @@ public class SegmentOfPortion {
     }
 
     //=== static methods ==================================================
+
     /**
      * returns number of stresses in the stress schema
+     *
      * @param representation stress schema like  0101...
      * @return number of stress in stress schema
      */
@@ -83,8 +85,9 @@ public class SegmentOfPortion {
 
     /**
      * from list of words receive segment with meter representations
+     *
      * @param listWords list of Word-objects
-     * @param language language of whole text
+     * @param language  language of whole text
      * @return segment instance of class
      */
     public static SegmentOfPortion buildSegmentMeterRepresentationWithAllOptions(List<Word> listWords, String language, boolean thisIsVerse) {
@@ -112,21 +115,40 @@ public class SegmentOfPortion {
                 s -> (thisIsVerse && s.contains("" + symbolOfStress + symbolOfStress + symbolOfStress))
                         || (thisIsVerse && s.startsWith("" + symbolOfStress + symbolOfStress)
                         || (thisIsVerse && s.endsWith("" + symbolOfStress + symbolOfStress)))
-                        || (!s.contains("" + symbolOfStress))
+                        || (thisIsVerse && !s.contains("" + symbolOfStress))
                         || (!checkSensibleRepresentationOfMeter(s, listWords, language, thisIsVerse))
         );
 
+        // impossible, but
+        if (varSegmentMeterRepresentations.size() == 0) {
+            //it is possible because of the text in other(not Russian), unknown language. That's why without throw
+            varSegmentMeterRepresentations.add(" .Probably unknown language?");
+            log.info("Just nothing in meter schema for segment! {}", listWords);
+            //throw new ArrayIndexOutOfBoundsException("Just nothing in meter schema for segment! "+listWords);
+        }
+
         //for ceasure
-        listWords.forEach(s-> spacesSchema.add(s.getNumSyllable()));
+        listWords.forEach(s -> spacesSchema.add(s.getNumSyllable()));
+
+        //there are such cases in prose (ну-ка?)
+        String oldString = varSegmentMeterRepresentations.get(0);
+        if ((varSegmentMeterRepresentations.size() == 1) && !oldString.contains("" + symbolOfStress)) {
+            if (oldString.length() > 0) {
+                varSegmentMeterRepresentations.set(0, "" + symbolOfStress + oldString.substring(1));
+            } else {//probably unknown language
+                varSegmentMeterRepresentations.set(0, "" + symbolOfStress);
+            }
+        }
 
         return new SegmentOfPortion(varSegmentMeterRepresentations, spacesSchema);
     }
 
     /**
      * check whether all is OK with representations
+     *
      * @param meterRepresentation stress schema
-     * @param listWords list of words-objects
-     * @param language language of the whole text
+     * @param listWords           list of words-objects
+     * @param language            language of the whole text
      * @return true if all OK and false otherwise
      */
     private static boolean checkSensibleRepresentationOfMeter(String meterRepresentation, List<Word> listWords, String language, boolean thisIsVerse) {
@@ -162,12 +184,13 @@ public class SegmentOfPortion {
         this.selectedMeterRepresentation = selectedMeterRepresentation;
         setDuration(selectedMeterRepresentation);
         setNumberSyllable(selectedMeterRepresentation.length());
-        if ((this.schemaOfSpaces.size() > 0) && (!selectedMeterRepresentation.isEmpty())){
+        if ((this.schemaOfSpaces.size() > 0) && (!selectedMeterRepresentation.isEmpty())) {
             StringBuilder meterRepresentationWithSpaces = new StringBuilder();
             for (int i = 0; i < selectedMeterRepresentation.length(); i++) {
-                if(schemaOfSpaces.contains(i)){
+                if (schemaOfSpaces.contains(i)) {
                     {
-                        meterRepresentationWithSpaces.append(" ");}
+                        meterRepresentationWithSpaces.append(" ");
+                    }
                 }
                 meterRepresentationWithSpaces.append(selectedMeterRepresentation.charAt(i));
             }
@@ -258,10 +281,11 @@ public class SegmentOfPortion {
 
     /**
      * after meter was defined (but not precisely) we need to fill segment with metric characteristics
-     * @param mainGroup main group of meter in poem
+     *
+     * @param mainGroup   main group of meter in poem
      * @param secondGroup second group of meter in poem
-     * @param mainPart part of main group in poem in %
-     * @param secondPart part of second group in poem in %
+     * @param mainPart    part of main group in poem in %
+     * @param secondPart  part of second group in poem in %
      */
     public void fillVerseSegmentWithMeterCharacteristics(String mainGroup, String secondGroup, int mainPart, int secondPart) {
 
@@ -444,12 +468,13 @@ public class SegmentOfPortion {
 
     /**
      * with meter schema get meter definition
+     *
      * @param language language of whole text
      * @return map with number of segment as a key and set of stress schema as values
      */
     public Map<Integer, Set<String>> getMeterDefinitions(String language) {
         if (!language.equals("ru")) {
-            log.error("Unknown language for meter's definition " + language +"!");
+            log.error("Unknown language for meter's definition " + language + "!");
             throw new IllegalArgumentException("Unknown language for meter's definition!");
         } else {
             return VocalAnalisysRu.getMeterSchemaOfSegment(this);
@@ -458,7 +483,7 @@ public class SegmentOfPortion {
 
     //=== private instance methods ===
 
-    public void setEndingByRepresentation(String repr){
+    public void setEndingByRepresentation(String repr) {
         int posLastSymbolOfStress = repr.lastIndexOf(symbolOfStress);
         if (posLastSymbolOfStress >= 0) {
             setEnding("..." + repr.substring(posLastSymbolOfStress));
@@ -467,8 +492,9 @@ public class SegmentOfPortion {
 
     /**
      * filling segment fields, when we have all lines with meter-definitions
+     *
      * @param dtMeters data table with all possible meter definitions for this segment
-     * @param nRow number of row in data table
+     * @param nRow     number of row in data table
      */
     private void fillMeterCharacteristicsVariables(DataTable dtMeters, int nRow) {
 
