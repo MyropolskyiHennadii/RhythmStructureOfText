@@ -31,7 +31,7 @@ public final class CommonConstants implements ApplicationContextAware {
     private final int validLevelOfMainMeterGroupInVerseText = 65;//in %
     private final int validDifferenceBetweenTwoMainGroupsInVerseText = 30;//in %
     private boolean thisIsVerse = true;//verse = true or prose = false
-    private boolean readingFromFile = false;// read text from file or from ...
+    private boolean readingFromFile = true;// read text from file or from ...
     private String portionSeparator = "//////////////////////////////////////////////////";
     private String fileInputDirectory = "c:\\Users\\Геннадий\\Documents\\Tests for RythmStructureOfText\\";//path to directory with input file
     private String fileInputName = "Kuzmin Verses.txt";//name of the input file
