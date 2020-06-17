@@ -20,7 +20,7 @@
         <module>coreText</module>
         <module>textsVocal.utils</module>
         <module>console</module>
-        <module>web</module>
+        <module>webRhythmStructure</module>
     </modules>
 
     <properties>

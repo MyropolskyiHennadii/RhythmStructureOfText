@@ -26,6 +26,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
     private String regularSpaceOnSyllable;//ceasure
     private double maxDuration = 0;//maximal duration in lines
     private double minDuration = Integer.MAX_VALUE;////minimal duration in lines
+    private double averageDuration = 0;//average duration in lines
 
     // == constructor ==============================================================
     public VersePortionForRhythm() {
@@ -382,10 +383,13 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
             VersePortionForRhythm instance = (VersePortionForRhythm) AnalyserPortionOfText.getListOfInstance().get(numberPortion - 1);
             AnalyserPortionOfText.refineVerseCharacteristics(instance);
 
+            //refine header
             HeaderAndFooterListsForWebOutput.getPortionHeaders().set(numberPortion - 1, instance.formHeaderLines(numberPortion));
 
-            //there is no footer in web-verse (we have there the table)
-            /* PortionsListsForWebOutput.getPortionFooters().set(numberPortion-1, instance.formFooterLinesWithoutWeb());*/
+            //refine footer
+            List<String> footer = new ArrayList<>();
+            instance.addFooterLinesWithAverageValues(footer);
+            HeaderAndFooterListsForWebOutput.getPortionFooters().set(numberPortion-1, footer);
         }
     }
 
@@ -470,6 +474,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         this.regularNumberOfStressOfFirstStrophe = "";
         this.regularSpaceOnSyllable = "";
         this.maxDuration = 0;
+        this.averageDuration = 0;
         this.minDuration = Integer.MAX_VALUE;
         this.pText = prepareStringForParsing(pText, SYMB_BRIEF_PUNCTUATION, SYMB_SPACE).toString();
         this.originalText = pText;
@@ -537,6 +542,14 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
 
     public void setMinDuration(double minDuration) {
         this.minDuration = minDuration;
+    }
+
+    public double getAverageDuration() {
+        return averageDuration;
+    }
+
+    public void setAverageDuration(double averageDuration) {
+        this.averageDuration = averageDuration;
     }
 
     @Override
@@ -941,16 +954,22 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         List<SegmentOfPortion> listSegments = getListOfSegments();
         double max = 0;
         double min = Integer.MAX_VALUE;
+        double sum = 0;
         for (SegmentOfPortion listSegment : listSegments) {
+            double duration = listSegment.getDuration();
+            sum += duration;
             if (listSegment.getDuration() > max) {
-                max = listSegment.getDuration();
+                max = duration;
             }
             if (listSegment.getDuration() < min) {
-                min = listSegment.getDuration();
+                min = duration;
             }
         }
         setMinDuration(min);
         setMaxDuration(max);
+        if(listSegments.size()>0){
+            setAverageDuration(sum/listSegments.size());
+        }
     }
 
     /**
@@ -997,7 +1016,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
      * @return list with header lines for output
      */
     public List<String> formHeaderLines(int nPortion) {
-        ResourceBundle  messages = CommonConstants.getResourceBundle();
+        ResourceBundle messages = CommonConstants.getResourceBundle();
         List<String> headerLines = new ArrayList<>();
         headerLines.add("\n");
         headerLines.add(messages.getString("portionNumber") + nPortion + "\n");
@@ -1007,18 +1026,18 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         headerLines.add(messages.getString("endingsFirstLines") + this.getRegularEndingsOfFirstStrophe() + "\n");
         headerLines.add(messages.getString("durationsFirstLines") + this.getRegularDurationOfFirstStrophe() + "\n");
         headerLines.add(messages.getString("numberStressesFirstLines") + this.getRegularNumberOfStressOfFirstStrophe() + "\n");
-        headerLines.add(messages.getString("regularSpacesFirstLines") + this.getRegularSpaceOnSyllable()  + "\n");
+        headerLines.add(messages.getString("regularSpacesFirstLines") + this.getRegularSpaceOnSyllable() + "\n");
         headerLines.add("==========================\n");
         return headerLines;
     }
 
     /**
-     * form footer for output
+     * form footer for output without web
      *
      * @return list String with footer for output
      */
     public List<String> formFooterLinesWithoutWeb() {
-        ResourceBundle  messages = CommonConstants.getResourceBundle();
+        ResourceBundle messages = CommonConstants.getResourceBundle();
         List<String> footLines = new ArrayList<>();
         footLines.add(messages.getString("nameStressProfile") + "\n");
         footLines.add(messages.getString("nameNumberSyllable") + "\n");
@@ -1048,7 +1067,35 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         }
         footLines.add("\n");
         footLines.add("==========================\n");
+
+        //max, min, average length:
+        addFooterLinesWithAverageValues(footLines);
+
         return footLines;
+    }
+
+    /**
+     * form footer for output with web
+     *
+     * @return list String with footer for output
+     */
+    public List<String> formFooterLinesWithWeb() {
+        List<String> footLines = new ArrayList<>();
+        //max, min, average length:
+        addFooterLinesWithAverageValues(footLines);
+        return footLines;
+    }
+
+    /**
+     * add to footer min, max and average values
+     */
+    public void addFooterLinesWithAverageValues(List<String> footLines) {
+        ResourceBundle messages = CommonConstants.getResourceBundle();
+        footLines.add(messages.getString("web.numberSentencesVerse") + this.getListOfSegments().size() + "\n");
+        footLines.add(messages.getString("web.maxLengthLine") + (int)this.getMaxDuration() + "\n");
+        footLines.add(messages.getString("web.minLengthLine") + (int)this.getMinDuration() + "\n");
+        footLines.add(messages.getString("web.averageLengthSentenseVerse") + (double)((int)(100*this.getAverageDuration()))/100 + "\n");
+        footLines.add("----------------------------\n");
     }
 
     /**
@@ -1096,7 +1143,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName(), true);
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
@@ -1107,7 +1154,9 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
      */
     public void prepareResumeOutputWeb() {
         HeaderAndFooterListsForWebOutput.getPortionHeaders().add(formHeaderLines(getNumberOfPortion()));
-        HeaderAndFooterListsForWebOutput.getPortionFooters().add(new ArrayList<>());
+        List<String> footer = new ArrayList<>();
+        addFooterLinesWithAverageValues(footer);
+        HeaderAndFooterListsForWebOutput.getPortionFooters().add(footer);
     }
 
     /**

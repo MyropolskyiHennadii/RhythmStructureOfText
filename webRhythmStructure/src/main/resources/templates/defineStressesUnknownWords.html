@@ -1,0 +1,56 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{web.commonTitle}"></title>
+</head>
+<body>
+<header th:replace="~{fragments/header :: header}"/>
+<br/>
+<br/>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).HOME}__}" th:text="#{web.referenceToHome}"></a>
+</div>
+<div align="left">
+    <a th:href="@{__${T(textsVocal.web.utilsWeb.ViewNames).SET_ANALYSIS_ATTRIBUTES}__}" th:text="#{web.referenceToSetAttributes}"></a>
+</div>
+<bt/>
+
+<div align="center">
+    <h3 th:text="#{web.instruction1DefineStress}"></h3>
+    <br/>
+    <p  th:text="#{web.instruction2DefineStress}"></p>
+    <p  th:text="#{web.instruction3DefineStress}"></p>
+    <p  th:text="#{web.instruction4DefineStress}"></p>
+    <h3 th:text="#{web.instruction5DefineStress}"></h3>
+    <br/>
+
+    <!-- data -->
+    <table border="1">
+        <tr>
+            <th th:text="#{web.nameWord}"></th>
+            <th th:text="#{web.ResultsVerseColumn3}"></th>
+        </tr>
+
+        <form action="#" th:action="@{/tableStressesWords}" th:object="${stressSchemaUnknownWordsInHTMLTable}"
+              method="post">
+            <tr th:each="rowTable, stateMainTable : ${unknownWords}">
+                <td align="left" th:utext="${rowTable}"></td>
+                <td><input type="text" th:field="*{newValuesItems}"></td>
+            <tr>
+                <td><input type="submit" th:value="#{web.ResultsSubmitChangesInTable}"/></td>
+            </tr>
+        </form>
+    </table>
+
+
+</div>
+
+<p/>
+<p/>
+
+<div align="center">
+    <footer th:replace="~{fragments/footer :: footer}"/>
+</div>
+
+</body>
+</html>

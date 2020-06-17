@@ -80,7 +80,7 @@ public class ProsePortionForRhythm extends TextPortionForRhythm {
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName(), true);
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
@@ -334,7 +334,7 @@ public class ProsePortionForRhythm extends TextPortionForRhythm {
             System.out.println(outputAccumulation.toString());
         } else // writing to file
         {
-            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName());
+            FileTreatment.outputResultToFile(outputAccumulation, commonConstants.getFileOutputDirectory() + commonConstants.getFileOutputName(), true);
         }
         //clear outputAccumulation before next portion
         outputAccumulation.delete(0, outputAccumulation.length() - 1);
