@@ -21,21 +21,13 @@ public class DB_RussianDictionary {
     private static String db_NAME = "schema_word_stress";
     private static String db_HOST = "localhost";
     private static int db_PORT = 3306;
-    private static String db_USER = "root";
+    //private static String db_USER = "root";
+    private static String db_USER = "guest";
     private static String db_PASSWORD = "1961";
     private static String db_Table = "stressworddictionaryru";
     private static String db_TableUnKnownWords = "unknownwords";//temporary table for unknown words
     private static Connection mainConnection;//main connection with stress table
 
-  /*
-        <property name="db_NAME" value="schema_word_stress"/>
-        <property name="db_HOST" value="localhost"/>
-        <property name="db_PORT" value="3306"/>
-        <property name="db_USER" value="root"/>
-        <property name="db_PASSWORD" value="1961"/>
-        <property name="db_Table" value="stressworddictionaryru"/>
-        <property name="db_TableUnKnownWords" value="unknownwords"/>
-*/
     //=== setters and getters ==========================
 
     public static String getDb_NAME() {

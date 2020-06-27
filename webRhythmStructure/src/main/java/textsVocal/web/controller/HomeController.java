@@ -20,9 +20,31 @@ public class HomeController {
 
     @GetMapping(Mappings.HOME)
     public String goHome(Model model, HttpServletRequest request) {
-        log.info("Entrance from {}", request.getRequestURL().toString());
+        log.info("===================Entrance parameters / ===================");
+        log.info("Entrance from local address:" + request.getLocalAddr() +
+                "; remote address: "+ request.getRemoteAddr());
+        log.info("Remote host " + request.getRemoteHost());
+        log.info("Server port {}", request.getServerPort());
+        log.info("Local port {}", request.getLocalPort() +
+                "; remote port " + request.getRemotePort());
+        log.info("Server info:", request.getServletContext().getServerInfo());
+        log.info("===================End entrance parameters /HOME ===================");
         model.addAttribute("setAttributePage", ViewNames.SET_ANALYSIS_ATTRIBUTES);
         return ViewNames.HOME;
     }
 
+/*    @GetMapping("/")
+    public String goHomePage(Model model, HttpServletRequest request) {
+        log.info("===================Entrance parameters /===================");
+        log.info("Entrance from local address:" + request.getLocalAddr() +
+                "; remote address: "+ request.getRemoteAddr());
+        log.info("Remote host " + request.getRemoteHost());
+        log.info("Server port {}", request.getServerPort());
+        log.info("Local port {}", request.getLocalPort() +
+                "; remote port " + request.getRemotePort());
+        log.info("Server info:", request.getServletContext().getServerInfo());
+        log.info("===================End entrance parameters /===================");
+        model.addAttribute("setAttributePage", ViewNames.SET_ANALYSIS_ATTRIBUTES);
+        return ViewNames.HOME;
+    }*/
 }
