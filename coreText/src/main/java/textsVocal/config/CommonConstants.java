@@ -30,6 +30,7 @@ public final class CommonConstants implements ApplicationContextAware {
     private final boolean requireUnknownWordsByUser = true;//ask user about unknown words or no - only in console
     private final int validLevelOfMainMeterGroupInVerseText = 65;//in %
     private final int validDifferenceBetweenTwoMainGroupsInVerseText = 30;//in %
+    //=== (in web-app fill auto) =======================
     private boolean thisIsVerse = true;//verse = true or prose = false
     private boolean readingFromFile = true;// read text from file or from ...
     private String portionSeparator = "//////////////////////////////////////////////////";

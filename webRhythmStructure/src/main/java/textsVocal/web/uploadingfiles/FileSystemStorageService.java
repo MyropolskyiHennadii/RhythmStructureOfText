@@ -52,7 +52,7 @@ public class FileSystemStorageService implements StorageService {
                 log.error("Failed to store empty file {}", filename);
                 throw new StorageException("Failed to store empty file " + filename);
             }
-            if(!file.getContentType().trim().equals("text/plain")){//Myropolskyi
+            if (!file.getContentType().trim().equals("text/plain")) {//Myropolskyi
                 log.error("Failed to store not *.txt file  {}", filename);
                 throw new StorageException("Failed to store not *.txt file " + filename);
             }
@@ -64,7 +64,7 @@ public class FileSystemStorageService implements StorageService {
                                 + filename);
             }
             try (InputStream inputStream = file.getInputStream()) {
-                log.info("Storing {}"+file.getOriginalFilename());
+                log.info("Storing {}" + file.getOriginalFilename());
                 //Myropolskyi
        /*         Files.copy(inputStream, this.rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);*/ //I don't know? why in local host this copyes file to itself
@@ -74,8 +74,7 @@ public class FileSystemStorageService implements StorageService {
                 //Myropolskyi
                 setFileAttributesToCommonConstants(simpleFilename, true);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Failed to store file {}", filename);
             throw new StorageException("Failed to store file " + filename, e);
         }
@@ -87,8 +86,7 @@ public class FileSystemStorageService implements StorageService {
             return Files.walk(this.rootLocation, 1)
                     .filter(path -> !path.equals(this.rootLocation))
                     .map(this.rootLocation::relativize);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Failed to store file {}", e.getMessage());
             throw new StorageException("Failed to read stored files", e);
         }
@@ -106,15 +104,13 @@ public class FileSystemStorageService implements StorageService {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }
-            else {
+            } else {
                 log.error("Could not read file: {}", filename);
                 throw new StorageFileNotFoundException(
                         "Could not read file: " + filename);
 
             }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             log.error("Could not read file: {}", filename);
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
@@ -129,41 +125,49 @@ public class FileSystemStorageService implements StorageService {
         BasicFileAttributes attributes = null;
 
         //input directory
-        for (File file: new File(rootLocation.toAbsolutePath().toString()).listFiles()){
-            try
-            {
+        File rootDir = new File(rootLocation.toAbsolutePath().toString());
+        File[] filesRootDir = null;
+        if (rootDir.exists()) {
+            filesRootDir = rootDir.listFiles();
+        }
+        if (filesRootDir == null) {
+            filesRootDir = new File[0];
+        }
+        for (File file : filesRootDir) {
+            try {
                 attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 Instant stampCreation = attributes.creationTime().toInstant();
                 LocalDateTime creationDate = LocalDateTime.ofInstant(stampCreation, ZoneId.systemDefault());
-                if(currentDate.isAfter(creationDate) && file.isFile()){
+                if (currentDate.isAfter(creationDate) && file.isFile()) {
                     file.delete();
                 }
-            }
-            catch (IOException exception)
-            {
+            } catch (IOException exception) {
                 log.info("Exception handled when trying to get input file attributes: {}", exception.getMessage());
-            }
-            catch (IllegalStateException e){
+            } catch (NullPointerException e) {
                 log.info("Something wrong with files deleting: {}", e.getMessage());
             }
         }
 
         //output directrory
-        for (File file: new File(outputLocation.toAbsolutePath().toString()).listFiles()){
-            try
-            {
+        File outputDir = new File(outputLocation.toAbsolutePath().toString());
+        File[] filesOutputDir = null;
+        if (rootDir.exists()) {
+            filesOutputDir = rootDir.listFiles();
+        }
+        if (filesOutputDir == null) {
+            filesOutputDir = new File[0];
+        }
+        for (File file : filesOutputDir) {
+            try {
                 attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 Instant stampCreation = attributes.creationTime().toInstant();
                 LocalDateTime creationDate = LocalDateTime.ofInstant(stampCreation, ZoneId.systemDefault());
-                if(currentDate.isAfter(creationDate) && file.isFile()){
+                if (currentDate.isAfter(creationDate) && file.isFile()) {
                     file.delete();
                 }
-            }
-            catch (IOException exception)
-            {
+            } catch (IOException exception) {
                 log.info("Exception handled when trying to get output file attributes: {}", exception.getMessage());
-            }
-            catch (IllegalStateException e){
+            } catch (NullPointerException e) {
                 log.info("Something wrong with files deleting: {}", e.getMessage());
             }
         }
@@ -174,20 +178,19 @@ public class FileSystemStorageService implements StorageService {
         try {
             Files.createDirectories(rootLocation);
             Files.createDirectories(outputLocation);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Could not initialize storage: {}", e.getMessage());
             throw new StorageException("Could not initialize storage", e);
         }
     }
 
     //Myropolskyi
-    public void setFileAttributesToCommonConstants(String filename, boolean readingFromFile){
+    public void setFileAttributesToCommonConstants(String filename, boolean readingFromFile) {
         CommonConstants commonConstants = CommonConstants.getApplicationContext().getBean(CommonConstants.class);
         commonConstants.setFileInputDirectory(Paths.get(this.rootLocation.toString()).toAbsolutePath().toString());
         commonConstants.setFileInputName(filename);
         commonConstants.setFileOutputDirectory(Paths.get(this.outputLocation.toString()).toAbsolutePath().toString());
-        commonConstants.setFileOutputName("out_"+filename);
+        commonConstants.setFileOutputName("out_" + filename);
         commonConstants.setReadingFromFile(readingFromFile);
     }
 
@@ -198,12 +201,12 @@ public class FileSystemStorageService implements StorageService {
             return Files.walk(this.outputLocation, 1)
                     .filter(path -> !path.equals(this.outputLocation))
                     .map(this.outputLocation::relativize);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Failed to read stored files: {}", e.getMessage());
             throw new StorageException("Failed to read stored files", e);
         }
     }
+
     //Myropolskyi
     public Path loadOutput(String filename) {
         return outputLocation.resolve(filename);
@@ -216,14 +219,12 @@ public class FileSystemStorageService implements StorageService {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }
-            else {
+            } else {
                 log.error("Could not read file: {}", filename);
                 throw new StorageFileNotFoundException(
                         "Could not read file: " + filename);
             }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             log.error("Could not read file: {}", filename);
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
