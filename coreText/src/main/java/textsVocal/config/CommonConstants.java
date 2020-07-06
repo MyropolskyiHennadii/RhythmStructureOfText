@@ -30,9 +30,10 @@ public final class CommonConstants implements ApplicationContextAware {
     private final boolean requireUnknownWordsByUser = true;//ask user about unknown words or no - only in console
     private final int validLevelOfMainMeterGroupInVerseText = 65;//in %
     private final int validDifferenceBetweenTwoMainGroupsInVerseText = 30;//in %
+    private final int levelOfRegularCaesure = 70;//in %
     //=== (in web-app fill auto) =======================
     private boolean thisIsVerse = true;//verse = true or prose = false
-    private boolean readingFromFile = true;// read text from file or from ...
+    private boolean readingFromFile = false;// read text from file or from ...
     private String portionSeparator = "//////////////////////////////////////////////////";
     private String fileInputDirectory = "c:\\Users\\Геннадий\\Documents\\Tests for RythmStructureOfText\\";//path to directory with input file
     private String fileInputName = "Kuzmin Verses.txt";//name of the input file
@@ -216,4 +217,7 @@ public final class CommonConstants implements ApplicationContextAware {
         this.textFromWebForm = textFromWebForm;
     }
 
+    public int getLevelOfRegularCaesure() {
+        return levelOfRegularCaesure;
+    }
 }

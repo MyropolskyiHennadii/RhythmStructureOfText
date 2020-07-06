@@ -60,6 +60,7 @@ public class VocalAnalisysRu {
             prepareWords = prepare.filter(s -> calculateDurationOnlyVocale(s).intValue() > 0)
                     .collect(Collectors.toList());
         }
+
         try {
             Connection conn = db.getConnectionMainStressTable();
             Statement stmt = conn.createStatement();
@@ -74,7 +75,6 @@ public class VocalAnalisysRu {
                 }
                 n0++;
                 if ((n0 == nStep) || (i == (prepareWords.size() - 1))) {
-
                     ResultSet rs = stmt.executeQuery(sql + sqlArray + ")");
                     fillStressMapWithResultSet(rs, stressMap);
 

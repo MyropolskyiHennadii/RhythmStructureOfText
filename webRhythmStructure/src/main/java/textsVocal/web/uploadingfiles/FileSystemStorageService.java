@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -64,7 +65,7 @@ public class FileSystemStorageService implements StorageService {
                                 + filename);
             }
             try (InputStream inputStream = file.getInputStream()) {
-                log.info("Storing {}" + file.getOriginalFilename());
+                log.info("Storing file {}", file.getOriginalFilename());
                 //Myropolskyi
        /*         Files.copy(inputStream, this.rootLocation.resolve(filename),
                         StandardCopyOption.REPLACE_EXISTING);*/ //I don't know? why in local host this copyes file to itself
@@ -151,8 +152,8 @@ public class FileSystemStorageService implements StorageService {
         //output directrory
         File outputDir = new File(outputLocation.toAbsolutePath().toString());
         File[] filesOutputDir = null;
-        if (rootDir.exists()) {
-            filesOutputDir = rootDir.listFiles();
+        if (outputDir.exists()) {
+            filesOutputDir = outputDir.listFiles();
         }
         if (filesOutputDir == null) {
             filesOutputDir = new File[0];

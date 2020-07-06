@@ -1,6 +1,9 @@
 package textsVocal.utilsCore;
 
+import textsVocal.config.CommonConstants;
 import textsVocal.structure.SegmentOfPortion;
+
+import java.util.ResourceBundle;
 
 /**
  * auxiliary class for web-output with common portion's characteristics
@@ -83,6 +86,8 @@ public class OutputWebCharacteristics {
 
     @Override
     public String toString() {
-        return meter + "-" + numberOfTonicFoot;
+        ResourceBundle messages = CommonConstants.getResourceBundle();
+        return messages.getString(meter) + "-" + numberOfTonicFoot;
     }
+
 }

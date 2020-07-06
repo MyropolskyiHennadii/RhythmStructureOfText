@@ -2,9 +2,13 @@ package textsVocal.web.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import textsVocal.config.CommonConstants;
+import textsVocal.web.uploadingfiles.FileSystemStorageService;
+import textsVocal.web.uploadingfiles.StorageProperties;
 import textsVocal.web.utilsWeb.Mappings;
 import textsVocal.web.utilsWeb.ViewNames;
 
@@ -29,6 +33,12 @@ public class HomeController {
                 "; remote port " + request.getRemotePort());
         log.info("Server info:", request.getServletContext().getServerInfo());
         log.info("===================End entrance parameters /HOME ===================");
+
+        //deleting old files
+        ApplicationContext context = CommonConstants.getApplicationContext();
+        FileSystemStorageService storageService = context.getBean(FileSystemStorageService.class);
+        storageService.deleteAll();
+
         model.addAttribute("setAttributePage", ViewNames.SET_ANALYSIS_ATTRIBUTES);
         return ViewNames.HOME;
     }

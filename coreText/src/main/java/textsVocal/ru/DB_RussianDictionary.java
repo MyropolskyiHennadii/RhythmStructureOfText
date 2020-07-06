@@ -114,7 +114,8 @@ public class DB_RussianDictionary {
     public Connection getConnectionMainStressTable()  throws SQLException{
         if (mainConnection == null) {
             try {
-                mainConnection = DriverManager.getConnection("jdbc:mysql://" + db_HOST + ":" + db_PORT + "/" + db_NAME + "?useSSL=false", db_USER, db_PASSWORD);
+                mainConnection = DriverManager.getConnection("jdbc:mysql://" + db_HOST + ":" + db_PORT + "/" + db_NAME
+                        + "?useSSL=false&serverTimezone=UTC&characterEncoding=utf8", db_USER, db_PASSWORD);
             } catch (SQLException e) {
                 log.error("Can't create connection with DB!" + e.getMessage());
                 throw e;
@@ -128,7 +129,7 @@ public class DB_RussianDictionary {
      * @throws SQLException
      */
     @PreDestroy
-    public void beforeDestoying() throws SQLException {
+    public void beforeDestroying() throws SQLException {
         if(mainConnection != null){
             try {
                 mainConnection.close();}

@@ -1,5 +1,6 @@
 package textsVocal.structure;
 
+import org.springframework.context.ApplicationContext;
 import textsVocal.config.CommonConstants;
 import textsVocal.config.HeaderAndFooterListsForWebOutput;
 import textsVocal.utilsCommon.DataTable;
@@ -712,6 +713,8 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         String mainGroupName = ((String) (priorityMap.keySet().stream().findFirst().get())).trim();
         int mainPart = 100 * (Integer) (priorityMap.get(mainGroupName)) / preparedListOfSegment.size();
 
+        ResourceBundle message = CommonConstants.getResourceBundle();
+
         int secondPart = 0;
         String secondGroupName = "-------";
         Optional<String> secondGroup = priorityMap.keySet().stream().skip(1).findFirst();
@@ -722,9 +725,9 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
 
         if ((mainPart >= constants.getValidLevelOfMainMeterGroupInVerseText()) && (mainPart - secondPart) >= constants.getValidDifferenceBetweenTwoMainGroupsInVerseText()
                 && !mainGroupName.equals("Unknown")) {
-            this.setMainMeter(mainGroupName);
+            this.setMainMeter(message.getString(mainGroupName));
         } else if ((mainPart + secondPart) >= constants.getValidLevelOfMainMeterGroupInVerseText()) {
-            this.setMainMeter("Mixed or free verse");
+            this.setMainMeter(message.getString("FreeVerse"));
         } else {
             this.setMainMeter("Unknown");
         }
@@ -924,7 +927,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         int[] caesura = new int[12];//considerate for ceasure max 12 syllables
         int lineCount = Math.min(listSegment.size(), 10);
 
-
+        CommonConstants commonConstants = CommonConstants.getApplicationContext().getBean(CommonConstants.class);
         for (int i = 0; i < lineCount; i++) {
             List<Integer> potentialCaesura = listSegment.get(i).getSchemaOfSpaces();
             int countSyllable = listSegment.get(i).getNumberSyllable();
@@ -938,7 +941,7 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         }
         StringBuilder reg = new StringBuilder();
         for (int i = 0; i < caesura.length; i++) {
-            if (100 * caesura[i] / lineCount > 50) {
+            if (100 * caesura[i] / lineCount > commonConstants.getLevelOfRegularCaesure()) {
                 reg.append(i + 1).append(" (").append(100 * caesura[i] / lineCount).append("%) | ");
             }
         }
@@ -985,6 +988,8 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
 
         int maxNumberOfStress = 0;
 
+        ResourceBundle messages = CommonConstants.getResourceBundle();
+
         for (SegmentOfPortion segmentOfPortion : listSegment) {
 
             // main meter definition
@@ -1001,11 +1006,11 @@ public class VersePortionForRhythm extends TextPortionForRhythm {
         }
 
         if (thatIsAccentVerse) {
-            this.setMainMeter("Accent verse. Max. " + maxNumberOfStress + " stresses.");
+            this.setMainMeter(messages.getString("Accent") + maxNumberOfStress + messages.getString("Stresses"));
         } else if (thatIsTaktovikVerse) {
-            this.setMainMeter("Taktovik verse. Max. " + maxNumberOfStress + " stresses.");
+            this.setMainMeter(messages.getString("Taktovik") + maxNumberOfStress + messages.getString("Stresses"));
         } else {
-            this.setMainMeter("Dolnik verse. Max. " + maxNumberOfStress + " stresses.");
+            this.setMainMeter(messages.getString("Dolnik") + maxNumberOfStress + messages.getString("Stresses"));
         }
     }
 

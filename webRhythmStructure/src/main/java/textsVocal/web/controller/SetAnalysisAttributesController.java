@@ -86,8 +86,6 @@ public class SetAnalysisAttributesController {
         constants.setThisIsWebApp(true);
         constants.setTextFromWebForm("" + textFromForm.trim());
 
-        log.info("Setting attributes from {}", request.getRequestURL().toString());
-
         Locale locale = context.getBean(LocaleResolver.class).resolveLocale(request);
         CommonConstants.setWebLocale(locale);
 
