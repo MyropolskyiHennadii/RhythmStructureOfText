@@ -16,8 +16,6 @@ The problems with the Russian texts rhythmic structure are
 1. there is no Russian online-vocabulary with simple stresses-schema like 00010101010...
 2. the stress position in the Russian poems is often variable.
 
-Unfortunately I have a Russian vocabulary of stresses only offline, but I hope soon I have a hosting for this vocabulary (<4Gb) and a web application.
-
-But the code is here.
+I don't know how long the application will be available here http://94.130.181.51:8090/rhythm, but you can try.
 
 
