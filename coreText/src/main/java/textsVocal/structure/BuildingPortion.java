@@ -68,11 +68,11 @@ public class BuildingPortion {
 
             Path textPath = Paths.get(directoryInput, fileInputName);
             if (!Files.exists(textPath)) {
-                log.error("There is no file " + textPath);
+                log.error("There is no file {}", textPath);
                 throw new FileNotFoundException("There is no file " + textPath);
             }
             if (!Files.isReadable(textPath)) {
-                log.error("Impossible to read file " + textPath);
+                log.error("Impossible to read file {}", textPath);
                 throw new FileNotFoundException("Impossible to read file " + textPath);
             }
 
@@ -123,10 +123,10 @@ public class BuildingPortion {
                     createTextPortionInstance(sPortion.toString().trim(), numPortion, true);
                 }
             } catch (FileNotFoundException e) {
-                log.error("Undefinite FileNotFoundExctption in main", e);
+                log.error("Undefinite FileNotFoundExctption in main {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
-                log.error("Undefinite IOException in main", e);
+                log.error("Undefinite IOException in main {}", e.getMessage());
                 throw e;
             }
         }
@@ -171,11 +171,11 @@ public class BuildingPortion {
 
             Path textPath = Paths.get(directoryInput, fileInputName);
             if (!Files.exists(textPath)) {
-                log.error("There is no file " + textPath);
+                log.error("There is no file {}", textPath);
                 throw new FileNotFoundException("There is no file " + textPath);
             }
             if (!Files.isReadable(textPath)) {
-                log.error("Impossible to read file " + textPath);
+                log.error("Impossible to read file {}", textPath);
                 throw new FileNotFoundException("Impossible to read file " + textPath);
             }
 
@@ -198,10 +198,10 @@ public class BuildingPortion {
                     line = bufferedReader.readLine();
                 }
             } catch (FileNotFoundException e) {
-                log.error("Undefinite FileNotFoundExctption in main", e);
+                log.error("Undefinite FileNotFoundExctption in main {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
-                log.error("Undefinite IOException in main", e);
+                log.error("Undefinite IOException in main {}", e.getMessage());
                 throw e;
             }
 

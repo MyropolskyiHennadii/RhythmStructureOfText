@@ -115,7 +115,7 @@ public class DB_RussianDictionary {
         if (mainConnection == null) {
             try {
                 mainConnection = DriverManager.getConnection("jdbc:mysql://" + db_HOST + ":" + db_PORT + "/" + db_NAME
-                        + "?useSSL=false&serverTimezone=UTC&characterEncoding=utf8", db_USER, db_PASSWORD);
+                        + "?useSSL=false&serverTimezone=UTC&autoReconnect=true&characterEncoding=utf8", db_USER, db_PASSWORD);
             } catch (SQLException e) {
                 log.error("Can't create connection with DB!" + e.getMessage());
                 throw e;
